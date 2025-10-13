@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AliJ A. Shaikh - Senior AI Architect & Prompt Engineer Portfolio">
+    <meta name="keywords" content="AI Architect, Prompt Engineer, Generative AI, Python, Flutter, ComfyUI">
+    <meta name="author" content="AliJ A. Shaikh">
+    <title>AliJ A. Shaikh - AI Architect & Prompt Engineer</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Waybar/Taskbar -->
+    <div id="waybar">
+        <div class="waybar-left">
+            <div class="waybar-module workspace">
+                <span class="workspace-item active">1</span>
+                <span class="workspace-item">2</span>
+                <span class="workspace-item">3</span>
+                <span class="workspace-item">4</span>
+                <span class="workspace-item">5</span>
+            </div>
+            <div class="waybar-module window-title">
+                <span id="current-window">AliJ A. Shaikh - Portfolio</span>
+            </div>
+        </div>
+        
+        <div class="waybar-center">
+            <div class="waybar-module clock">
+                <span id="current-time"></span>
+            </div>
+        </div>
+        
+        <div class="waybar-right">
+            <div class="waybar-module system-info">
+                <span class="sys-item">
+                    <i class="icon">🖥️</i>
+                    <span id="cpu-usage">45%</span>
+                </span>
+                <span class="sys-item">
+                    <i class="icon">💾</i>
+                    <span id="memory-usage">2.1G</span>
+                </span>
+                <span class="sys-item">
+                    <i class="icon">🌐</i>
+                    <span id="network-status">WiFi</span>
+                </span>
+                <span class="sys-item">
+                    <i class="icon">🔋</i>
+                    <span id="battery">100%</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Desktop Environment -->
+    <div id="desktop">
+        <!-- Tiling Window Manager Layout -->
+        <div id="window-grid">
+            <!-- Top Left: Animated ASCII Visualization -->
+            <div class="window-pane" id="ascii-viz">
+                <div class="window-header">
+                    <div class="window-controls">
+                        <span class="control close"></span>
+                        <span class="control minimize"></span>
+                        <span class="control maximize"></span>
+                    </div>
+                    <div class="window-title">✨ Kawaii AI Core ✨</div>
+                </div>
+                <div class="window-content">
+                    <div id="ascii-animation"></div>
+                </div>
+            </div>
+
+            <!-- Top Center: System Monitor -->
+            <div class="window-pane" id="system-monitor">
+                <div class="window-header">
+                    <div class="window-controls">
+                        <span class="control close"></span>
+                        <span class="control minimize"></span>
+                        <span class="control maximize"></span>
+                    </div>
+                    <div class="window-title">💀 AI Doomsday Process Monitor</div>
+                </div>
+                <div class="window-content">
+                    <div id="htop-display"></div>
+                </div>
+            </div>
+
+            <!-- Top Right: Portfolio Content -->
+            <div class="window-pane main-window" id="portfolio-window">
+                <div class="window-header">
+                    <div class="window-controls">
+                        <span class="control close"></span>
+                        <span class="control minimize"></span>
+                        <span class="control maximize"></span>
+                    </div>
+                    <div class="window-title">alij@portfolio: ~/portfolio</div>
+                </div>
+                <div class="window-content">
+                    <div id="terminal-prompt">
+                        <span class="user">alij@portfolio</span><span class="separator">:</span><span class="path">~/portfolio</span><span class="prompt">$</span>
+                        <span id="typed-command"></span>
+                        <span id="cursor">_</span>
+                    </div>
+                    <div id="portfolio-content">
+                        <!-- Dynamic content here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Left: Navigation Terminal -->
+            <div class="window-pane" id="nav-terminal">
+                <div class="window-header">
+                    <div class="window-controls">
+                        <span class="control close"></span>
+                        <span class="control minimize"></span>
+                        <span class="control maximize"></span>
+                    </div>
+                    <div class="window-title">Navigation - zsh</div>
+                </div>
+                <div class="window-content">
+                    <div class="nav-menu">
+                        <div class="nav-item active" data-command="about">
+                            <span class="nav-prompt">➜</span> <span class="nav-cmd">cat</span> <span class="nav-file">about.md</span>
+                        </div>
+                        <div class="nav-item" data-command="skills">
+                            <span class="nav-prompt">➜</span> <span class="nav-cmd">cat</span> <span class="nav-file">skills.json</span>
+                        </div>
+                        <div class="nav-item" data-command="experience">
+                            <span class="nav-prompt">➜</span> <span class="nav-cmd">cat</span> <span class="nav-file">experience.log</span>
+                        </div>
+                        <div class="nav-item" data-command="achievements">
+                            <span class="nav-prompt">➜</span> <span class="nav-cmd">cat</span> <span class="nav-file">achievements.txt</span>
+                        </div>
+                        <div class="nav-item" data-command="portfolio">
+                            <span class="nav-prompt">➜</span> <span class="nav-cmd">ls -la</span> <span class="nav-file">projects/</span>
+                        </div>
+                        <div class="nav-item" data-command="contact">
+                            <span class="nav-prompt">➜</span> <span class="nav-cmd">contact</span> <span class="nav-file">--info</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Center: System Stats with Metrics -->
+            <div class="window-pane" id="system-metrics">
+                <div class="window-header">
+                    <div class="window-controls">
+                        <span class="control close"></span>
+                        <span class="control minimize"></span>
+                        <span class="control maximize"></span>
+                    </div>
+                    <div class="window-title">😈 AI Doomsday Neural Metrics</div>
+                </div>
+                <div class="window-content">
+                    <div id="metrics-display"></div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
