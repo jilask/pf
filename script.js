@@ -892,7 +892,7 @@ class ArchPortfolio {
                         <span style="color: var(--accent-cyan);">EMAIL:</span> <span style="color: var(--accent-green);">jilask70@gmail.com</span>
                     </div>
                     <div style="margin: 8px 0;">
-                        <span style="color: var(--accent-cyan);">PHONE:</span> <span style="color: var(--accent-green);">+91-9284481044</span>
+                        <span style="color: var(--accent-cyan);">PHONE:</span> <span style="color: var(--accent-green);">[PHONE_NUMBER]</span>
                     </div>
                     <div style="margin: 8px 0;">
                         <span style="color: var(--accent-cyan);">LOCATION:</span> <span style="color: var(--accent-green);">Maharashtra, India</span>
@@ -913,16 +913,16 @@ class ArchPortfolio {
                         <div class="contact-value">jilask70@gmail.com</div>
                     </a>
                     
-                    <a href="tel:+919284481044" class="contact-item">
+                    <a href="#" class="contact-item">
                         <div class="contact-icon">📱</div>
                         <div class="contact-label">Phone</div>
-                        <div class="contact-value">+91-9284481044</div>
+                        <div class="contact-value">[PHONE_NUMBER]</div>
                     </a>
                     
-                    <a href="https://github.com/alij-shaikh" target="_blank" class="contact-item">
+                    <a href="https://github.com/aler69" target="_blank" class="contact-item">
                         <div class="contact-icon">💻</div>
                         <div class="contact-label">GitHub</div>
-                        <div class="contact-value">github.com/alij-shaikh</div>
+                        <div class="contact-value">github.com/aler69</div>
                     </a>
                     
                     <a href="https://www.linkedin.com/in/alij-shaikh-1311a3211/" target="_blank" class="contact-item">
@@ -1172,7 +1172,7 @@ class ArchPortfolio {
         // Create a simple text-based resume for download
         const resumeContent = `AliJ A. SHAIKH
 Senior AI Architect & Prompt Engineer
-Maharashtra, India | +91-9284481044 | jilask70@gmail.com
+Maharashtra, India | [PHONE_NUMBER] | jilask70@gmail.com
 
 SKILLS
 ======
