@@ -10,6 +10,7 @@ class ArchPortfolio {
             uptime: '2:34:12',
             processes: 156
         };
+        this.currentWorkspace = 1;
         this.init();
     }
 
@@ -26,6 +27,13 @@ class ArchPortfolio {
     setupWaybar() {
         this.updateClock();
         setInterval(() => this.updateClock(), 1000);
+
+        // Workspace switching via top bar
+        document.querySelectorAll('.workspace-item').forEach((item, index) => {
+            item.addEventListener('click', () => {
+                this.switchWorkspace(index + 1);
+            });
+        });
 
         // Update system info
         this.updateSystemInfo();
@@ -401,10 +409,79 @@ class ArchPortfolio {
         navItems.forEach(item => {
             item.addEventListener('click', () => {
                 const command = item.dataset.command;
+
+                // Simulate workspace switch visual effect
+                this.switchWorkspace(2);
+
                 this.executeCommand(command);
                 this.updateActiveNav(item);
             });
         });
+    }
+
+    switchWorkspace(index) {
+        if (this.currentWorkspace === index) return;
+        this.currentWorkspace = index;
+
+        // Visual indication of top bar
+        document.querySelectorAll('.workspace-item').forEach(w => w.classList.remove('active'));
+        const targetWs = document.querySelectorAll('.workspace-item')[index - 1];
+        if (targetWs) targetWs.classList.add('active');
+
+        // Animate the grid to simulate workspace switching
+        const grid = document.getElementById('window-grid');
+
+        grid.classList.add('workspace-transition-out');
+
+        setTimeout(() => {
+            // Apply layout changes while hidden
+            this.applyWorkspaceLayout(index);
+
+            grid.classList.remove('workspace-transition-out');
+            grid.classList.add('workspace-transition-in');
+
+            // Remove 'in' class after animation completes
+            setTimeout(() => {
+                grid.classList.remove('workspace-transition-in');
+            }, 300);
+        }, 300);
+    }
+
+    applyWorkspaceLayout(index) {
+        const grid = document.getElementById('window-grid');
+        const systemMonitor = document.getElementById('system-monitor');
+        const systemMetrics = document.getElementById('system-metrics');
+        const mainWindow = document.getElementById('portfolio-window');
+        const asciiViz = document.getElementById('ascii-viz');
+        const navTerminal = document.getElementById('nav-terminal');
+
+        if (index === 2) {
+            // Workspace 2: Expanded Portfolio View
+            // Hide specific tiles as requested (Process Monitor & Metrics)
+            if (systemMonitor) systemMonitor.style.display = 'none';
+            if (systemMetrics) systemMetrics.style.display = 'none';
+
+            // Keep Viz and Nav visible
+            if (asciiViz) asciiViz.style.display = '';
+            if (navTerminal) navTerminal.style.display = '';
+
+            // Expand main window to fill columns 2 and 3
+            if (mainWindow) {
+                mainWindow.style.gridColumn = '2 / -1';
+                mainWindow.style.gridRow = '1 / -1';
+            }
+        } else {
+            // Workspace 1: Dashboard View (Default)
+            if (systemMonitor) systemMonitor.style.display = '';
+            if (systemMetrics) systemMetrics.style.display = '';
+            if (asciiViz) asciiViz.style.display = '';
+            if (navTerminal) navTerminal.style.display = '';
+
+            if (mainWindow) {
+                mainWindow.style.gridColumn = ''; // Reset to CSS default
+                mainWindow.style.gridRow = '';    // Reset to CSS default
+            }
+        }
     }
 
     startSystemUpdates() {
