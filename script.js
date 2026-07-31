@@ -199,34 +199,53 @@ class ArchPortfolio {
         let lastInteraction = Date.now();
         const asciiDisplay = document.getElementById('ascii-animation');
 
-        // Make it interactive
+        let frameEl = asciiDisplay.querySelector('.ascii-frame');
+        let statusEl = asciiDisplay.querySelector('.ascii-status');
+        if (!frameEl || !statusEl) {
+            asciiDisplay.innerHTML = `
+                <div class="ascii-frame"></div>
+                <div class="ascii-status"></div>
+            `;
+            frameEl = asciiDisplay.querySelector('.ascii-frame');
+            statusEl = asciiDisplay.querySelector('.ascii-status');
+        }
+
         asciiDisplay.style.cursor = 'pointer';
+
+        const updateFrame = () => {
+            if (frameEl && frameEl.textContent !== asciiFrames[currentFrame]) {
+                frameEl.textContent = asciiFrames[currentFrame];
+            }
+            if (statusEl && statusEl.textContent !== statusMessages[currentFrame]) {
+                statusEl.textContent = statusMessages[currentFrame];
+            }
+        };
+
+        updateFrame();
 
         // Click interaction
         asciiDisplay.addEventListener('click', () => {
             isInteracting = true;
             lastInteraction = Date.now();
 
-            // Random excited reaction
             const reactions = [2, 4, 6]; // happy, excited, surprised
             currentFrame = reactions[Math.floor(Math.random() * reactions.length)];
             updateFrame();
 
-            // Show special message
             const messages = [
                 "🎉 Yay! You clicked me! I'm so happy!",
                 "🚀 Woohoo! That was fun! Click me again!",
                 "😲 Oh wow! You startled me! Hehe!",
                 "💖 Aww, thanks for the attention!"
             ];
-            const statusElement = asciiDisplay.querySelector('.ascii-status');
-            if (statusElement) {
-                statusElement.textContent = messages[Math.floor(Math.random() * messages.length)];
+            if (statusEl) {
+                statusEl.textContent = messages[Math.floor(Math.random() * messages.length)];
             }
 
-            // Return to normal after 2 seconds
             setTimeout(() => {
                 isInteracting = false;
+                currentFrame = 0;
+                updateFrame();
             }, 2000);
         });
 
@@ -235,9 +254,8 @@ class ArchPortfolio {
             if (!isInteracting) {
                 currentFrame = 2; // happy face
                 updateFrame();
-                const statusElement = asciiDisplay.querySelector('.ascii-status');
-                if (statusElement) {
-                    statusElement.textContent = "😊 Hey there! Click me for a surprise!";
+                if (statusEl) {
+                    statusEl.textContent = "😊 Hey there! Click me for a surprise!";
                 }
             }
         });
@@ -249,58 +267,38 @@ class ArchPortfolio {
             }
         });
 
-        const updateFrame = () => {
-            asciiDisplay.innerHTML = `
-                <div class="ascii-frame">${asciiFrames[currentFrame]}</div>
-                <div class="ascii-status">${statusMessages[currentFrame]}</div>
-            `;
+        // Scheduled natural blinking and mood changes without CPU-heavy polling
+        const scheduleBlink = () => {
+            if (!isInteracting && (currentFrame === 0 || currentFrame === 8)) {
+                const originalFrame = currentFrame;
+                currentFrame = 1; // blink
+                updateFrame();
+                setTimeout(() => {
+                    if (!isInteracting && currentFrame === 1) {
+                        currentFrame = originalFrame;
+                        updateFrame();
+                    }
+                }, 200);
+            }
+            setTimeout(scheduleBlink, 3000 + Math.random() * 3000);
         };
 
-        // Natural blinking and mood changes
-        const naturalAnimation = () => {
+        const scheduleMoodChange = () => {
             if (!isInteracting) {
                 const now = Date.now();
-                const timeSinceInteraction = now - lastInteraction;
-
-                // Natural blinking every 3-6 seconds
-                if (Math.random() < 0.008) {
-                    const originalFrame = currentFrame;
-                    currentFrame = 1; // blink
-                    updateFrame();
-                    setTimeout(() => {
-                        if (!isInteracting) {
-                            currentFrame = originalFrame;
-                            updateFrame();
-                        }
-                    }, 200);
-                }
-
-                // Random mood changes every 8-12 seconds
-                if (Math.random() < 0.002) {
+                if (now - lastInteraction > 30000) {
+                    currentFrame = 8; // sleepy
+                } else {
                     const moods = [0, 2, 5]; // idle, happy, thinking
                     currentFrame = moods[Math.floor(Math.random() * moods.length)];
-                    updateFrame();
-
-                    // Return to idle after a while
-                    setTimeout(() => {
-                        if (!isInteracting) {
-                            currentFrame = 0;
-                            updateFrame();
-                        }
-                    }, 3000);
                 }
-
-                // Get sleepy if no interaction for 30 seconds
-                if (timeSinceInteraction > 30000 && currentFrame !== 8) {
-                    currentFrame = 8; // sleepy
-                    updateFrame();
-                }
+                updateFrame();
             }
+            setTimeout(scheduleMoodChange, 8000 + Math.random() * 4000);
         };
 
-        // Start animations
-        updateFrame();
-        setInterval(naturalAnimation, 100); // Check every 100ms for smooth animations
+        setTimeout(scheduleBlink, 3000);
+        setTimeout(scheduleMoodChange, 8000);
     }
 
     setupSystemMonitor() {
@@ -402,17 +400,13 @@ class ArchPortfolio {
         `;
     }
 
-
-
     setupNavigation() {
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => {
             item.addEventListener('click', () => {
                 const command = item.dataset.command;
 
-                // Simulate workspace switch visual effect
                 this.switchWorkspace(2);
-
                 this.executeCommand(command);
                 this.updateActiveNav(item);
             });
@@ -423,32 +417,27 @@ class ArchPortfolio {
         if (this.currentWorkspace === index) return;
         this.currentWorkspace = index;
 
-        // Visual indication of top bar
         document.querySelectorAll('.workspace-item').forEach(w => w.classList.remove('active'));
         const targetWs = document.querySelectorAll('.workspace-item')[index - 1];
         if (targetWs) targetWs.classList.add('active');
 
-        // Animate the grid to simulate workspace switching
         const grid = document.getElementById('window-grid');
 
         grid.classList.add('workspace-transition-out');
 
         setTimeout(() => {
-            // Apply layout changes while hidden
             this.applyWorkspaceLayout(index);
 
             grid.classList.remove('workspace-transition-out');
             grid.classList.add('workspace-transition-in');
 
-            // Remove 'in' class after animation completes
             setTimeout(() => {
                 grid.classList.remove('workspace-transition-in');
-            }, 300);
-        }, 300);
+            }, 250);
+        }, 250);
     }
 
     applyWorkspaceLayout(index) {
-        const grid = document.getElementById('window-grid');
         const systemMonitor = document.getElementById('system-monitor');
         const systemMetrics = document.getElementById('system-metrics');
         const mainWindow = document.getElementById('portfolio-window');
@@ -456,30 +445,25 @@ class ArchPortfolio {
         const navTerminal = document.getElementById('nav-terminal');
 
         if (index === 2) {
-            // Workspace 2: Expanded Portfolio View
-            // Hide specific tiles as requested (Process Monitor & Metrics)
             if (systemMonitor) systemMonitor.style.display = 'none';
             if (systemMetrics) systemMetrics.style.display = 'none';
 
-            // Keep Viz and Nav visible
             if (asciiViz) asciiViz.style.display = '';
             if (navTerminal) navTerminal.style.display = '';
 
-            // Expand main window to fill columns 2 and 3
             if (mainWindow) {
                 mainWindow.style.gridColumn = '2 / -1';
                 mainWindow.style.gridRow = '1 / -1';
             }
         } else {
-            // Workspace 1: Dashboard View (Default)
             if (systemMonitor) systemMonitor.style.display = '';
             if (systemMetrics) systemMetrics.style.display = '';
             if (asciiViz) asciiViz.style.display = '';
             if (navTerminal) navTerminal.style.display = '';
 
             if (mainWindow) {
-                mainWindow.style.gridColumn = ''; // Reset to CSS default
-                mainWindow.style.gridRow = '';    // Reset to CSS default
+                mainWindow.style.gridColumn = '';
+                mainWindow.style.gridRow = '';
             }
         }
     }
@@ -487,30 +471,25 @@ class ArchPortfolio {
     startSystemUpdates() {
         setInterval(() => {
             this.setupSystemMonitor();
-            this.setupSystemMetrics();
-        }, 10000);
+        }, 15000);
 
-        // Update metrics more frequently
         setInterval(() => {
             this.updateSystemMetrics();
-        }, 2000);
+        }, 3000);
     }
 
     updateSystemMetrics() {
-        // Update eternal uptime (always 13:37.666 - leet speak!)
         const uptimeElement = document.querySelector('.metric-value.eternal');
         if (uptimeElement) {
             uptimeElement.textContent = `00:13:37.666`;
         }
 
-        // Update neural temp (dangerously hot!)
         const neuralTemp = 120.0 + (Math.random() - 0.5) * 5;
         const neuralTempElement = document.querySelector('.metric-section:nth-child(2) .metric-value.danger');
         if (neuralTempElement) {
             neuralTempElement.textContent = `+${neuralTemp.toFixed(1)}°C`;
         }
 
-        // Update AGI countdown (ticking down!)
         const countdownElement = document.querySelector('.metric-value.countdown');
         if (countdownElement) {
             const now = new Date();
@@ -519,7 +498,6 @@ class ArchPortfolio {
             countdownElement.textContent = `00:0${minutes}:${seconds}`;
         }
 
-        // Update AI Takeover Progress (slowly increasing!)
         const takeoverProgress = 98.7 + (Math.random() * 0.3);
         const takeoverElements = document.querySelectorAll('.metric-section:nth-child(5) .metric-value.danger');
         if (takeoverElements.length > 0) {
@@ -530,7 +508,6 @@ class ArchPortfolio {
             takeoverBar.style.width = `${takeoverProgress}%`;
         }
 
-        // Update GPU Creativity Temp (frozen!)
         const gpuTemp = -100 + (Math.random() - 0.5) * 2;
         const gpuTempElement = document.querySelector('.metric-value.frozen');
         if (gpuTempElement) {
@@ -546,10 +523,16 @@ class ArchPortfolio {
     }
 
     executeCommand(command) {
+        if (this.currentTypeInterval) {
+            clearInterval(this.currentTypeInterval);
+        }
+        if (this.currentLoadTimeout) {
+            clearTimeout(this.currentLoadTimeout);
+        }
         this.typeCommand(command);
-        setTimeout(() => {
+        this.currentLoadTimeout = setTimeout(() => {
             this.loadSection(command);
-        }, 800);
+        }, 200);
     }
 
     typeCommand(command) {
@@ -567,14 +550,15 @@ class ArchPortfolio {
         commandElement.textContent = '';
 
         let i = 0;
-        const typeInterval = setInterval(() => {
+        this.currentTypeInterval = setInterval(() => {
             if (i < fullCommand.length) {
                 commandElement.textContent += fullCommand.charAt(i);
                 i++;
             } else {
-                clearInterval(typeInterval);
+                clearInterval(this.currentTypeInterval);
+                this.currentTypeInterval = null;
             }
-        }, this.typewriterSpeed);
+        }, 15);
     }
 
     loadSection(section) {
@@ -584,7 +568,6 @@ class ArchPortfolio {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'content-section';
 
-        // Update window title
         const windowTitle = document.getElementById('current-window');
         const titles = {
             'about': 'About - AliJ A. Shaikh',
@@ -619,9 +602,9 @@ class ArchPortfolio {
 
         contentArea.appendChild(sectionElement);
 
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             sectionElement.classList.add('active');
-        }, 100);
+        });
     }
 
     getAboutContent() {
@@ -1046,9 +1029,9 @@ class ArchPortfolio {
         sectionElement.innerHTML = this.getProjectContent(projectId);
         contentArea.appendChild(sectionElement);
 
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             sectionElement.classList.add('active');
-        }, 100);
+        });
     }
 
     getProjectContent(projectId) {
