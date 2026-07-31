@@ -1,7 +1,5 @@
 /* Arch Linux Tiling WM Portfolio - Inspired by PewDiePie's Setup */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Fira+Code:wght@300;400;500;600&display=swap');
-
 :root {
     --bg-desktop: #050505;
     --bg-window: #000000;
@@ -47,11 +45,11 @@ body {
 
 body::after {
     content: '';
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background: rgba(0, 0, 0, 0.1);
     z-index: 9999;
     pointer-events: none;
@@ -59,34 +57,38 @@ body::after {
     background-size: 100% 2px;
     /* Finer scanlines */
     opacity: 0.8;
+    transform: translateZ(0);
+    will-change: transform;
 }
 
 /* Workspace Transitions */
 @keyframes slideOut {
     to {
-        transform: translateX(-20px);
+        transform: translate3d(-20px, 0, 0);
         opacity: 0;
     }
 }
 
 @keyframes slideIn {
     from {
-        transform: translateX(20px);
+        transform: translate3d(20px, 0, 0);
         opacity: 0;
     }
 
     to {
-        transform: translateX(0);
+        transform: translate3d(0, 0, 0);
         opacity: 1;
     }
 }
 
 .workspace-transition-out {
-    animation: slideOut 0.3s ease forwards;
+    animation: slideOut 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    will-change: transform, opacity;
 }
 
 .workspace-transition-in {
-    animation: slideIn 0.3s ease forwards;
+    animation: slideIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    will-change: transform, opacity;
 }
 
 /* Waybar/Taskbar */
@@ -208,9 +210,10 @@ body::after {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 0 20px rgba(57, 255, 20, 0.1);
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.1);
     position: relative;
-    /* Optional: Clip path for corners if desired, but might be complex for resize */
+    contain: layout style paint;
+    transform: translateZ(0);
 }
 
 /* Add corner decorations */
@@ -291,7 +294,8 @@ body::after {
 
 .window-title {
     color: var(--text-primary);
-    font-weight: 500;
+    font-weight: 600;
+    text-shadow: 0 0 3px rgba(57, 255, 20, 0.4);
 }
 
 .window-content {
@@ -517,25 +521,20 @@ body::after {
     font-size: 8px;
     line-height: 1.1;
     color: var(--accent-cyan);
-    text-shadow: 0 0 8px var(--accent-cyan), 0 0 16px var(--accent-blue);
+    text-shadow: 0 0 3px var(--accent-cyan);
     animation: gentle-glow 6s ease-in-out infinite alternate;
-    transition: all 0.3s ease;
+    will-change: color, opacity;
 }
 
 @keyframes gentle-glow {
-    0% {
-        text-shadow: 0 0 8px var(--accent-cyan), 0 0 16px var(--accent-blue);
+    0%, 100% {
         color: var(--accent-cyan);
+        opacity: 0.9;
     }
 
     50% {
-        text-shadow: 0 0 12px var(--accent-blue), 0 0 24px var(--accent-cyan);
         color: var(--accent-blue);
-    }
-
-    100% {
-        text-shadow: 0 0 8px var(--accent-cyan), 0 0 16px var(--accent-blue);
-        color: var(--accent-cyan);
+        opacity: 1;
     }
 }
 
@@ -544,16 +543,14 @@ body::after {
     font-size: 10px;
     color: var(--accent-green);
     text-align: center;
-    text-shadow: 0 0 5px var(--accent-green);
+    text-shadow: 0 0 2px var(--accent-green);
     animation: status-breathe 4s ease-in-out infinite;
-    transition: all 0.3s ease;
+    will-change: opacity, color;
 }
 
 @keyframes status-breathe {
-
-    0%,
-    100% {
-        opacity: 0.9;
+    0%, 100% {
+        opacity: 0.85;
         color: var(--accent-green);
     }
 
@@ -581,21 +578,18 @@ body::after {
     background: rgba(255, 0, 110, 0.1);
     border-radius: 4px;
     border: 1px solid #ff006e;
-    text-shadow: 0 0 10px #ff006e;
+    text-shadow: 0 0 4px #ff006e;
     animation: evil-pulse 2s ease-in-out infinite;
+    will-change: opacity;
 }
 
 @keyframes evil-pulse {
-
-    0%,
-    100% {
-        text-shadow: 0 0 10px #ff006e;
-        border-color: #ff006e;
+    0%, 100% {
+        opacity: 0.85;
     }
 
     50% {
-        text-shadow: 0 0 20px #ff006e, 0 0 30px #ff0000;
-        border-color: #ff0000;
+        opacity: 1;
     }
 }
 
@@ -612,7 +606,7 @@ body::after {
     font-weight: 600;
     margin-bottom: 6px;
     font-size: 10px;
-    text-shadow: 0 0 5px var(--accent-red);
+    text-shadow: 0 0 2px var(--accent-red);
 }
 
 .metric-item {
@@ -636,19 +630,18 @@ body::after {
 
 .metric-value.eternal {
     color: #ff006e;
-    text-shadow: 0 0 8px #ff006e;
+    text-shadow: 0 0 3px #ff006e;
     animation: eternal-glow 3s ease-in-out infinite;
+    will-change: opacity;
 }
 
 @keyframes eternal-glow {
-
-    0%,
-    100% {
-        text-shadow: 0 0 8px #ff006e;
+    0%, 100% {
+        opacity: 0.8;
     }
 
     50% {
-        text-shadow: 0 0 15px #ff006e, 0 0 25px #ff0000;
+        opacity: 1;
     }
 }
 
@@ -841,97 +834,55 @@ body::after {
 
 .content-section {
     opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.4s ease;
+    transform: translate3d(0, 10px, 0);
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), opacity 0.3s ease-out;
+    will-change: transform, opacity;
+    contain: layout style;
 }
 
 .content-section.active {
     opacity: 1;
-    transform: translateY(0);
-}
-
-.section-title {
-    color: var(--accent-blue);
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 16px;
-    border-bottom: 2px solid var(--accent-blue);
-    padding-bottom: 4px;
-}
-
-.typewriter {
-    overflow: hidden;
-    border-right: 2px solid var(--accent-blue);
-    white-space: nowrap;
-    animation: typing 2s steps(30, end), blink-caret 0.75s step-end infinite;
-}
-
-@keyframes typing {
-    from {
-        width: 0;
-    }
-
-    to {
-        width: 100%;
-    }
-}
-
-@keyframes blink-caret {
-
-    from,
-    to {
-        border-color: transparent;
-    }
-
-    50% {
-        border-color: var(--accent-blue);
-    }
-}
-
-.content-section {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.5s ease;
-}
-
-.content-section.active {
-    opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
 }
 
 .section-title {
     color: var(--accent-cyan);
     font-size: 24px;
+    font-weight: 700;
     margin-bottom: 20px;
-    text-shadow: 0 0 10px var(--accent-cyan);
+    border-bottom: 2px solid var(--accent-blue);
+    padding-bottom: 6px;
+    text-shadow: 0 0 5px var(--accent-cyan);
+    letter-spacing: 0.5px;
 }
 
 .typewriter {
+    display: inline-block;
     overflow: hidden;
-    border-right: 2px solid var(--accent-magenta);
+    border-right: 3px solid var(--accent-purple);
     white-space: nowrap;
-    animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+    max-width: 100%;
+    contain: layout style;
+    animation: typing 2.5s steps(35, end), blink-caret 0.75s step-end infinite;
 }
 
 @keyframes typing {
     from {
-        width: 0;
+        max-width: 0;
     }
 
     to {
-        width: 100%;
+        max-width: 100%;
     }
 }
 
 @keyframes blink-caret {
-
-    from,
-    to {
+    from, to {
         border-color: transparent;
     }
 
     50% {
-        border-color: var(--accent-magenta);
+        border-color: var(--accent-purple);
     }
 }
 
