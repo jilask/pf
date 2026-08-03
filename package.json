@@ -1,0 +1,27 @@
+{
+  "name": "alij-portfolio",
+  "version": "1.0.0",
+  "description": "Retro Arch Linux Tiling WM (Waybar/Hyprland) inspired interactive developer portfolio.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "portfolio",
+    "retro-ui",
+    "tiling-wm",
+    "waybar",
+    "arch-linux",
+    "cyberpunk",
+    "terminal-portfolio"
+  ],
+  "author": "AliJ A. Shaikh",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "vite": "^5.0.0"
+  }
+}
