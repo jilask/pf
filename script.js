@@ -1,13 +1,5 @@
 // Arch Linux Tiling WM Portfolio - Interactive Desktop Environment
 
-import aboutData from './data/about.json';
-import skillsData from './data/skills.json';
-import experienceData from './data/experience.json';
-import achievementsData from './data/achievements.json';
-import projectsData from './data/projects.json';
-import contactData from './data/contact.json';
-import { renderSection, renderProjectDetails } from './render.js';
-
 class ArchPortfolio {
     constructor() {
         this.currentSection = 'about';
@@ -19,23 +11,54 @@ class ArchPortfolio {
             processes: 156
         };
         this.currentWorkspace = 1;
-        this.data = {
-            about: aboutData,
-            skills: skillsData,
-            experience: experienceData,
-            achievements: achievementsData,
-            portfolio: projectsData,
-            contact: contactData
-        };
+        this.data = null;
         this.init();
     }
 
-    init() {
+    async loadJson(url) {
+        try {
+            const res = await fetch(url);
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            }
+            return await res.json();
+        } catch (err) {
+            console.error(`[Portfolio Error] Failed to fetch data from ${url}:`, err);
+            return null;
+        }
+    }
+
+    async loadAllData() {
+        try {
+            const [about, skills, experience, achievements, portfolio, contact] = await Promise.all([
+                this.loadJson('./data/about.json'),
+                this.loadJson('./data/skills.json'),
+                this.loadJson('./data/experience.json'),
+                this.loadJson('./data/achievements.json'),
+                this.loadJson('./data/projects.json'),
+                this.loadJson('./data/contact.json')
+            ]);
+
+            this.data = {
+                about,
+                skills,
+                experience,
+                achievements,
+                portfolio,
+                contact
+            };
+        } catch (err) {
+            console.error('[Portfolio Error] Critical error during data initialization:', err);
+        }
+    }
+
+    async init() {
         this.setupWaybar();
         this.setupAnimatedASCII();
         this.setupSystemMonitor();
         this.setupSystemMetrics();
         this.setupNavigation();
+        await this.loadAllData();
         this.loadSection('about');
         this.startSystemUpdates();
     }
@@ -624,31 +647,33 @@ class ArchPortfolio {
     }
 
     getAboutContent() {
-        return renderSection('about', this.data.about);
+        return renderSection('about', this.data ? this.data.about : null);
     }
 
     getSkillsContent() {
-        return renderSection('skills', this.data.skills);
+        return renderSection('skills', this.data ? this.data.skills : null);
     }
 
     getExperienceContent() {
-        return renderSection('experience', this.data.experience);
+        return renderSection('experience', this.data ? this.data.experience : null);
     }
 
     getAchievementsContent() {
-        return renderSection('achievements', this.data.achievements);
+        return renderSection('achievements', this.data ? this.data.achievements : null);
     }
 
     getPortfolioContent() {
-        return renderSection('portfolio', this.data.portfolio);
+        return renderSection('portfolio', this.data ? this.data.portfolio : null);
     }
 
     getContactContent() {
-        return renderSection('contact', this.data.contact);
+        return renderSection('contact', this.data ? this.data.contact : null);
     }
 
     getProjectContent(projectId) {
-        const project = this.data.portfolio.projects.find(p => p.id === projectId);
+        const project = (this.data && this.data.portfolio && this.data.portfolio.projects)
+            ? this.data.portfolio.projects.find(p => p.id === projectId)
+            : null;
         return renderProjectDetails(project);
     }
 
@@ -792,10 +817,14 @@ setInterval(() => {
     const processes = document.querySelectorAll('.htop-process');
     if (processes.length > 1) {
         const randomProcess = processes[Math.floor(Math.random() * (processes.length - 1)) + 1];
-        const cpuCell = randomProcess.children[2];
-        const currentCpu = parseFloat(cpuCell.textContent);
-        const newCpu = (currentCpu + (Math.random() - 0.5) * 2).toFixed(1);
-        cpuCell.textContent = Math.max(0, Math.min(100, newCpu));
+        const cpuCell = (randomProcess && randomProcess.children) ? randomProcess.children[2] : null;
+        if (cpuCell && cpuCell.textContent) {
+            const currentCpu = parseFloat(cpuCell.textContent);
+            if (!isNaN(currentCpu)) {
+                const newCpu = (currentCpu + (Math.random() - 0.5) * 2).toFixed(1);
+                cpuCell.textContent = Math.max(0, Math.min(100, newCpu));
+            }
+        }
     }
 }, 3000);
 

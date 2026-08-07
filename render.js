@@ -6,7 +6,7 @@
  * @param {string} type - Card/item type ('project', 'experience', 'achievement', 'metric', 'skill_bar', 'contact_link', 'status_tag', 'tech_tag')
  * @returns {string} HTML markup string
  */
-export function renderCard(item, type) {
+function renderCard(item, type) {
     switch (type) {
         case 'project':
             return `
@@ -92,7 +92,11 @@ export function renderCard(item, type) {
  * @param {Object} data - Section data object loaded from JSON
  * @returns {string} HTML markup string
  */
-export function renderSection(sectionType, data) {
+function renderSection(sectionType, data) {
+    if (!data) {
+        return `<div class="terminal-text" style="color: var(--accent-red); margin-top: 16px;">[ERROR] Failed to load data for section: ${sectionType}</div>`;
+    }
+
     switch (sectionType) {
         case 'about':
             return `
@@ -319,7 +323,7 @@ export function renderSection(sectionType, data) {
  * @param {Object} project - Project object from projects data
  * @returns {string} HTML markup string
  */
-export function renderProjectDetails(project) {
+function renderProjectDetails(project) {
     if (!project) return '<div>Project not found</div>';
 
     return `
@@ -367,6 +371,11 @@ export function renderProjectDetails(project) {
                     </p>
                 </div>
             </div>
-        </div>
-    `;
+        `;
+}
+
+if (typeof window !== 'undefined') {
+    window.renderCard = renderCard;
+    window.renderSection = renderSection;
+    window.renderProjectDetails = renderProjectDetails;
 }
