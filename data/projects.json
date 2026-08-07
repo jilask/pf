@@ -1,0 +1,156 @@
+{
+  "ls_projects": [
+    "ai_fashion_pipeline/",
+    "sb_art69_brand/",
+    "comfyui_custom_nodes/",
+    "flutter_apps/"
+  ],
+  "tech_stack": [
+    "Python",
+    "ComfyUI",
+    "Stable Diffusion",
+    "Flutter",
+    "JavaScript",
+    "API Integration",
+    "Prompt Engineering",
+    "AI Workflows"
+  ],
+  "projects": [
+    {
+      "id": "ai-fashion",
+      "title": "AI Fashion Pipeline",
+      "icon": "🤖",
+      "description": "Production-grade generative AI system for fashion retail, featuring custom ComfyUI workflows and brand-safe content generation.",
+      "detailTitle": "AI Fashion Pipeline",
+      "detailDescription": "Production-grade generative AI system for fashion retail",
+      "readmeCommand": "cat ai_fashion_pipeline/README.md",
+      "borderLeftColor": "var(--accent-blue)",
+      "intro": "A comprehensive production-grade generative AI system designed specifically for the fashion retail industry.",
+      "featuresHeader": "Key Features:",
+      "features": [
+        "Custom ComfyUI workflows for fashion imagery",
+        "Brand-safe content generation with quality control",
+        "Automated batch processing capabilities",
+        "Real-time API integration for e-commerce platforms",
+        "Advanced prompt engineering for consistent results"
+      ],
+      "technologies": [
+        "Python",
+        "ComfyUI",
+        "Stable Diffusion",
+        "FastAPI",
+        "Docker",
+        "Redis",
+        "PostgreSQL"
+      ],
+      "techStyle": {
+        "bg": "rgba(152, 195, 121, 0.2)",
+        "color": "var(--accent-green)"
+      },
+      "impactHeader": "Impact:",
+      "impactText": "Successfully deployed in production environment, processing 1000+ fashion images daily with 99.9% uptime. Reduced content creation time by 80% while maintaining brand consistency and quality standards."
+    },
+    {
+      "id": "ai-content",
+      "title": "AI Content Creation",
+      "icon": "🎨",
+      "description": "Advanced AI-driven content creation system with innovative prompt engineering techniques and automated workflows.",
+      "detailTitle": "AI Content Creation System",
+      "detailDescription": "Advanced AI-driven content creation platform",
+      "readmeCommand": "cat ai_content_system/README.md",
+      "borderLeftColor": "var(--accent-purple)",
+      "intro": "Innovative AI-driven content creation platform with advanced prompt engineering and automated workflow management.",
+      "featuresHeader": "Key Features:",
+      "features": [
+        "Multi-modal content generation (text, images, video)",
+        "Advanced prompt optimization algorithms",
+        "Automated content scheduling and publishing",
+        "Brand voice consistency enforcement",
+        "Performance analytics and optimization"
+      ],
+      "technologies": [
+        "Python",
+        "GPT-4",
+        "Claude",
+        "DALL-E",
+        "React",
+        "Node.js",
+        "MongoDB"
+      ],
+      "techStyle": {
+        "bg": "rgba(198, 120, 221, 0.2)",
+        "color": "var(--accent-purple)"
+      },
+      "impactHeader": "Results:",
+      "impactText": "Increased content production efficiency by 300% while maintaining high quality standards. Successfully automated content workflows for multiple clients across various industries."
+    },
+    {
+      "id": "comfyui-nodes",
+      "title": "Custom ComfyUI Nodes",
+      "icon": "⚙️",
+      "description": "Specialized node development extending ComfyUI capabilities for advanced AI image generation workflows.",
+      "detailTitle": "Custom ComfyUI Nodes",
+      "detailDescription": "Specialized node development for ComfyUI",
+      "readmeCommand": "cat comfyui_nodes/README.md",
+      "borderLeftColor": "var(--accent-orange)",
+      "intro": "Specialized node development extending ComfyUI capabilities for advanced AI image generation workflows.",
+      "featuresHeader": "Custom Nodes Developed:",
+      "features": [
+        "Advanced prompt weighting and conditioning nodes",
+        "Custom LoRA loading and blending utilities",
+        "Batch processing and automation nodes",
+        "Quality control and filtering nodes",
+        "API integration and webhook nodes"
+      ],
+      "technologies": [
+        "Python",
+        "PyTorch",
+        "ComfyUI",
+        "OpenCV",
+        "NumPy",
+        "Pillow",
+        "Git"
+      ],
+      "techStyle": {
+        "bg": "rgba(209, 154, 102, 0.2)",
+        "color": "var(--accent-orange)"
+      },
+      "impactHeader": "Community Impact:",
+      "impactText": "Open-source contributions used by 500+ developers in the ComfyUI community. Nodes have been integrated into popular workflows and featured in community showcases."
+    },
+    {
+      "id": "flutter-apps",
+      "title": "Flutter Applications",
+      "icon": "📱",
+      "description": "Cross-platform mobile applications with responsive design and seamless user experience.",
+      "detailTitle": "Flutter Applications",
+      "detailDescription": "Cross-platform mobile applications",
+      "readmeCommand": "cat flutter_apps/README.md",
+      "borderLeftColor": "var(--accent-cyan)",
+      "intro": "Cross-platform mobile applications with responsive design and seamless user experience.",
+      "featuresHeader": "Applications Developed:",
+      "features": [
+        "E-commerce mobile app with AI-powered recommendations",
+        "Task management app with smart scheduling",
+        "Social media content creation tool",
+        "Real-time chat application with encryption",
+        "Fitness tracking app with AI coaching"
+      ],
+      "technologies": [
+        "Flutter",
+        "Dart",
+        "Firebase",
+        "SQLite",
+        "REST APIs",
+        "Provider",
+        "Bloc"
+      ],
+      "techStyle": {
+        "bg": "rgba(86, 182, 194, 0.2)",
+        "color": "var(--accent-cyan)"
+      },
+      "impactHeader": "Performance:",
+      "impactText": "Apps deployed to both iOS and Android app stores with 4.5+ star ratings. Achieved 95% crash-free sessions and optimized for performance across all device types."
+    }
+  ]
+}

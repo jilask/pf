@@ -1,0 +1,58 @@
+{
+  "achievements": [
+    {
+      "id": "ach-production-ai",
+      "status": "[SUCCESS]",
+      "icon": "🚀",
+      "title": "Production AI Deployment",
+      "titleColor": "var(--accent-cyan)",
+      "description": "Successfully deployed generative AI pipelines for fashion retail industry, achieving production-grade performance and reliability."
+    },
+    {
+      "id": "ach-brand-safe",
+      "status": "[SUCCESS]",
+      "icon": "🛡️",
+      "title": "Brand-Safe AI Systems",
+      "titleColor": "var(--accent-green)",
+      "description": "Developed comprehensive brand-safe AI image generation systems, ensuring content compliance and quality control."
+    },
+    {
+      "id": "ach-creative-ai",
+      "status": "[SUCCESS]",
+      "icon": "🎨",
+      "title": "Creative AI Solutions",
+      "titleColor": "var(--accent-yellow)",
+      "description": "Developed innovative AI-driven content creation systems leveraging advanced prompt engineering and automated workflows."
+    },
+    {
+      "id": "ach-custom-comfyui",
+      "status": "[SUCCESS]",
+      "icon": "⚙️",
+      "title": "Custom ComfyUI Development",
+      "titleColor": "var(--accent-purple)",
+      "description": "Specialized in developing custom ComfyUI nodes and workflows, extending the platform's capabilities for specific use cases."
+    }
+  ],
+  "impact_metrics": [
+    {
+      "value": "3+",
+      "label": "Years Experience",
+      "color": "var(--accent-green)"
+    },
+    {
+      "value": "50+",
+      "label": "Projects Completed",
+      "color": "var(--accent-cyan)"
+    },
+    {
+      "value": "100%",
+      "label": "Client Satisfaction",
+      "color": "var(--accent-purple)"
+    },
+    {
+      "value": "24/7",
+      "label": "AI Systems Uptime",
+      "color": "var(--accent-yellow)"
+    }
+  ]
+}
