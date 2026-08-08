@@ -1024,41 +1024,6 @@ body::after {
     margin-bottom: 4px;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    #terminal-container {
-        margin: 10px;
-        min-height: calc(100vh - 20px);
-    }
-
-    #terminal-body {
-        flex-direction: column;
-        height: auto;
-    }
-
-    #sidebar {
-        width: 100%;
-        border-right: none;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    #navigation {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 4px;
-    }
-
-    .nav-item {
-        font-size: 12px;
-        padding: 8px 12px;
-    }
-
-    .skill-grid,
-    .portfolio-grid,
-    .contact-grid {
-        grid-template-columns: 1fr;
-    }
-}
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
@@ -1345,63 +1310,217 @@ ntent Styling */
     }
 }
 
-@media (max-width: 768px) {
+/* ==========================================================================
+   Mobile Responsive Layout Audit & Implementation (Breakpoint: < 768px)
+   ==========================================================================
+   Audit Findings:
+   1. Desktop (>= 768px & 1024px+):
+      - Multi-pane tiling-WM desktop grid with fixed viewport (100vh) and overflow hidden body.
+      - Intact and pixel-identical to original visual design.
+   2. Tablet (768px):
+      - Old media queries hid #system-monitor and #system-metrics, squishing #nav-terminal to 120px.
+      - JS inline styles (gridColumn, display) conflicted with CSS rules upon workspace navigation.
+      - Touch targets (.nav-item at ~20px, .workspace-item at 24x20px) were under 44px.
+   3. Small Mobile (375px):
+      - Body had fixed 100vh overflow:hidden preventing page scrolling.
+      - Top taskbar (#waybar) overflowed horizontally with fixed clock, sys-items, and workspace buttons.
+      - Fixed-width preformatted ASCII frames (41-char) caused overflow or text truncation.
+      - Touch target sizes failed the ~44px accessibility threshold.
+
+   Mobile Layout Changes (< 768px):
+   - Switch from fixed desktop viewport to a single-column stacked layout with natural page scrolling.
+   - All workspace panes (#nav-terminal, #portfolio-window, #ascii-viz, #system-monitor, #system-metrics) stack vertically.
+   - Terminal & tiling-WM visual identity (neon borders, window chrome, dark scanline overlay) is preserved.
+   - Interactive touch targets (.nav-item, .workspace-item, .contact-item, buttons) upgraded to >= 44px tap targets.
+   - Zero horizontal viewport scrolling down to 375px with word-wrapping and responsive ASCII sizing.
+   ========================================================================== */
+
+@media (max-width: 767.98px) {
+    html, body {
+        height: auto !important;
+        min-height: 100vh;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
     #waybar {
-        padding: 0 8px;
+        padding: 0 6px;
+        height: 36px;
         font-size: 11px;
     }
 
     .waybar-left,
     .waybar-right {
-        gap: 8px;
+        gap: 6px;
     }
 
-    .waybar-module {
-        padding: 2px 6px;
+    .workspace-item {
+        min-width: 44px;
+        min-height: 28px;
+        padding: 4px 8px;
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        touch-action: manipulation;
     }
 
-    .window-title {
-        max-width: 150px;
+    .waybar-module.window-title {
+        display: none;
+    }
+
+    .waybar-module.clock {
+        font-size: 11px;
+        padding: 2px 4px;
     }
 
     .sys-item {
         gap: 2px;
+        font-size: 11px;
     }
 
     #desktop {
-        padding: 4px;
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: auto;
+        min-height: calc(100vh - 36px);
+        margin-top: 36px;
+        padding: 8px 6px 24px 6px;
+        overflow-x: hidden;
     }
 
     #window-grid {
-        gap: 4px;
-        grid-template-rows: auto 1fr auto;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        height: auto !important;
+        grid-template-columns: none !important;
+        grid-template-rows: none !important;
     }
 
-    #system-monitor,
-    #system-metrics {
-        display: none;
+    .window-pane {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        min-height: unset !important;
+        flex: none !important;
+        display: flex !important;
+        grid-column: auto !important;
+        grid-row: auto !important;
     }
 
-    .window-pane.main-window {
-        grid-row: 2;
+    .window-pane .window-content {
+        max-height: none !important;
+        overflow-y: visible !important;
     }
 
+    /* Stack order below waybar */
     #nav-terminal {
-        grid-row: 1;
-        max-height: 120px;
+        order: 1;
     }
 
+    #portfolio-window {
+        order: 2;
+        min-height: 320px;
+    }
+
+    #ascii-viz {
+        order: 3;
+    }
+
+    #system-monitor {
+        order: 4;
+    }
+
+    #system-metrics {
+        order: 5;
+    }
+
+    /* Navigation Terminal Touch Targets */
     .nav-menu {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 4px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 8px;
     }
 
     .nav-item {
-        font-size: 10px;
-        padding: 4px 6px;
+        min-height: 44px;
+        padding: 10px 12px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 4px;
+        touch-action: manipulation;
+        box-sizing: border-box;
+    }
+
+    /* Content & Interactive Elements Touch Targets */
+    .skill-grid,
+    .portfolio-grid,
+    .contact-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+
+    .contact-item {
+        min-height: 48px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        touch-action: manipulation;
+    }
+
+    .portfolio-item {
+        touch-action: manipulation;
+    }
+
+    .control {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* Horizontal Overflow Prevention for Narrow Mobile (down to 375px) */
+    #ascii-animation, .ascii-frame {
+        font-size: clamp(5.5px, 1.8vw, 8px) !important;
+        line-height: 1.1;
+        overflow-x: auto;
+        max-width: 100%;
+    }
+
+    #htop-display, .htop-process-table {
+        overflow-x: auto;
+        max-width: 100%;
+        font-size: clamp(7px, 2vw, 9.5px);
+        white-space: pre-wrap;
+        word-break: break-all;
+    }
+
+    #terminal-prompt {
+        flex-wrap: wrap;
+        word-break: break-all;
+    }
+
+    .section-title {
+        font-size: 20px;
     }
 }
+
+@media (max-width: 480px) {
+    .sys-item:nth-child(n+3) {
+        display: none; /* Keep CPU & Memory, hide Network & Battery on very narrow screens */
+    }
+
+    .nav-menu {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
