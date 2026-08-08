@@ -1347,36 +1347,79 @@ ntent Styling */
         padding: 0 6px;
         height: 36px;
         font-size: 11px;
+        overflow: hidden;
+        box-sizing: border-box;
     }
 
-    .waybar-left,
+    .waybar-left {
+        flex-shrink: 0;
+        gap: 4px;
+    }
+
+    .waybar-center {
+        flex-shrink: 0;
+        min-width: 0;
+    }
+
     .waybar-right {
-        gap: 6px;
+        flex-shrink: 1;
+        min-width: 0;
+        overflow: hidden;
+        justify-content: flex-end;
+    }
+
+    .workspace {
+        gap: 2px;
     }
 
     .workspace-item {
-        min-width: 44px;
-        min-height: 28px;
-        padding: 4px 8px;
-        font-size: 12px;
+        min-width: 28px;
+        height: 26px;
+        padding: 2px 5px;
+        font-size: 11px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         touch-action: manipulation;
+        flex-shrink: 0;
+        box-sizing: border-box;
     }
 
     .waybar-module.window-title {
         display: none;
     }
 
+    /* Date & Time: Keep on a single line, prevent wrapping */
     .waybar-module.clock {
-        font-size: 11px;
-        padding: 2px 4px;
+        font-size: 10px;
+        padding: 2px 5px;
+        white-space: nowrap;
+        word-break: keep-all;
+        flex-shrink: 0;
+    }
+
+    #current-time {
+        white-space: nowrap;
+        word-break: keep-all;
+        display: inline-block;
+    }
+
+    /* System Indicators: Prevent right-side overflow */
+    .system-info {
+        gap: 6px;
+        white-space: nowrap;
+        overflow: hidden;
     }
 
     .sys-item {
         gap: 2px;
-        font-size: 11px;
+        font-size: 10px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .sys-item .icon {
+        font-size: 10px;
     }
 
     #desktop {
@@ -1439,10 +1482,23 @@ ntent Styling */
         order: 5;
     }
 
-    /* Navigation Terminal Touch Targets */
+    /* Navigation Terminal Touch Targets & Responsiveness */
+    .window-header {
+        height: 34px;
+        padding: 0 10px;
+        flex-shrink: 0;
+    }
+
+    .window-title {
+        font-size: clamp(10px, 3vw, 13px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     .nav-menu {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 8px;
     }
 
@@ -1456,6 +1512,21 @@ ntent Styling */
         border-radius: 4px;
         touch-action: manipulation;
         box-sizing: border-box;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .nav-prompt,
+    .nav-cmd {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    .nav-file {
+        flex-shrink: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     /* Content & Interactive Elements Touch Targets */
@@ -1511,13 +1582,22 @@ ntent Styling */
     }
 }
 
-@media (max-width: 480px) {
-    .sys-item:nth-child(n+3) {
-        display: none; /* Keep CPU & Memory, hide Network & Battery on very narrow screens */
+@media (max-width: 580px) {
+    /* Drop lower-priority disk/memory usage indicator first */
+    .sys-item:nth-child(2) {
+        display: none;
     }
 
+    /* Single column navigation menu on mobile phone viewports so long commands like 'experience.log' and 'ls -la projects/' fit with ample space and never wrap/truncate */
     .nav-menu {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 400px) {
+    /* On narrow phone viewports (<400px), drop CPU indicator to keep WiFi, Battery, Clock, and Workspaces un-clipped */
+    .sys-item:nth-child(1) {
+        display: none;
     }
 }
 
