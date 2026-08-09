@@ -10,29 +10,29 @@ function renderCard(item, type) {
     switch (type) {
         case 'project':
             return `
-                <div class="portfolio-item" onclick="window.portfolio.showProject('${item.id}')">
-                    <div class="portfolio-image">${item.icon}</div>
+                <button class="portfolio-item" type="button" onclick="window.portfolio.showProject('${item.id}')" aria-label="${item.title}: ${item.description}. View project details.">
+                    <div class="portfolio-image" aria-hidden="true">${item.icon}</div>
                     <div class="portfolio-content">
                         <div class="portfolio-title">${item.title}</div>
                         <div class="portfolio-description">${item.description}</div>
-                        <div style="margin-top: 8px; color: var(--accent-blue); font-size: 10px;">Click to view details →</div>
+                        <div style="margin-top: 8px; color: var(--accent-blue); font-size: 10px;">View project details →</div>
                     </div>
-                </div>
+                </button>
             `;
 
         case 'experience':
             return `
-                <div class="experience-item">
+                <article class="experience-item">
                     <div class="job-title">${item.title}</div>
                     <div class="company" style="color: ${item.companyColor}; font-weight: 600;">${item.company}</div>
                     <div class="duration">${item.duration}</div>
                     <div class="job-description">
                         ${item.bullets.map((bullet, idx) => {
                             const isLast = idx === item.bullets.length - 1;
-                            return `<div${isLast ? '' : ' style="margin-bottom: 4px;"'}><span style="color: var(--accent-green);">→</span> ${bullet}</div>`;
+                            return `<div${isLast ? '' : ' style="margin-bottom: 4px;"'}><span style="color: var(--accent-green);" aria-hidden="true">→</span> ${bullet}</div>`;
                         }).join('')}
                     </div>
-                </div>
+                </article>
             `;
 
         case 'achievement':
@@ -55,7 +55,7 @@ function renderCard(item, type) {
             return `
                 <div style="margin-bottom: 8px;">
                     <span style="color: var(--accent-cyan);">${item.name}:</span>
-                    <div class="progress-bar" style="margin-top: 4px;">
+                    <div class="progress-bar" style="margin-top: 4px;" role="progressbar" aria-valuenow="${item.percentage}" aria-valuemin="0" aria-valuemax="100" aria-label="${item.name} proficiency">
                         <div class="progress-fill" style="width: ${item.percentage}%;"></div>
                     </div>
                     <span style="color: var(--text-dim); font-size: 10px;">${item.percentage}%</span>
@@ -64,8 +64,8 @@ function renderCard(item, type) {
 
         case 'contact_link':
             return `
-                <a href="${item.url}"${item.target ? ` target="${item.target}"` : ''} class="contact-item">
-                    <div class="contact-icon">${item.icon}</div>
+                <a href="${item.url}"${item.target ? ` target="${item.target}"` : ''} class="contact-item" aria-label="${item.label}: ${item.value}">
+                    <div class="contact-icon" aria-hidden="true">${item.icon}</div>
                     <div class="contact-label">${item.label}</div>
                     <div class="contact-value">${item.value}</div>
                 </a>
@@ -100,7 +100,7 @@ function renderSection(sectionType, data) {
     switch (sectionType) {
         case 'about':
             return `
-                <div class="section-title typewriter"># About Me</div>
+                <h2 class="section-title typewriter"># About Me</h2>
                 <div class="terminal-text" style="margin-top: 16px;">
                     <div class="command-output">
                         <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> whoami
@@ -142,7 +142,7 @@ function renderSection(sectionType, data) {
 
         case 'skills':
             return `
-                <div class="section-title"># Technical Skills</div>
+                <h2 class="section-title"># Technical Skills</h2>
                 <div class="terminal-text" style="margin-top: 16px;">
                     <div class="command-output">
                         <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> cat skills.json | jq .
@@ -192,7 +192,7 @@ function renderSection(sectionType, data) {
 
         case 'experience':
             return `
-                <div class="section-title"># Professional Experience</div>
+                <h2 class="section-title"># Professional Experience</h2>
                 <div class="terminal-text" style="margin-top: 16px;">
                     <div class="command-output">
                         <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> cat experience.log
@@ -209,7 +209,7 @@ function renderSection(sectionType, data) {
 
         case 'achievements':
             return `
-                <div class="section-title"># Key Achievements</div>
+                <h2 class="section-title"># Key Achievements</h2>
                 <div class="terminal-text" style="margin-top: 16px;">
                     <div class="command-output">
                         <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> cat achievements.txt
@@ -233,7 +233,7 @@ function renderSection(sectionType, data) {
 
         case 'portfolio':
             return `
-                <div class="section-title"># Projects & Portfolio</div>
+                <h2 class="section-title"># Projects & Portfolio</h2>
                 <div class="terminal-text" style="margin-top: 16px;">
                     <div class="command-output">
                         <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> ls -la projects/
@@ -268,7 +268,7 @@ function renderSection(sectionType, data) {
 
         case 'contact':
             return `
-                <div class="section-title"># Contact Information</div>
+                <h2 class="section-title"># Contact Information</h2>
                 <div class="terminal-text" style="margin-top: 16px;">
                     <div class="command-output">
                         <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> contact --info
@@ -327,10 +327,10 @@ function renderProjectDetails(project) {
     if (!project) return '<div>Project not found</div>';
 
     return `
-        <div class="section-title"># ${project.detailTitle || project.title}</div>
+        <h2 class="section-title"># ${project.detailTitle || project.title}</h2>
         <div class="terminal-text" style="margin-top: 16px;">
             <div style="margin-bottom: 16px;">
-                <button onclick="window.portfolio.loadSection('portfolio')" style="
+                <button type="button" onclick="window.portfolio.loadSection('portfolio')" aria-label="Back to Portfolio projects list" style="
                     background: rgba(97, 175, 239, 0.2); 
                     border: 1px solid var(--accent-blue); 
                     color: var(--accent-blue); 
