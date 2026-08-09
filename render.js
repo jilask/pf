@@ -11,9 +11,9 @@ function renderCard(item, type) {
         case 'project':
             return `
                 <button class="portfolio-item" type="button" onclick="window.portfolio.showProject('${item.id}')" aria-label="${item.title}: ${item.description}. View project details.">
-                    <div class="portfolio-image" aria-hidden="true">${item.icon}</div>
+                    <div class="portfolio-image" aria-hidden="true">${item.image ? `<img src="${item.image}" alt="${item.title}" loading="lazy">` : item.icon}</div>
                     <div class="portfolio-content">
-                        <div class="portfolio-title">${item.title}</div>
+                        <h3 class="portfolio-title">${item.title}</h3>
                         <div class="portfolio-description">${item.description}</div>
                         <div style="margin-top: 8px; color: var(--accent-blue); font-size: 10px;">View project details →</div>
                     </div>
@@ -23,7 +23,7 @@ function renderCard(item, type) {
         case 'experience':
             return `
                 <article class="experience-item">
-                    <div class="job-title">${item.title}</div>
+                    <h3 class="job-title">${item.title}</h3>
                     <div class="company" style="color: ${item.companyColor}; font-weight: 600;">${item.company}</div>
                     <div class="duration">${item.duration}</div>
                     <div class="job-description">
@@ -353,19 +353,19 @@ function renderProjectDetails(project) {
                     ${project.intro}
                 </p>
                 <div style="margin-bottom: 16px;">
-                    <div style="color: var(--accent-yellow); font-weight: 600; margin-bottom: 8px;">${project.featuresHeader}</div>
+                    <h4 class="project-subsection-title">${project.featuresHeader}</h4>
                     <ul style="list-style: none; padding: 0;">
                         ${project.features.map(f => `<li style="margin-bottom: 6px;"><span style="color: var(--accent-green);">✓</span> ${f}</li>`).join('')}
                     </ul>
                 </div>
                 <div style="margin-bottom: 16px;">
-                    <div style="color: var(--accent-yellow); font-weight: 600; margin-bottom: 8px;">Technologies Used:</div>
+                    <h4 class="project-subsection-title">Technologies Used:</h4>
                     <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                         ${project.technologies.map(tech => renderCard({ name: tech, bg: project.techStyle.bg, color: project.techStyle.color }, 'tech_tag')).join('')}
                     </div>
                 </div>
                 <div>
-                    <div style="color: var(--accent-yellow); font-weight: 600; margin-bottom: 8px;">${project.impactHeader}</div>
+                    <h4 class="project-subsection-title">${project.impactHeader}</h4>
                     <p style="color: var(--text-secondary); font-size: 12px; line-height: 1.5;">
                         ${project.impactText}
                     </p>

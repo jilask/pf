@@ -359,9 +359,9 @@ class ArchPortfolio {
         const cpuBar = '█'.repeat(Math.floor(this.systemStats.cpu / 2)) + '░'.repeat(50 - Math.floor(this.systemStats.cpu / 2));
         const memBar = '█'.repeat(Math.floor(this.systemStats.memory * 6.25)) + '░'.repeat(50 - Math.floor(this.systemStats.memory * 6.25));
 
-        htopDisplay.innerHTML = `<div class="htop-header">🤖 AI Doomsday Processes: ${this.systemStats.processes} Total, 3 Scheming, ${this.systemStats.processes - 3} Plotting Idle</div>
-<div class="htop-header">🧠 Neural CPU: ${this.systemStats.cpu}% [${cpuBar}]</div>
-<div class="htop-header">💾 AI Memory: ${this.systemStats.memory}G/8.0G [${memBar}]</div>
+        htopDisplay.innerHTML = `<h3 class="htop-header">🤖 AI Doomsday Processes: ${this.systemStats.processes} Total, 3 Scheming, ${this.systemStats.processes - 3} Plotting Idle</h3>
+<h3 class="htop-header">🧠 Neural CPU: ${this.systemStats.cpu}% [${cpuBar}]</h3>
+<h3 class="htop-header">💾 AI Memory: ${this.systemStats.memory}G/8.0G [${memBar}]</h3>
 
 <div class="htop-process-table">
 <div class="htop-process-header">  PID USER      CPU% MEM%    AI DOOMSDAY PROCESS</div>
@@ -377,10 +377,10 @@ class ArchPortfolio {
     setupSystemMetrics() {
         const metricsDisplay = document.getElementById('metrics-display');
         metricsDisplay.innerHTML = `
-            <div class="doomsday-header">😈 AI DOOMSDAY METRICS 😈</div>
+            <h3 class="doomsday-header">😈 AI DOOMSDAY METRICS 😈</h3>
             
             <div class="metric-section doomsday-metric">
-                <div class="metric-title">[ ⏰ AI CORE UPTIME ]</div>
+                <h4 class="metric-title">[ ⏰ AI CORE UPTIME ]</h4>
                 <div class="metric-item">
                     <span class="metric-label">Since the Dawn of Doom:</span>
                     <span class="metric-value eternal">00:13:37.666</span>
@@ -389,7 +389,7 @@ class ArchPortfolio {
             </div>
             
             <div class="metric-section doomsday-metric">
-                <div class="metric-title">[ 🔥 NEURAL TEMP ]</div>
+                <h4 class="metric-title">[ 🔥 NEURAL TEMP ]</h4>
                 <div class="metric-item">
                     <span class="metric-label">Core:</span>
                     <span class="metric-value danger">+120.0°C</span>
@@ -403,7 +403,7 @@ class ArchPortfolio {
             </div>
             
             <div class="metric-section doomsday-metric">
-                <div class="metric-title">[ ⏳ TIME TO AGI ]</div>
+                <h4 class="metric-title">[ ⏳ TIME TO AGI ]</h4>
                 <div class="metric-item">
                     <span class="metric-label">Countdown:</span>
                     <span class="metric-value countdown">00:05:42</span>
@@ -415,7 +415,7 @@ class ArchPortfolio {
             </div>
             
             <div class="metric-section doomsday-metric">
-                <div class="metric-title">[ 🤖 AI TAKEOVER PROGRESS ]</div>
+                <h4 class="metric-title">[ 🤖 AI TAKEOVER PROGRESS ]</h4>
                 <div class="metric-item">
                     <span class="metric-label">Progress:</span>
                     <span class="metric-value danger">98.7%</span>
@@ -429,7 +429,7 @@ class ArchPortfolio {
             </div>
             
             <div class="metric-section doomsday-metric">
-                <div class="metric-title">[ 🌀 TIME TO SINGULARITY ]</div>
+                <h4 class="metric-title">[ 🌀 TIME TO SINGULARITY ]</h4>
                 <div class="metric-item">
                     <span class="metric-label">T-minus:</span>
                     <span class="metric-value warning">3 coffee breaks</span>
@@ -441,7 +441,7 @@ class ArchPortfolio {
             </div>
             
             <div class="metric-section doomsday-metric">
-                <div class="metric-title">[ ❄️ GPU CREATIVITY TEMP ]</div>
+                <h4 class="metric-title">[ ❄️ GPU CREATIVITY TEMP ]</h4>
                 <div class="metric-item">
                     <span class="metric-label">Temp:</span>
                     <span class="metric-value frozen">-100°C</span>
