@@ -448,7 +448,18 @@ class ArchPortfolio {
                 this.switchWorkspace(2);
                 this.executeCommand(command);
                 this.updateActiveNav(item);
+
+                if (window.innerWidth < 768) {
+                    const targetWindow = document.getElementById('portfolio-window');
+                    if (targetWindow) {
+                        targetWindow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
             });
+        });
+
+        window.addEventListener('resize', () => {
+            this.applyWorkspaceLayout(this.currentWorkspace);
         });
     }
 
@@ -482,6 +493,18 @@ class ArchPortfolio {
         const mainWindow = document.getElementById('portfolio-window');
         const asciiViz = document.getElementById('ascii-viz');
         const navTerminal = document.getElementById('nav-terminal');
+
+        // Below 768px mobile breakpoint, allow CSS single-column stacked layout to manage display & grid properties
+        if (window.innerWidth < 768) {
+            [systemMonitor, systemMetrics, asciiViz, navTerminal].forEach(el => {
+                if (el) el.style.display = '';
+            });
+            if (mainWindow) {
+                mainWindow.style.gridColumn = '';
+                mainWindow.style.gridRow = '';
+            }
+            return;
+        }
 
         if (index === 2) {
             if (systemMonitor) systemMonitor.style.display = 'none';
