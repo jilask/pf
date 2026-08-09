@@ -729,6 +729,10 @@ class ArchPortfolio {
         return renderSection('portfolio', this.data ? this.data.portfolio : null);
     }
 
+    getContactContent() {
+        return renderSection('contact', this.data ? this.data.contact : null);
+    }
+
     getProjectContent(projectId) {
         const project = (this.data && this.data.portfolio && this.data.portfolio.projects)
             ? this.data.portfolio.projects.find(p => p.id === projectId)
