@@ -72,6 +72,12 @@ class ArchPortfolio {
             item.addEventListener('click', () => {
                 this.switchWorkspace(index + 1);
             });
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.switchWorkspace(index + 1);
+                }
+            });
         });
 
         // Update system info
@@ -262,8 +268,8 @@ class ArchPortfolio {
 
         updateFrame();
 
-        // Click interaction
-        asciiDisplay.addEventListener('click', () => {
+        // Click & keyboard interaction
+        const triggerAsciiReaction = () => {
             isInteracting = true;
             lastInteraction = Date.now();
 
@@ -272,8 +278,8 @@ class ArchPortfolio {
             updateFrame();
 
             const messages = [
-                "🎉 Yay! You clicked me! I'm so happy!",
-                "🚀 Woohoo! That was fun! Click me again!",
+                "🎉 Yay! You activated me! I'm so happy!",
+                "🚀 Woohoo! That was fun! Trigger me again!",
                 "😲 Oh wow! You startled me! Hehe!",
                 "💖 Aww, thanks for the attention!"
             ];
@@ -286,6 +292,14 @@ class ArchPortfolio {
                 currentFrame = 0;
                 updateFrame();
             }, 2000);
+        };
+
+        asciiDisplay.addEventListener('click', triggerAsciiReaction);
+        asciiDisplay.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                triggerAsciiReaction();
+            }
         });
 
         // Hover interaction
@@ -442,7 +456,7 @@ class ArchPortfolio {
     setupNavigation() {
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => {
-            item.addEventListener('click', () => {
+            const handleNav = () => {
                 const command = item.dataset.command;
 
                 this.switchWorkspace(2);
@@ -454,6 +468,14 @@ class ArchPortfolio {
                     if (targetWindow) {
                         targetWindow.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
+                }
+            };
+
+            item.addEventListener('click', handleNav);
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleNav();
                 }
             });
         });
@@ -467,11 +489,22 @@ class ArchPortfolio {
         if (this.currentWorkspace === index) return;
         this.currentWorkspace = index;
 
-        document.querySelectorAll('.workspace-item').forEach(w => w.classList.remove('active'));
-        const targetWs = document.querySelectorAll('.workspace-item')[index - 1];
-        if (targetWs) targetWs.classList.add('active');
+        document.querySelectorAll('.workspace-item').forEach((w, i) => {
+            w.classList.remove('active');
+            w.removeAttribute('aria-current');
+            if (i === index - 1) {
+                w.classList.add('active');
+                w.setAttribute('aria-current', 'page');
+            }
+        });
 
         const grid = document.getElementById('window-grid');
+        const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (isReducedMotion) {
+            this.applyWorkspaceLayout(index);
+            return;
+        }
 
         grid.classList.add('workspace-transition-out');
 
@@ -580,8 +613,10 @@ class ArchPortfolio {
     updateActiveNav(activeItem) {
         document.querySelectorAll('.nav-item').forEach(item => {
             item.classList.remove('active');
+            item.setAttribute('aria-selected', 'false');
         });
         activeItem.classList.add('active');
+        activeItem.setAttribute('aria-selected', 'true');
     }
 
     executeCommand(command) {
@@ -610,6 +645,11 @@ class ArchPortfolio {
 
         const fullCommand = commands[command] || command;
         commandElement.textContent = '';
+
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            commandElement.textContent = fullCommand;
+            return;
+        }
 
         let i = 0;
         this.currentTypeInterval = setInterval(() => {
@@ -689,15 +729,34 @@ class ArchPortfolio {
         return renderSection('portfolio', this.data ? this.data.portfolio : null);
     }
 
-    getContactContent() {
-        return renderSection('contact', this.data ? this.data.contact : null);
-    }
-
     getProjectContent(projectId) {
         const project = (this.data && this.data.portfolio && this.data.portfolio.projects)
             ? this.data.portfolio.projects.find(p => p.id === projectId)
             : null;
         return renderProjectDetails(project);
+    }
+
+    showProject(projectId) {
+        const contentArea = document.getElementById('portfolio-content');
+        if (!contentArea) return;
+        contentArea.innerHTML = '';
+
+        const sectionElement = document.createElement('div');
+        sectionElement.className = 'content-section';
+        sectionElement.innerHTML = this.getProjectContent(projectId);
+
+        const windowTitle = document.getElementById('current-window');
+        if (windowTitle) {
+            windowTitle.textContent = `Project: ${projectId}`;
+        }
+
+        contentArea.appendChild(sectionElement);
+
+        requestAnimationFrame(() => {
+            sectionElement.classList.add('active');
+            const backBtn = sectionElement.querySelector('button');
+            if (backBtn) backBtn.focus();
+        });
     }
 
     downloadResume() {
