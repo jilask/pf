@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://alijshaikh.dev/sitemap.xml
+Sitemap: https://jilask.github.io/pf/sitemap.xml
