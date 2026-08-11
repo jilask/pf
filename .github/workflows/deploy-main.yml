@@ -10,17 +10,37 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
     steps:
-      - name: Checkout
+      - name: Checkout main
         uses: actions/checkout@v4
-
-      - name: Deploy to gh-pages (root)
-        uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          destination_dir: .
-          keep_files: true
-          exclude_assets: '.github,node_modules,.git'
+          path: source
+
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Get or create gh-pages branch
+        run: |
+          if git ls-remote --exit-code --heads https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages; then
+            git clone --branch gh-pages https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-repo
+          else
+            git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-repo
+            cd gh-pages-repo
+            git checkout --orphan gh-pages
+            git rm -rf . || true
+            cd ..
+          fi
+
+      - name: Copy site files into root
+        run: |
+          rsync -av --exclude='.git' --exclude='.github' --exclude='node_modules' source/ gh-pages-repo/
+          touch gh-pages-repo/.nojekyll
+
+      - name: Commit and push
+        run: |
+          cd gh-pages-repo
+          git add -A
+          git commit -m "Deploy main $(date -u +%Y-%m-%dT%H:%M:%SZ)" || echo "Nothing to commit"
+          git push origin gh-pages
