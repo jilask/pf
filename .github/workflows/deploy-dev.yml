@@ -1,0 +1,24 @@
+   name: Deploy dev to Pages (preview)
+
+   on:
+     push:
+       branches: [dev]
+
+   permissions:
+     contents: write
+
+   jobs:
+     deploy:
+       runs-on: ubuntu-latest
+       steps:
+         - name: Checkout
+           uses: actions/checkout@v4
+
+         - name: Deploy to gh-pages (/preview subfolder)
+           uses: peaceiris/actions-gh-pages@v4
+           with:
+             github_token: ${{ secrets.GITHUB_TOKEN }}
+             publish_dir: .
+             destination_dir: preview
+             keep_files: true
+             exclude_assets: '.github,node_modules,.git'
