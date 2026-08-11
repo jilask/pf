@@ -2,7 +2,6 @@
 
 An interactive, cyberpunk-inspired developer portfolio styled like an **Arch Linux Tiling Window Manager** (Waybar + Hyprland aesthetic). Designed for **AliJ A. Shaikh** — Senior AI Architect & Prompt Engineer.
 
-![Retro Tiling WM UI Screenshot](file:///C:/Users/alijs/.gemini/antigravity-ide/brain/fc7f0c59-3d08-4fff-814b-1a5b70e8a715/portfolio_preview_1785764616261.png)
 
 ---
 
