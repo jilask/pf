@@ -1,0 +1,48 @@
+{
+  "email": "jilask70@gmail.com",
+  "phone": "[PHONE_NUMBER]",
+  "location": "Chiba, Japan",
+  "timezone": "JST (UTC +9:00)",
+  "social_links": [
+    {
+      "icon": "📧",
+      "label": "Email",
+      "value": "jilask70@gmail.com",
+      "url": "mailto:jilask70@gmail.com",
+      "target": "_self"
+    },
+    {
+      "icon": "📱",
+      "label": "Phone",
+      "value": "[PHONE_NUMBER]",
+      "url": "#",
+      "target": "_self"
+    },
+    {
+      "icon": "💻",
+      "label": "GitHub",
+      "value": "github.com/aler69",
+      "url": "https://github.com/aler69",
+      "target": "_blank"
+    },
+    {
+      "icon": "💼",
+      "label": "LinkedIn",
+      "value": "linkedin.com/in/alij-shaikh-1311a3211",
+      "url": "https://www.linkedin.com/in/alij-shaikh-1311a3211/",
+      "target": "_blank"
+    }
+  ],
+  "status_tags": [
+    {
+      "text": "Available for Freelance",
+      "color": "var(--accent-green)",
+      "bg": "rgba(152, 195, 121, 0.2)"
+    },
+    {
+      "text": "Open to Collaboration",
+      "color": "var(--accent-purple)",
+      "bg": "rgba(198, 120, 221, 0.2)"
+    }
+  ]
+}

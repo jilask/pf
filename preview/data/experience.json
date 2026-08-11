@@ -1,0 +1,54 @@
+{
+  "total_experience": "Total experience: 3+ years",
+  "entries": [
+    {
+      "id": "exp-ai-engineer-freelance",
+      "title": "💡 AI Engineer (Freelance)",
+      "company": "@ Self-employed",
+      "companyColor": "var(--accent-green)",
+      "duration": "October 2025 – Present",
+      "bullets": [
+        "Architected custom LLM and generative AI workflows, optimizing prompt architecture and API integration for client solutions",
+        "Engineered advanced node-based pipelines (ComfyUI, control frameworks, image-to-video models) for high-fidelity visual and video asset production",
+        "Developed end-to-end multimodal workflows combining text, image, and generative video systems for digital media production"
+      ]
+    },
+    {
+      "id": "exp-senior-ai-architect",
+      "title": "🚀 Senior AI Architect",
+      "company": "@ Modelia",
+      "companyColor": "var(--accent-red)",
+      "duration": "March 2024 – October 2025",
+      "bullets": [
+        "Led generative AI solutions for fashion retail, integrating Stable Diffusion and ComfyUI",
+        "Designed and deployed custom ComfyUI nodes for garment image synthesis",
+        "Integrated cutting-edge AI technologies into production pipelines",
+        "Collaborated across multicultural teams to drive R&D on prompt logic"
+      ]
+    },
+    {
+      "id": "exp-prompt-engineer-freelance",
+      "title": "💡 Prompt Engineer (Freelance)",
+      "company": "@ Self-employed",
+      "companyColor": "var(--accent-purple)",
+      "duration": "July 2022 – March 2024",
+      "bullets": [
+        "Created optimized prompts and fine-tuned LoRA models for anime-style generation",
+        "Delivered prompt-based workflows using Stable Diffusion, Midjourney, GPT variants",
+        "Specialized in creative AI applications and custom model training"
+      ]
+    },
+    {
+      "id": "exp-junior-flutter-developer",
+      "title": "📱 Junior Flutter Developer",
+      "company": "@ AARFAA Technovision pvt Ltd, Pune",
+      "companyColor": "var(--accent-orange)",
+      "duration": "June 2021 – July 2022",
+      "bullets": [
+        "Developed cross-platform mobile applications using Flutter framework",
+        "Implemented responsive UI/UX designs and integrated APIs",
+        "Collaborated with design teams to deliver high-quality mobile solutions"
+      ]
+    }
+  ]
+}

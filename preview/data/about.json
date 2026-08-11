@@ -1,0 +1,15 @@
+{
+  "name": "AliJ A. Shaikh",
+  "title": "Senior AI Architect & Prompt Engineer",
+  "location": "Maharashtra, India",
+  "bio": [
+    "I specialize in cutting-edge <span class=\"syntax-keyword\">generative AI</span> technologies, with deep expertise in <span class=\"syntax-string\">Stable Diffusion</span>, <span class=\"syntax-string\">ComfyUI</span>, and custom AI workflows.",
+    "My passion lies in bridging the gap between complex AI systems and practical business applications."
+  ],
+  "focus_areas": [
+    "Production-grade AI pipeline deployment",
+    "Custom ComfyUI node development",
+    "Brand-safe AI image generation systems",
+    "Prompt engineering optimization"
+  ]
+}
