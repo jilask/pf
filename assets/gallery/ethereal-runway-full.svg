@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-ethereal-full" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#051214" />
+      <stop offset="50%" stop-color="#0b2329" />
+      <stop offset="100%" stop-color="#050505" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#bg-ethereal-full)" />
+  <circle cx="600" cy="400" r="250" fill="none" stroke="#00f0ff" stroke-width="3" opacity="0.6" stroke-dasharray="12 6" />
+  <text x="600" y="380" font-family="monospace" font-size="120" fill="#00f0ff" text-anchor="middle">💎</text>
+  <text x="600" y="520" font-family="'Fira Code', monospace" font-size="36" font-weight="bold" fill="#00f0ff" text-anchor="middle">ETHEREAL RUNWAY [FULL RES]</text>
+  <text x="600" y="570" font-family="'Fira Code', monospace" font-size="20" fill="#8b5cf6" text-anchor="middle">// FASHION / COMMERCIAL - HIGH RES ARTWORK</text>
+  <rect x="40" y="40" width="1120" height="820" fill="none" stroke="#00f0ff" stroke-width="2" opacity="0.4" />
+</svg>
