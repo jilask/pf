@@ -89,10 +89,29 @@ function renderCard(item, type) {
             };
             const catInfo = catMap[item.category] || { label: item.category || 'General', class: 'general' };
             const mediaBadge = item.mediaType === 'video' ? `<span class="gallery-type-badge">VIDEO</span>` : '';
+            const featuredBadge = item.featured
+                ? `<span class="gallery-featured-badge" aria-label="Featured item"><span aria-hidden="true">★</span> FEATURED</span>`
+                : '';
+
+            const altText = `${item.title} - ${catInfo.label} artwork thumbnail`;
+
             return `
-                <article class="gallery-card" data-id="${item.id}" data-category="${item.category}" onclick="console.log('Gallery item clicked:', '${item.id}')">
-                    <div class="gallery-thumb-wrap">
-                        <img src="${item.thumb}" alt="${item.title}" loading="lazy" class="gallery-thumb">
+                <article class="gallery-card${item.featured ? ' is-featured' : ''}" data-id="${item.id}" data-category="${item.category}" onclick="console.log('Gallery item clicked:', '${item.id}')">
+                    <div class="gallery-thumb-wrap skeleton-loading">
+                        <img src="${item.thumb}" 
+                             alt="${altText}" 
+                             loading="lazy" 
+                             width="400" 
+                             height="300" 
+                             class="gallery-thumb"
+                             onload="this.classList.add('loaded'); if (this.parentElement) this.parentElement.classList.remove('skeleton-loading');"
+                             onerror="this.style.display='none'; if (this.nextElementSibling) this.nextElementSibling.style.display='flex'; if (this.parentElement) this.parentElement.classList.remove('skeleton-loading');">
+                        <div class="gallery-fallback" style="display: none;" role="img" aria-label="Image failed to load: ${item.title}">
+                            <span class="fallback-icon" aria-hidden="true">⚠️</span>
+                            <span class="fallback-code">[ERR 404: NOT_FOUND]</span>
+                            <span class="fallback-sub">${item.title}</span>
+                        </div>
+                        ${featuredBadge}
                         ${mediaBadge}
                         <div class="gallery-thumb-overlay">
                             <span class="view-prompt">VIEW // DETAILS</span>
@@ -374,15 +393,31 @@ function renderSection(sectionType, data) {
 
 /**
  * Renders gallery grid items into containerEl or returns HTML markup string.
- * @param {Array} items - List of gallery items
+ * @param {Array|null} items - List of gallery items, or null if loading
  * @param {HTMLElement|string} [containerEl] - Target container element or selector
  * @returns {string} HTML markup string
  */
 function renderGallery(items, containerEl) {
-    const list = Array.isArray(items) ? items : [];
-    const gridHtml = list.length > 0
-        ? list.map(item => renderCard(item, 'gallery_item')).join('')
-        : '<div class="terminal-text" style="color: var(--text-secondary); margin: 16px 0;">No items found in gallery.</div>';
+    let gridHtml = '';
+
+    if (items === null || items === undefined) {
+        // Render loading skeleton cards before data has loaded
+        const skeletonCardHtml = `
+            <article class="gallery-card skeleton-card">
+                <div class="gallery-thumb-wrap skeleton-loading"></div>
+                <div class="gallery-info">
+                    <div class="skeleton-line skeleton-title-line skeleton-loading"></div>
+                    <div class="skeleton-line skeleton-meta-line skeleton-loading"></div>
+                </div>
+            </article>
+        `;
+        gridHtml = Array(6).fill(skeletonCardHtml).join('');
+    } else {
+        const list = Array.isArray(items) ? items : [];
+        gridHtml = list.length > 0
+            ? list.map(item => renderCard(item, 'gallery_item')).join('')
+            : '<div class="terminal-text" style="color: var(--text-secondary); margin: 16px 0;">No items found in gallery.</div>';
+    }
 
     if (containerEl) {
         const target = typeof containerEl === 'string' ? document.querySelector(containerEl) : containerEl;

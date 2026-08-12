@@ -1184,6 +1184,101 @@ body::after {
     border-radius: 2px;
 }
 
+/* Featured Badge */
+.gallery-featured-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.85);
+    color: var(--accent-orange);
+    border: 1px solid var(--accent-orange);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    z-index: 3;
+    box-shadow: 0 0 8px rgba(255, 95, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+/* Broken Image Fallback */
+.gallery-fallback {
+    position: absolute;
+    inset: 0;
+    background: rgba(18, 8, 8, 0.95);
+    border: 1px dashed var(--accent-red);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    text-align: center;
+    gap: 4px;
+    z-index: 1;
+}
+
+.fallback-icon {
+    font-size: 22px;
+}
+
+.fallback-code {
+    color: var(--accent-red);
+    font-family: 'Fira Code', monospace;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.fallback-sub {
+    color: var(--text-secondary);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Skeleton Loading Shimmer */
+.skeleton-loading {
+    background: linear-gradient(90deg, rgba(20, 20, 20, 0.8) 25%, rgba(45, 45, 45, 0.8) 50%, rgba(20, 20, 20, 0.8) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite ease-in-out;
+}
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.skeleton-card {
+    pointer-events: none;
+    background: rgba(10, 10, 10, 0.6);
+    border-color: rgba(57, 255, 20, 0.2);
+}
+
+.skeleton-line {
+    border-radius: 2px;
+    margin-bottom: 6px;
+}
+
+.skeleton-title-line {
+    width: 70%;
+    height: 14px;
+}
+
+.skeleton-meta-line {
+    width: 40%;
+    height: 10px;
+}
+
 .maximized-pane {
     position: fixed !important;
     inset: 32px 0 0 0 !important;
@@ -1985,8 +2080,13 @@ button {
     .countdown-fill,
     .takeover-fill,
     .robot-arm,
-    .disclaimer {
+    .disclaimer,
+    .skeleton-loading {
         animation: none !important;
+    }
+
+    .skeleton-loading {
+        background: rgba(30, 30, 30, 0.8) !important;
     }
 
     body::after {
