@@ -81,6 +81,61 @@ function renderCard(item, type) {
             return `<span style="background: ${bg}; padding: 4px 8px; border-radius: 12px; font-size: 10px; color: ${color}; border: 1px solid ${color};">${name}</span>`;
         }
 
+        case 'gallery_item': {
+            const catMap = {
+                'fashion': { label: 'Fashion / Commercial', class: 'fashion' },
+                'character': { label: 'Character / Stylized', class: 'character' },
+                'video': { label: 'Video / Motion', class: 'video' }
+            };
+            const catInfo = catMap[item.category] || { label: item.category || 'General', class: 'general' };
+            const mediaBadge = item.mediaType === 'video' ? `<span class="gallery-type-badge">VIDEO</span>` : '';
+            const featuredBadge = item.featured
+                ? `<span class="gallery-featured-badge" aria-label="Featured item"><span aria-hidden="true">★</span> FEATURED</span>`
+                : '';
+
+            const altText = `${item.title} - ${catInfo.label} artwork thumbnail`;
+
+            return `
+                <article class="gallery-card${item.featured ? ' is-featured' : ''}" data-id="${item.id}" data-category="${item.category}" onclick="console.log('Gallery item clicked:', '${item.id}')">
+                    <div class="gallery-thumb-wrap skeleton-loading">
+                        <img src="${item.thumb}" 
+                             alt="${altText}" 
+                             loading="lazy" 
+                             width="400" 
+                             height="300" 
+                             class="gallery-thumb"
+                             onload="this.classList.add('loaded'); if (this.parentElement) this.parentElement.classList.remove('skeleton-loading');"
+                             onerror="this.style.display='none'; if (this.nextElementSibling) this.nextElementSibling.style.display='flex'; if (this.parentElement) this.parentElement.classList.remove('skeleton-loading');">
+                        <div class="gallery-fallback" style="display: none;" role="img" aria-label="Image failed to load: ${item.title}">
+                            <span class="fallback-icon" aria-hidden="true">⚠️</span>
+                            <span class="fallback-code">[ERR 404: NOT_FOUND]</span>
+                            <span class="fallback-sub">${item.title}</span>
+                        </div>
+                        ${featuredBadge}
+                        ${mediaBadge}
+                        <div class="gallery-thumb-overlay">
+                            <span class="view-prompt">VIEW // DETAILS</span>
+                        </div>
+                    </div>
+                    <div class="gallery-info">
+                        <div class="gallery-header-line">
+                            <h3 class="gallery-title">${item.title}</h3>
+                            <span class="gallery-category-badge ${catInfo.class}">${catInfo.label}</span>
+                        </div>
+                        <div class="gallery-meta">
+                            <span class="gallery-tool">${item.tool || ''}</span>
+                            <span class="gallery-date">${item.date || ''}</span>
+                        </div>
+                        ${item.tags && item.tags.length ? `
+                            <div class="gallery-tags">
+                                ${item.tags.map(tag => `<span class="gallery-tag">#${tag}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                </article>
+            `;
+        }
+
         default:
             return '';
     }
@@ -313,9 +368,64 @@ function renderSection(sectionType, data) {
                 </div>
             `;
 
+        case 'gallery': {
+            const items = Array.isArray(data) ? data : (data && data.items ? data.items : []);
+            return `
+                <h2 class="section-title"># AI Art & Motion Gallery</h2>
+                <div class="terminal-text" style="margin-top: 16px;">
+                    <div class="command-output">
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> ls gallery/
+                    </div>
+                    <div style="margin: 12px 0; font-family: 'Fira Code', monospace; font-size: 11px;">
+                        <div style="color: var(--text-secondary); margin-bottom: 8px;">total ${items.length} items</div>
+                    </div>
+                    <div class="gallery-grid" id="gallery-grid">
+                        ${renderGallery(items)}
+                    </div>
+                </div>
+            `;
+        }
+
         default:
             return '';
     }
+}
+
+/**
+ * Renders gallery grid items into containerEl or returns HTML markup string.
+ * @param {Array|null} items - List of gallery items, or null if loading
+ * @param {HTMLElement|string} [containerEl] - Target container element or selector
+ * @returns {string} HTML markup string
+ */
+function renderGallery(items, containerEl) {
+    let gridHtml = '';
+
+    if (items === null || items === undefined) {
+        // Render loading skeleton cards before data has loaded
+        const skeletonCardHtml = `
+            <article class="gallery-card skeleton-card">
+                <div class="gallery-thumb-wrap skeleton-loading"></div>
+                <div class="gallery-info">
+                    <div class="skeleton-line skeleton-title-line skeleton-loading"></div>
+                    <div class="skeleton-line skeleton-meta-line skeleton-loading"></div>
+                </div>
+            </article>
+        `;
+        gridHtml = Array(6).fill(skeletonCardHtml).join('');
+    } else {
+        const list = Array.isArray(items) ? items : [];
+        gridHtml = list.length > 0
+            ? list.map(item => renderCard(item, 'gallery_item')).join('')
+            : '<div class="terminal-text" style="color: var(--text-secondary); margin: 16px 0;">No items found in gallery.</div>';
+    }
+
+    if (containerEl) {
+        const target = typeof containerEl === 'string' ? document.querySelector(containerEl) : containerEl;
+        if (target) {
+            target.innerHTML = gridHtml;
+        }
+    }
+    return gridHtml;
 }
 
 /**
@@ -377,5 +487,6 @@ function renderProjectDetails(project) {
 if (typeof window !== 'undefined') {
     window.renderCard = renderCard;
     window.renderSection = renderSection;
+    window.renderGallery = renderGallery;
     window.renderProjectDetails = renderProjectDetails;
 }

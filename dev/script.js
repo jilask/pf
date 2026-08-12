@@ -30,12 +30,13 @@ class ArchPortfolio {
 
     async loadAllData() {
         try {
-            const [about, skills, experience, achievements, portfolio, contact] = await Promise.all([
+            const [about, skills, experience, achievements, portfolio, gallery, contact] = await Promise.all([
                 this.loadJson('./data/about.json'),
                 this.loadJson('./data/skills.json'),
                 this.loadJson('./data/experience.json'),
                 this.loadJson('./data/achievements.json'),
                 this.loadJson('./data/projects.json'),
+                this.loadJson('./data/gallery.json'),
                 this.loadJson('./data/contact.json')
             ]);
 
@@ -45,6 +46,7 @@ class ArchPortfolio {
                 experience,
                 achievements,
                 portfolio,
+                gallery,
                 contact
             };
         } catch (err) {
@@ -354,6 +356,157 @@ class ArchPortfolio {
         setTimeout(scheduleMoodChange, 8000);
     }
 
+    setupWaybar() {
+        this.updateClock();
+        setInterval(() => this.updateClock(), 1000);
+
+        // Workspace switching via top bar
+        document.querySelectorAll('.workspace-item').forEach((item, index) => {
+            const handleWorkspaceClick = () => {
+                const targetWorkspace = index + 1;
+                this.switchWorkspace(targetWorkspace);
+
+                // Auto-load section if switching workspace via top bar
+                if (targetWorkspace === 3) {
+                    const galleryNavItem = document.querySelector('[data-command="gallery"]');
+                    if (galleryNavItem) {
+                        this.executeCommand('gallery');
+                        this.updateActiveNav(galleryNavItem);
+                    }
+                } else if (targetWorkspace === 2 && this.currentSection === 'gallery') {
+                    const aboutNavItem = document.querySelector('[data-command="about"]');
+                    if (aboutNavItem) {
+                        this.executeCommand('about');
+                        this.updateActiveNav(aboutNavItem);
+                    }
+                }
+            };
+
+            item.addEventListener('click', handleWorkspaceClick);
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleWorkspaceClick();
+                }
+            });
+        });
+
+        // Update system info
+        this.updateSystemInfo();
+        setInterval(() => this.updateSystemInfo(), 5000);
+    }
+
+    setupNavigation() {
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            const handleNav = () => {
+                const command = item.dataset.command;
+                const targetWorkspace = command === 'gallery' ? 3 : 2;
+
+                this.switchWorkspace(targetWorkspace);
+                this.executeCommand(command);
+                this.updateActiveNav(item);
+
+                if (window.innerWidth < 768) {
+                    const targetWindow = document.getElementById('portfolio-window');
+                    if (targetWindow) {
+                        targetWindow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            };
+
+            item.addEventListener('click', handleNav);
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleNav();
+                }
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            this.applyWorkspaceLayout(this.currentWorkspace);
+        });
+    }
+
+    switchWorkspace(index) {
+        if (this.currentWorkspace === index) return;
+        this.currentWorkspace = index;
+
+        document.querySelectorAll('.workspace-item').forEach((w, i) => {
+            w.classList.remove('active');
+            w.removeAttribute('aria-current');
+            if (i === index - 1) {
+                w.classList.add('active');
+                w.setAttribute('aria-current', 'page');
+            }
+        });
+
+        const grid = document.getElementById('window-grid');
+        const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (isReducedMotion) {
+            this.applyWorkspaceLayout(index);
+            return;
+        }
+
+        grid.classList.add('workspace-transition-out');
+
+        setTimeout(() => {
+            this.applyWorkspaceLayout(index);
+
+            grid.classList.remove('workspace-transition-out');
+            grid.classList.add('workspace-transition-in');
+
+            setTimeout(() => {
+                grid.classList.remove('workspace-transition-in');
+            }, 250);
+        }, 250);
+    }
+
+    applyWorkspaceLayout(index) {
+        const systemMonitor = document.getElementById('system-monitor');
+        const systemMetrics = document.getElementById('system-metrics');
+        const mainWindow = document.getElementById('portfolio-window');
+        const asciiViz = document.getElementById('ascii-viz');
+        const navTerminal = document.getElementById('nav-terminal');
+
+        // Below 768px mobile breakpoint, allow CSS single-column stacked layout to manage display & grid properties
+        if (window.innerWidth < 768) {
+            [systemMonitor, systemMetrics, asciiViz, navTerminal].forEach(el => {
+                if (el) el.style.display = '';
+            });
+            if (mainWindow) {
+                mainWindow.style.gridColumn = '';
+                mainWindow.style.gridRow = '';
+            }
+            return;
+        }
+
+        if (index === 2 || index === 3) {
+            if (systemMonitor) systemMonitor.style.display = 'none';
+            if (systemMetrics) systemMetrics.style.display = 'none';
+
+            if (asciiViz) asciiViz.style.display = '';
+            if (navTerminal) navTerminal.style.display = '';
+
+            if (mainWindow) {
+                mainWindow.style.gridColumn = '2 / -1';
+                mainWindow.style.gridRow = '1 / -1';
+            }
+        } else {
+            if (systemMonitor) systemMonitor.style.display = '';
+            if (systemMetrics) systemMetrics.style.display = '';
+            if (asciiViz) asciiViz.style.display = '';
+            if (navTerminal) navTerminal.style.display = '';
+
+            if (mainWindow) {
+                mainWindow.style.gridColumn = '';
+                mainWindow.style.gridRow = '';
+            }
+        }
+    }
+
     setupSystemMonitor() {
         const htopDisplay = document.getElementById('htop-display');
         const cpuBar = '█'.repeat(Math.floor(this.systemStats.cpu / 2)) + '░'.repeat(50 - Math.floor(this.systemStats.cpu / 2));
@@ -453,126 +606,6 @@ class ArchPortfolio {
         `;
     }
 
-    setupNavigation() {
-        const navItems = document.querySelectorAll('.nav-item');
-        navItems.forEach(item => {
-            const handleNav = () => {
-                const command = item.dataset.command;
-
-                this.switchWorkspace(2);
-                this.executeCommand(command);
-                this.updateActiveNav(item);
-
-                if (window.innerWidth < 768) {
-                    const targetWindow = document.getElementById('portfolio-window');
-                    if (targetWindow) {
-                        targetWindow.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                }
-            };
-
-            item.addEventListener('click', handleNav);
-            item.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleNav();
-                }
-            });
-        });
-
-        window.addEventListener('resize', () => {
-            this.applyWorkspaceLayout(this.currentWorkspace);
-        });
-    }
-
-    switchWorkspace(index) {
-        if (this.currentWorkspace === index) return;
-        this.currentWorkspace = index;
-
-        document.querySelectorAll('.workspace-item').forEach((w, i) => {
-            w.classList.remove('active');
-            w.removeAttribute('aria-current');
-            if (i === index - 1) {
-                w.classList.add('active');
-                w.setAttribute('aria-current', 'page');
-            }
-        });
-
-        const grid = document.getElementById('window-grid');
-        const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        if (isReducedMotion) {
-            this.applyWorkspaceLayout(index);
-            return;
-        }
-
-        grid.classList.add('workspace-transition-out');
-
-        setTimeout(() => {
-            this.applyWorkspaceLayout(index);
-
-            grid.classList.remove('workspace-transition-out');
-            grid.classList.add('workspace-transition-in');
-
-            setTimeout(() => {
-                grid.classList.remove('workspace-transition-in');
-            }, 250);
-        }, 250);
-    }
-
-    applyWorkspaceLayout(index) {
-        const systemMonitor = document.getElementById('system-monitor');
-        const systemMetrics = document.getElementById('system-metrics');
-        const mainWindow = document.getElementById('portfolio-window');
-        const asciiViz = document.getElementById('ascii-viz');
-        const navTerminal = document.getElementById('nav-terminal');
-
-        // Below 768px mobile breakpoint, allow CSS single-column stacked layout to manage display & grid properties
-        if (window.innerWidth < 768) {
-            [systemMonitor, systemMetrics, asciiViz, navTerminal].forEach(el => {
-                if (el) el.style.display = '';
-            });
-            if (mainWindow) {
-                mainWindow.style.gridColumn = '';
-                mainWindow.style.gridRow = '';
-            }
-            return;
-        }
-
-        if (index === 2) {
-            if (systemMonitor) systemMonitor.style.display = 'none';
-            if (systemMetrics) systemMetrics.style.display = 'none';
-
-            if (asciiViz) asciiViz.style.display = '';
-            if (navTerminal) navTerminal.style.display = '';
-
-            if (mainWindow) {
-                mainWindow.style.gridColumn = '2 / -1';
-                mainWindow.style.gridRow = '1 / -1';
-            }
-        } else {
-            if (systemMonitor) systemMonitor.style.display = '';
-            if (systemMetrics) systemMetrics.style.display = '';
-            if (asciiViz) asciiViz.style.display = '';
-            if (navTerminal) navTerminal.style.display = '';
-
-            if (mainWindow) {
-                mainWindow.style.gridColumn = '';
-                mainWindow.style.gridRow = '';
-            }
-        }
-    }
-
-    startSystemUpdates() {
-        setInterval(() => {
-            this.setupSystemMonitor();
-        }, 15000);
-
-        setInterval(() => {
-            this.updateSystemMetrics();
-        }, 3000);
-    }
-
     updateSystemMetrics() {
         const uptimeElement = document.querySelector('.metric-value.eternal');
         if (uptimeElement) {
@@ -626,6 +659,19 @@ class ArchPortfolio {
         if (this.currentLoadTimeout) {
             clearTimeout(this.currentLoadTimeout);
         }
+
+        // Restore main portfolio window if closed
+        const mainWindow = document.getElementById('portfolio-window');
+        if (mainWindow) {
+            mainWindow.style.display = '';
+            const mainContent = mainWindow.querySelector('.window-content');
+            if (mainContent) mainContent.style.display = '';
+            document.querySelectorAll('.window-pane').forEach(p => {
+                p.style.borderColor = 'var(--border-color)';
+            });
+            mainWindow.style.borderColor = 'var(--border-active)';
+        }
+
         this.typeCommand(command);
         this.currentLoadTimeout = setTimeout(() => {
             this.loadSection(command);
@@ -640,6 +686,7 @@ class ArchPortfolio {
             'experience': 'cat experience.log',
             'achievements': 'cat achievements.txt',
             'portfolio': 'ls -la projects/',
+            'gallery': 'ls gallery/',
             'contact': 'contact --info'
         };
 
@@ -664,6 +711,7 @@ class ArchPortfolio {
     }
 
     loadSection(section) {
+        this.currentSection = section;
         const contentArea = document.getElementById('portfolio-content');
         contentArea.innerHTML = '';
 
@@ -677,6 +725,7 @@ class ArchPortfolio {
             'experience': 'Professional Experience',
             'achievements': 'Key Achievements',
             'portfolio': 'Projects & Portfolio',
+            'gallery': 'AI Art & Motion Gallery',
             'contact': 'Contact Information'
         };
         windowTitle.textContent = titles[section] || 'Portfolio';
@@ -696,6 +745,9 @@ class ArchPortfolio {
                 break;
             case 'portfolio':
                 sectionElement.innerHTML = this.getPortfolioContent();
+                break;
+            case 'gallery':
+                sectionElement.innerHTML = this.getGalleryContent();
                 break;
             case 'contact':
                 sectionElement.innerHTML = this.getContactContent();
@@ -727,6 +779,10 @@ class ArchPortfolio {
 
     getPortfolioContent() {
         return renderSection('portfolio', this.data ? this.data.portfolio : null);
+    }
+
+    getGalleryContent() {
+        return renderSection('gallery', this.data ? this.data.gallery : null);
     }
 
     getContactContent() {
@@ -882,13 +938,17 @@ document.addEventListener('keydown', (e) => {
                 break;
             case '6':
                 e.preventDefault();
+                document.querySelector('[data-command="gallery"]').click();
+                break;
+            case '7':
+                e.preventDefault();
                 document.querySelector('[data-command="contact"]').click();
                 break;
         }
     }
 });
 
-// Add window focus effects
+// Add window focus & window control handlers (close, minimize, maximize)
 document.querySelectorAll('.window-pane').forEach(pane => {
     pane.addEventListener('click', () => {
         document.querySelectorAll('.window-pane').forEach(p => {
@@ -896,6 +956,33 @@ document.querySelectorAll('.window-pane').forEach(pane => {
         });
         pane.style.borderColor = 'var(--border-active)';
     });
+
+    const closeBtn = pane.querySelector('.control.close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            pane.style.display = 'none';
+        });
+    }
+
+    const minBtn = pane.querySelector('.control.minimize');
+    if (minBtn) {
+        minBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const content = pane.querySelector('.window-content');
+            if (content) {
+                content.style.display = content.style.display === 'none' ? '' : 'none';
+            }
+        });
+    }
+
+    const maxBtn = pane.querySelector('.control.maximize');
+    if (maxBtn) {
+        maxBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            pane.classList.toggle('maximized-pane');
+        });
+    }
 });
 
 // Simulate system activity
