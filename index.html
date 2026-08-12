@@ -4,10 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AliJ A. Shaikh - Senior AI Architect & Prompt Engineer Portfolio">
-    <meta name="keywords" content="AI Architect, Prompt Engineer, Generative AI, Python, Flutter, ComfyUI">
-    <meta name="author" content="AliJ A. Shaikh">
     <title>AliJ A. Shaikh - AI Architect & Prompt Engineer</title>
+    <meta name="description" content="Interactive retro Arch Linux Tiling WM portfolio of AliJ A. Shaikh, Senior AI Architect & Prompt Engineer specializing in Generative AI, Python, Flutter, and AI Workflows.">
+    <meta name="keywords" content="AI Architect, Prompt Engineer, Generative AI, Python, Flutter, ComfyUI, Arch Linux, Tiling WM">
+    <meta name="author" content="AliJ A. Shaikh">
+    <link rel="canonical" href="https://jilask.github.io/pf/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jilask.github.io/pf/">
+    <meta property="og:title" content="AliJ A. Shaikh - AI Architect & Prompt Engineer">
+    <meta property="og:description" content="Interactive retro Arch Linux Tiling WM portfolio of AliJ A. Shaikh, Senior AI Architect & Prompt Engineer specializing in Generative AI, Python, Flutter, and AI Workflows.">
+    <meta property="og:image" content="https://jilask.github.io/pf/og-image.png">
+    <meta property="og:site_name" content="AliJ A. Shaikh Portfolio">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://jilask.github.io/pf/">
+    <meta name="twitter:title" content="AliJ A. Shaikh - AI Architect & Prompt Engineer">
+    <meta name="twitter:description" content="Interactive retro Arch Linux Tiling WM portfolio of AliJ A. Shaikh, Senior AI Architect & Prompt Engineer specializing in Generative AI, Python, Flutter, and AI Workflows.">
+    <meta name="twitter:image" content="https://jilask.github.io/pf/og-image.png">
+
     <link rel="icon" type="image/x-icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,94 +35,94 @@
 
 <body>
     <!-- Waybar/Taskbar -->
-    <div id="waybar">
+    <header id="waybar" role="banner">
         <div class="waybar-left">
-            <div class="waybar-module workspace">
-                <span class="workspace-item active">1</span>
-                <span class="workspace-item">2</span>
-                <span class="workspace-item">3</span>
-                <span class="workspace-item">4</span>
-                <span class="workspace-item">5</span>
-            </div>
+            <nav class="waybar-module workspace" aria-label="Workspaces">
+                <button class="workspace-item active" type="button" aria-label="Workspace 1" aria-current="page">1</button>
+                <button class="workspace-item" type="button" aria-label="Workspace 2">2</button>
+                <button class="workspace-item" type="button" aria-label="Workspace 3">3</button>
+                <button class="workspace-item" type="button" aria-label="Workspace 4">4</button>
+                <button class="workspace-item" type="button" aria-label="Workspace 5">5</button>
+            </nav>
             <div class="waybar-module window-title">
-                <span id="current-window">AliJ A. Shaikh - Portfolio</span>
+                <h1 id="current-window" class="waybar-h1">AliJ A. Shaikh - Portfolio</h1>
             </div>
         </div>
 
         <div class="waybar-center">
-            <div class="waybar-module clock">
-                <span id="current-time"></span>
+            <div class="waybar-module clock" aria-label="Current system time">
+                <span id="current-time" aria-live="off"></span>
             </div>
         </div>
 
         <div class="waybar-right">
-            <div class="waybar-module system-info">
-                <span class="sys-item">
-                    <i class="icon">🖥️</i>
+            <div class="waybar-module system-info" role="region" aria-label="System status">
+                <span class="sys-item" aria-label="CPU usage">
+                    <i class="icon" aria-hidden="true">🖥️</i>
                     <span id="cpu-usage">45%</span>
                 </span>
-                <span class="sys-item">
-                    <i class="icon">💾</i>
+                <span class="sys-item" aria-label="Memory usage">
+                    <i class="icon" aria-hidden="true">💾</i>
                     <span id="memory-usage">2.1G</span>
                 </span>
-                <span class="sys-item">
-                    <i class="icon">🌐</i>
+                <span class="sys-item" aria-label="Network status">
+                    <i class="icon" aria-hidden="true">🌐</i>
                     <span id="network-status">WiFi</span>
                 </span>
-                <span class="sys-item">
-                    <i class="icon">🔋</i>
+                <span class="sys-item" aria-label="Battery level">
+                    <i class="icon" aria-hidden="true">🔋</i>
                     <span id="battery">100%</span>
                 </span>
             </div>
         </div>
-    </div>
+    </header>
 
     <!-- Main Desktop Environment -->
-    <div id="desktop">
+    <main id="desktop">
         <!-- Tiling Window Manager Layout -->
         <div id="window-grid">
             <!-- Top Left: Animated ASCII Visualization -->
-            <div class="window-pane" id="ascii-viz">
+            <section class="window-pane" id="ascii-viz" aria-label="System Visualization">
                 <div class="window-header">
                     <div class="window-controls">
-                        <span class="control close"></span>
-                        <span class="control minimize"></span>
-                        <span class="control maximize"></span>
+                        <button class="control close" type="button" aria-label="Close window" tabindex="-1"></button>
+                        <button class="control minimize" type="button" aria-label="Minimize window" tabindex="-1"></button>
+                        <button class="control maximize" type="button" aria-label="Maximize window" tabindex="-1"></button>
                     </div>
-                    <div class="window-title">VISUALIZATION // SYSTEM-01</div>
+                    <h2 class="window-title">VISUALIZATION // SYSTEM-01</h2>
                 </div>
                 <div class="window-content">
-                    <div id="ascii-animation">
+                    <div id="ascii-animation" role="button" tabindex="0" aria-label="Interactive ASCII AI Core face. Press Enter or Space to interact.">
                         <div class="ascii-frame"></div>
                         <div class="ascii-status"></div>
                     </div>
                 </div>
-            </div>
+            </section>
 
             <!-- Top Center: System Monitor -->
-            <div class="window-pane" id="system-monitor">
+            <section class="window-pane" id="system-monitor" aria-label="Process Monitor">
                 <div class="window-header">
                     <div class="window-controls">
-                        <span class="control close"></span>
-                        <span class="control minimize"></span>
-                        <span class="control maximize"></span>
+                        <button class="control close" type="button" aria-label="Close window" tabindex="-1"></button>
+                        <button class="control minimize" type="button" aria-label="Minimize window" tabindex="-1"></button>
+                        <button class="control maximize" type="button" aria-label="Maximize window" tabindex="-1"></button>
                     </div>
-                    <div class="window-title">PROCESS MONITOR // KERNEL CORE</div>
+                    <h2 class="window-title">PROCESS MONITOR // KERNEL CORE</h2>
                 </div>
                 <div class="window-content">
-                    <div id="htop-display"></div>
+                    <div id="htop-display" aria-live="off"></div>
                 </div>
-            </div>
+            </section>
 
             <!-- Top Right: Portfolio Content -->
-            <div class="window-pane main-window" id="portfolio-window">
+            <section class="window-pane main-window" id="portfolio-window" aria-label="Portfolio Content Terminal">
                 <div class="window-header">
                     <div class="window-controls">
-                        <span class="control close"></span>
-                        <span class="control minimize"></span>
-                        <span class="control maximize"></span>
+                        <button class="control close" type="button" aria-label="Close window" tabindex="-1"></button>
+                        <button class="control minimize" type="button" aria-label="Minimize window" tabindex="-1"></button>
+                        <button class="control maximize" type="button" aria-label="Maximize window" tabindex="-1"></button>
                     </div>
-                    <div class="window-title">USER@SYSTEM: ~/portfolio</div>
+                    <h2 class="window-title">USER@SYSTEM: ~/portfolio</h2>
                 </div>
                 <div class="window-content">
                     <div id="terminal-prompt">
@@ -114,72 +131,73 @@
                         <span id="typed-command"></span>
                         <span id="cursor">_</span>
                     </div>
-                    <div id="portfolio-content">
+                    <div id="portfolio-content" role="region" aria-label="Active Portfolio View" aria-live="polite" aria-atomic="false">
                         <!-- Dynamic content here -->
                     </div>
                 </div>
-            </div>
+            </section>
 
             <!-- Bottom Left: Navigation Terminal -->
-            <div class="window-pane" id="nav-terminal">
+            <nav class="window-pane" id="nav-terminal" aria-label="Navigation Terminal">
                 <div class="window-header">
                     <div class="window-controls">
-                        <span class="control close"></span>
-                        <span class="control minimize"></span>
-                        <span class="control maximize"></span>
+                        <button class="control close" type="button" aria-label="Close window" tabindex="-1"></button>
+                        <button class="control minimize" type="button" aria-label="Minimize window" tabindex="-1"></button>
+                        <button class="control maximize" type="button" aria-label="Maximize window" tabindex="-1"></button>
                     </div>
-                    <div class="window-title">Navigation - zsh</div>
+                    <h2 class="window-title">Navigation - zsh</h2>
                 </div>
                 <div class="window-content">
-                    <div class="nav-menu">
-                        <div class="nav-item active" data-command="about">
-                            <span class="nav-prompt">➜</span> <span class="nav-cmd">cat</span> <span
-                                class="nav-file">about.md</span>
-                        </div>
-                        <div class="nav-item" data-command="skills">
-                            <span class="nav-prompt">➜</span> <span class="nav-cmd">cat</span> <span
-                                class="nav-file">skills.json</span>
-                        </div>
-                        <div class="nav-item" data-command="experience">
-                            <span class="nav-prompt">➜</span> <span class="nav-cmd">cat</span> <span
-                                class="nav-file">experience.log</span>
-                        </div>
-                        <div class="nav-item" data-command="achievements">
-                            <span class="nav-prompt">➜</span> <span class="nav-cmd">cat</span> <span
-                                class="nav-file">achievements.txt</span>
-                        </div>
-                        <div class="nav-item" data-command="portfolio">
-                            <span class="nav-prompt">➜</span> <span class="nav-cmd">ls -la</span> <span
-                                class="nav-file">projects/</span>
-                        </div>
-                        <div class="nav-item" data-command="contact">
-                            <span class="nav-prompt">➜</span> <span class="nav-cmd">contact</span> <span
-                                class="nav-file">--info</span>
-                        </div>
+                    <div class="nav-menu" role="tablist" aria-label="Portfolio Section Tabs">
+                        <button class="nav-item active" type="button" role="tab" aria-selected="true" data-command="about" aria-label="About Me section: cat about.md">
+                            <span class="nav-prompt" aria-hidden="true">➜</span> <span class="nav-cmd" aria-hidden="true">cat</span> <span
+                                class="nav-file" aria-hidden="true">about.md</span>
+                        </button>
+                        <button class="nav-item" type="button" role="tab" aria-selected="false" data-command="skills" aria-label="Skills section: cat skills.json">
+                            <span class="nav-prompt" aria-hidden="true">➜</span> <span class="nav-cmd" aria-hidden="true">cat</span> <span
+                                class="nav-file" aria-hidden="true">skills.json</span>
+                        </button>
+                        <button class="nav-item" type="button" role="tab" aria-selected="false" data-command="experience" aria-label="Experience section: cat experience.log">
+                            <span class="nav-prompt" aria-hidden="true">➜</span> <span class="nav-cmd" aria-hidden="true">cat</span> <span
+                                class="nav-file" aria-hidden="true">experience.log</span>
+                        </button>
+                        <button class="nav-item" type="button" role="tab" aria-selected="false" data-command="achievements" aria-label="Achievements section: cat achievements.txt">
+                            <span class="nav-prompt" aria-hidden="true">➜</span> <span class="nav-cmd" aria-hidden="true">cat</span> <span
+                                class="nav-file" aria-hidden="true">achievements.txt</span>
+                        </button>
+                        <button class="nav-item" type="button" role="tab" aria-selected="false" data-command="portfolio" aria-label="Projects section: ls -la projects/">
+                            <span class="nav-prompt" aria-hidden="true">➜</span> <span class="nav-cmd" aria-hidden="true">ls -la</span> <span
+                                class="nav-file" aria-hidden="true">projects/</span>
+                        </button>
+                        <button class="nav-item" type="button" role="tab" aria-selected="false" data-command="contact" aria-label="Contact section: contact --info">
+                            <span class="nav-prompt" aria-hidden="true">➜</span> <span class="nav-cmd" aria-hidden="true">contact</span> <span
+                                class="nav-file" aria-hidden="true">--info</span>
+                        </button>
                     </div>
                 </div>
-            </div>
+            </nav>
 
             <!-- Bottom Center: System Stats with Metrics -->
-            <div class="window-pane" id="system-metrics">
+            <section class="window-pane" id="system-metrics" aria-label="Neural Metrics">
                 <div class="window-header">
                     <div class="window-controls">
-                        <span class="control close"></span>
-                        <span class="control minimize"></span>
-                        <span class="control maximize"></span>
+                        <button class="control close" type="button" aria-label="Close window" tabindex="-1"></button>
+                        <button class="control minimize" type="button" aria-label="Minimize window" tabindex="-1"></button>
+                        <button class="control maximize" type="button" aria-label="Maximize window" tabindex="-1"></button>
                     </div>
-                    <div class="window-title">NEURAL METRICS // LINK-STATUS</div>
+                    <h2 class="window-title">NEURAL METRICS // LINK-STATUS</h2>
                 </div>
                 <div class="window-content">
-                    <div id="metrics-display"></div>
+                    <div id="metrics-display" aria-live="off"></div>
                 </div>
-            </div>
+            </section>
 
 
         </div>
-    </div>
+    </main>
 
-    <script src="script.js"></script>
+    <script src="render.js" defer></script>
+    <script src="script.js" defer></script>
 </body>
 
 </html>
