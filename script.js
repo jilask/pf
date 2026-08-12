@@ -30,12 +30,13 @@ class ArchPortfolio {
 
     async loadAllData() {
         try {
-            const [about, skills, experience, achievements, portfolio, contact] = await Promise.all([
+            const [about, skills, experience, achievements, portfolio, gallery, contact] = await Promise.all([
                 this.loadJson('./data/about.json'),
                 this.loadJson('./data/skills.json'),
                 this.loadJson('./data/experience.json'),
                 this.loadJson('./data/achievements.json'),
                 this.loadJson('./data/projects.json'),
+                this.loadJson('./data/gallery.json'),
                 this.loadJson('./data/contact.json')
             ]);
 
@@ -45,6 +46,7 @@ class ArchPortfolio {
                 experience,
                 achievements,
                 portfolio,
+                gallery,
                 contact
             };
         } catch (err) {
@@ -626,6 +628,19 @@ class ArchPortfolio {
         if (this.currentLoadTimeout) {
             clearTimeout(this.currentLoadTimeout);
         }
+
+        // Restore main portfolio window if closed
+        const mainWindow = document.getElementById('portfolio-window');
+        if (mainWindow) {
+            mainWindow.style.display = '';
+            const mainContent = mainWindow.querySelector('.window-content');
+            if (mainContent) mainContent.style.display = '';
+            document.querySelectorAll('.window-pane').forEach(p => {
+                p.style.borderColor = 'var(--border-color)';
+            });
+            mainWindow.style.borderColor = 'var(--border-active)';
+        }
+
         this.typeCommand(command);
         this.currentLoadTimeout = setTimeout(() => {
             this.loadSection(command);
@@ -640,6 +655,7 @@ class ArchPortfolio {
             'experience': 'cat experience.log',
             'achievements': 'cat achievements.txt',
             'portfolio': 'ls -la projects/',
+            'gallery': 'ls gallery/',
             'contact': 'contact --info'
         };
 
@@ -677,6 +693,7 @@ class ArchPortfolio {
             'experience': 'Professional Experience',
             'achievements': 'Key Achievements',
             'portfolio': 'Projects & Portfolio',
+            'gallery': 'AI Art & Motion Gallery',
             'contact': 'Contact Information'
         };
         windowTitle.textContent = titles[section] || 'Portfolio';
@@ -696,6 +713,9 @@ class ArchPortfolio {
                 break;
             case 'portfolio':
                 sectionElement.innerHTML = this.getPortfolioContent();
+                break;
+            case 'gallery':
+                sectionElement.innerHTML = this.getGalleryContent();
                 break;
             case 'contact':
                 sectionElement.innerHTML = this.getContactContent();
@@ -727,6 +747,10 @@ class ArchPortfolio {
 
     getPortfolioContent() {
         return renderSection('portfolio', this.data ? this.data.portfolio : null);
+    }
+
+    getGalleryContent() {
+        return renderSection('gallery', this.data ? this.data.gallery : null);
     }
 
     getContactContent() {
@@ -882,13 +906,17 @@ document.addEventListener('keydown', (e) => {
                 break;
             case '6':
                 e.preventDefault();
+                document.querySelector('[data-command="gallery"]').click();
+                break;
+            case '7':
+                e.preventDefault();
                 document.querySelector('[data-command="contact"]').click();
                 break;
         }
     }
 });
 
-// Add window focus effects
+// Add window focus & window control handlers (close, minimize, maximize)
 document.querySelectorAll('.window-pane').forEach(pane => {
     pane.addEventListener('click', () => {
         document.querySelectorAll('.window-pane').forEach(p => {
@@ -896,6 +924,33 @@ document.querySelectorAll('.window-pane').forEach(pane => {
         });
         pane.style.borderColor = 'var(--border-active)';
     });
+
+    const closeBtn = pane.querySelector('.control.close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            pane.style.display = 'none';
+        });
+    }
+
+    const minBtn = pane.querySelector('.control.minimize');
+    if (minBtn) {
+        minBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const content = pane.querySelector('.window-content');
+            if (content) {
+                content.style.display = content.style.display === 'none' ? '' : 'none';
+            }
+        });
+    }
+
+    const maxBtn = pane.querySelector('.control.maximize');
+    if (maxBtn) {
+        maxBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            pane.classList.toggle('maximized-pane');
+        });
+    }
 });
 
 // Simulate system activity

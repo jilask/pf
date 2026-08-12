@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-video-full" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#051409" />
+      <stop offset="50%" stop-color="#092b15" />
+      <stop offset="100%" stop-color="#050505" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#bg-video-full)" />
+  <circle cx="600" cy="400" r="250" fill="none" stroke="#39ff14" stroke-width="3" opacity="0.6" stroke-dasharray="12 6" />
+  <text x="600" y="380" font-family="monospace" font-size="120" fill="#39ff14" text-anchor="middle">🎬</text>
+  <text x="600" y="520" font-family="'Fira Code', monospace" font-size="36" font-weight="bold" fill="#39ff14" text-anchor="middle">NEON DRIVE LOOP [FULL RES]</text>
+  <text x="600" y="570" font-family="'Fira Code', monospace" font-size="20" fill="#ff5f00" text-anchor="middle">// VIDEO / MOTION - HIGH RES VIDEO</text>
+  <rect x="40" y="40" width="1120" height="820" fill="none" stroke="#39ff14" stroke-width="2" opacity="0.4" />
+</svg>
