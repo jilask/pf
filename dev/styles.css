@@ -2093,3 +2093,468 @@ button {
         opacity: 0.3 !important;
     }
 }
+
+/* ==========================================================================
+   Gallery Lightbox Modal Styles
+   ========================================================================== */
+
+.lightbox-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.lightbox-modal-backdrop.active,
+.lightbox-modal-backdrop[hidden="false"] {
+    opacity: 1;
+    visibility: visible;
+    display: flex;
+}
+
+.lightbox-window-pane {
+    background: var(--bg-primary, #0f1419);
+    border: 1px solid var(--border-active, #39ff14);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 20px rgba(57, 255, 20, 0.2);
+    border-radius: 6px;
+    width: 92vw;
+    max-width: 1200px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', monospace;
+    transform: scale(0.95);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lightbox-modal-backdrop.active .lightbox-window-pane {
+    transform: scale(1);
+}
+
+.lightbox-header {
+    background: rgba(20, 25, 30, 0.95);
+    border-bottom: 1px solid var(--border-color, #232a32);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.lightbox-header-title-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+    margin: 0 8px;
+}
+
+.lightbox-window-title {
+    max-width: 450px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    color: var(--text-primary, #abb2bf);
+}
+
+.lightbox-counter-badge {
+    background: rgba(86, 182, 194, 0.15);
+    color: var(--accent-cyan, #56b6c2);
+    border: 1px solid var(--accent-cyan, #56b6c2);
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-family: 'Share Tech Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 0 8px rgba(86, 182, 194, 0.2);
+}
+
+.lightbox-close-btn {
+    background: rgba(235, 87, 87, 0.15);
+    border: 1px solid var(--accent-red, #ff5f56);
+    color: var(--accent-red, #ff5f56);
+    font-family: 'Fira Code', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.lightbox-close-btn:hover,
+.lightbox-close-btn:focus-visible {
+    background: var(--accent-red, #ff5f56);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(255, 95, 86, 0.5);
+    outline: none;
+}
+
+.close-shortcut-hint {
+    font-size: 9px;
+    opacity: 0.8;
+}
+
+.lightbox-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* Media Viewer Section */
+.lightbox-media-container {
+    flex: 1.4;
+    position: relative;
+    background: #050709;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    overflow: hidden;
+}
+
+.lightbox-media-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-media-img {
+    max-width: 100%;
+    max-height: calc(85vh - 70px);
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.lightbox-media-video {
+    max-width: 100%;
+    max-height: calc(85vh - 70px);
+    border-radius: 4px;
+    outline: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* Lightbox Navigation Buttons */
+.lightbox-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(15, 20, 25, 0.75);
+    color: var(--accent-cyan, #61afef);
+    border: 1px solid var(--border-color, #333);
+    font-size: 28px;
+    width: 44px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    z-index: 10;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.lightbox-nav-btn:hover,
+.lightbox-nav-btn:focus-visible {
+    background: rgba(97, 175, 239, 0.2);
+    border-color: var(--accent-cyan, #61afef);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(97, 175, 239, 0.4);
+    outline: none;
+}
+
+.lightbox-nav-btn.prev {
+    left: 12px;
+}
+
+.lightbox-nav-btn.next {
+    right: 12px;
+}
+
+/* Metadata Panel Section */
+.lightbox-meta-panel {
+    flex: 1;
+    min-width: 320px;
+    max-width: 420px;
+    background: rgba(15, 20, 25, 0.98);
+    border-left: 1px solid var(--border-color, #232a32);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+}
+
+.lightbox-meta-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.lightbox-title {
+    color: var(--text-primary, #abb2bf);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0;
+}
+
+.lightbox-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--text-secondary, #9da5b4);
+}
+
+.lightbox-meta-item {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.lightbox-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* Prompt Section (Centerpiece) */
+.lightbox-prompt-section {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--accent-blue, #61afef);
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.prompt-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.prompt-label {
+    color: var(--accent-cyan, #56b6c2);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.prompt-toggle-btn {
+    background: rgba(97, 175, 239, 0.15);
+    border: 1px solid var(--accent-blue, #61afef);
+    color: var(--accent-blue, #61afef);
+    font-family: 'Fira Code', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.prompt-toggle-btn:hover,
+.prompt-toggle-btn:focus-visible {
+    background: rgba(97, 175, 239, 0.3);
+    color: #fff;
+    outline: none;
+}
+
+.lightbox-prompt-container {
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--accent-green, #98c379);
+}
+
+.prompt-text.prompt-summary {
+    display: block;
+}
+
+.prompt-text.prompt-full {
+    display: none;
+}
+
+.lightbox-prompt-container.expanded .prompt-text.prompt-summary {
+    display: none;
+}
+
+.lightbox-prompt-container.expanded .prompt-text.prompt-full {
+    display: block;
+}
+
+.negative-prompt-block {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(255, 95, 0, 0.4);
+}
+
+.negative-prompt-label {
+    color: var(--accent-orange, #d19a66);
+    font-size: 10px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.negative-prompt-text {
+    color: var(--accent-orange, #e5c07b);
+    font-size: 11px;
+}
+
+/* Related Project Link Button */
+.lightbox-project-section {
+    margin-top: auto;
+    padding-top: 8px;
+}
+
+.lightbox-project-link-btn {
+    width: 100%;
+    background: rgba(198, 120, 221, 0.15);
+    border: 1px solid var(--accent-purple, #c678dd);
+    color: var(--accent-purple, #c678dd);
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-family: 'Fira Code', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.lightbox-project-link-btn:hover,
+.lightbox-project-link-btn:focus-visible {
+    background: rgba(198, 120, 221, 0.3);
+    color: #fff;
+    border-color: #fff;
+    box-shadow: 0 0 10px rgba(198, 120, 221, 0.3);
+    outline: none;
+}
+
+/* Responsive Stacking for Mobile (375px, 390px, 428px & <= 768px) */
+@media (max-width: 768px) {
+    .lightbox-modal-backdrop {
+        padding: 0;
+    }
+
+    .lightbox-window-pane {
+        width: 100vw;
+        height: 100vh;
+        max-width: 100vw;
+        max-height: 100vh;
+        border-radius: 0;
+        border: none;
+    }
+
+    .lightbox-header {
+        padding: 8px 10px;
+    }
+
+    .lightbox-header-title-container {
+        margin: 0 4px;
+    }
+
+    .lightbox-window-title {
+        max-width: 180px;
+        font-size: 11px;
+    }
+
+    .lightbox-body {
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .lightbox-media-container {
+        flex: none;
+        width: 100%;
+        height: auto;
+        max-height: 48vh;
+        min-height: 220px;
+        padding: 8px;
+        background: #000000;
+        flex-shrink: 0;
+    }
+
+    .lightbox-media-img,
+    .lightbox-media-video {
+        max-height: 45vh;
+        max-width: 100%;
+        object-fit: contain;
+    }
+
+    .lightbox-nav-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 20px;
+        border-radius: 50%;
+        background: rgba(15, 20, 25, 0.85);
+        border-color: rgba(97, 175, 239, 0.5);
+        backdrop-filter: blur(4px);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+    }
+
+    .lightbox-nav-btn.prev {
+        left: 6px;
+    }
+
+    .lightbox-nav-btn.next {
+        right: 6px;
+    }
+
+    .lightbox-meta-panel {
+        flex: none;
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+        border-left: none;
+        border-top: 1px solid var(--border-color, #232a32);
+        padding: 16px 14px 28px 14px;
+        overflow-y: visible;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lightbox-modal-backdrop,
+    .lightbox-window-pane,
+    .lightbox-nav-btn,
+    .prompt-toggle-btn,
+    .lightbox-project-link-btn {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+    }
+}

@@ -96,7 +96,14 @@ function renderCard(item, type) {
             const altText = `${item.title} - ${catInfo.label} artwork thumbnail`;
 
             return `
-                <article class="gallery-card${item.featured ? ' is-featured' : ''}" data-id="${item.id}" data-category="${item.category}" onclick="console.log('Gallery item clicked:', '${item.id}')">
+                <article class="gallery-card${item.featured ? ' is-featured' : ''}" 
+                         data-id="${item.id}" 
+                         data-category="${item.category}" 
+                         role="button" 
+                         tabindex="0" 
+                         aria-label="View details for ${item.title}" 
+                         onclick="window.portfolio && window.portfolio.openGalleryLightbox('${item.id}')" 
+                         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); window.portfolio && window.portfolio.openGalleryLightbox('${item.id}');}">
                     <div class="gallery-thumb-wrap skeleton-loading">
                         <img src="${item.thumb}" 
                              alt="${altText}" 
