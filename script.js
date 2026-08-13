@@ -1122,6 +1122,11 @@ ACHIEVEMENTS
         const indexDisplay = `[${current}/${total}]`;
         const fileName = (item.full || item.id).split('/').pop();
 
+        const modal = document.getElementById('gallery-lightbox');
+        if (modal) {
+            modal.setAttribute('aria-label', `Gallery Lightbox Viewer: ${item.title}`);
+        }
+
         const windowTitle = document.getElementById('lightbox-window-title');
         if (windowTitle) {
             windowTitle.textContent = `VIEWER // ${fileName}`;
@@ -1144,14 +1149,14 @@ ACHIEVEMENTS
                            loop 
                            playsinline
                            class="lightbox-media-video" 
-                           aria-label="${item.title} video">
+                           aria-label="${item.title} - ${item.tool || 'Generative AI'} video presentation">
                         Your browser does not support HTML5 video playback.
                     </video>
                 `;
             } else {
                 mediaWrapper.innerHTML = `
                     <img src="${item.full}" 
-                         alt="${item.title} full resolution artwork" 
+                         alt="${item.title} - ${item.tool || 'Generative AI'} artwork (full resolution)" 
                          class="lightbox-media-img"
                          onerror="this.onerror=null; this.src='${item.thumb}';">
                 `;
@@ -1170,7 +1175,7 @@ ACHIEVEMENTS
         if (metaPanel) {
             metaPanel.innerHTML = `
                 <div class="lightbox-meta-header">
-                    <h3 class="lightbox-title">${item.title}</h3>
+                    <h3 class="lightbox-title" id="lightbox-item-title">${item.title}</h3>
                     <span class="gallery-category-badge ${item.category || 'general'}">${(item.category || 'General').toUpperCase()}</span>
                 </div>
 
