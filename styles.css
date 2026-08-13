@@ -2147,7 +2147,38 @@ button {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
     flex-shrink: 0;
+}
+
+.lightbox-close-btn {
+    background: rgba(235, 87, 87, 0.15);
+    border: 1px solid var(--accent-red, #ff5f56);
+    color: var(--accent-red, #ff5f56);
+    font-family: 'Fira Code', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.lightbox-close-btn:hover,
+.lightbox-close-btn:focus-visible {
+    background: var(--accent-red, #ff5f56);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(255, 95, 86, 0.5);
+    outline: none;
+}
+
+.close-shortcut-hint {
+    font-size: 9px;
+    opacity: 0.8;
 }
 
 .lightbox-body {
