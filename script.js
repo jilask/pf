@@ -1069,12 +1069,20 @@ ACHIEVEMENTS
         if (!item) return;
 
         const total = this.lightboxItems.length;
-        const indexDisplay = `[${this.currentLightboxIndex + 1}/${total}]`;
+        const current = this.currentLightboxIndex + 1;
+        const indexDisplay = `[${current}/${total}]`;
         const fileName = (item.full || item.id).split('/').pop();
 
         const windowTitle = document.getElementById('lightbox-window-title');
         if (windowTitle) {
-            windowTitle.textContent = `VIEWER // ${fileName} ${indexDisplay}`;
+            windowTitle.textContent = `VIEWER // ${fileName}`;
+            windowTitle.title = `VIEWER // ${fileName}`;
+        }
+
+        const counterEl = document.getElementById('lightbox-counter');
+        if (counterEl) {
+            counterEl.textContent = indexDisplay;
+            counterEl.setAttribute('aria-label', `Item ${current} of ${total}`);
         }
 
         const mediaWrapper = document.getElementById('lightbox-media-wrapper');
