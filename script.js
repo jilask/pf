@@ -976,8 +976,16 @@ ACHIEVEMENTS
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
 
-            const closeBtn = document.getElementById('lightbox-close-btn');
-            if (closeBtn) closeBtn.focus();
+            // Set initial focus inside lightbox
+            requestAnimationFrame(() => {
+                const closeBtn = document.getElementById('lightbox-close-btn');
+                if (closeBtn) {
+                    closeBtn.focus();
+                } else {
+                    const firstFocusable = modal.querySelector('button:not([disabled]), [tabindex="0"]:not([disabled])');
+                    if (firstFocusable) firstFocusable.focus();
+                }
+            });
         }
 
         if (this.lightboxKeydownHandler) {
@@ -1000,6 +1008,7 @@ ACHIEVEMENTS
             this.lightboxKeydownHandler = null;
         }
 
+        // Return focus to originating or navigated grid thumbnail
         if (this.previousFocusedElement && typeof this.previousFocusedElement.focus === 'function') {
             this.previousFocusedElement.focus();
         }
@@ -1012,6 +1021,15 @@ ACHIEVEMENTS
         this.currentLightboxIndex = (this.currentLightboxIndex + direction + total) % total;
         this.isPromptExpanded = false;
         this.updateLightboxContent();
+
+        // Update return focus target to match newly navigated item in gallery grid
+        const currentItem = this.lightboxItems[this.currentLightboxIndex];
+        if (currentItem) {
+            const cardEl = document.querySelector(`.gallery-card[data-id="${currentItem.id}"]`);
+            if (cardEl) {
+                this.previousFocusedElement = cardEl;
+            }
+        }
     }
 
     togglePromptDetails() {
@@ -1069,9 +1087,11 @@ ACHIEVEMENTS
 
         if (e.key === 'Tab') {
             const focusables = modal.querySelectorAll(
-                'button:not([disabled]), [tabindex="0"]:not([disabled]), a[href]:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
+                'button:not([disabled]), [tabindex="0"]:not([disabled]), a[href]:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), video[controls]'
             );
-            const focusableArray = Array.from(focusables);
+            const focusableArray = Array.from(focusables).filter(el => {
+                return el.offsetWidth > 0 || el.offsetHeight > 0 || el === document.activeElement;
+            });
             if (focusableArray.length === 0) return;
 
             const firstEl = focusableArray[0];
