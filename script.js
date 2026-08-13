@@ -923,6 +923,35 @@ ACHIEVEMENTS
                     this.closeGalleryLightbox();
                 }
             });
+
+            // Touch swipe gesture support for mobile viewers
+            let touchStartX = 0;
+            let touchStartY = 0;
+
+            modal.addEventListener('touchstart', (e) => {
+                if (e.touches && e.touches.length === 1) {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                }
+            }, { passive: true });
+
+            modal.addEventListener('touchend', (e) => {
+                if (e.changedTouches && e.changedTouches.length === 1) {
+                    const touchEndX = e.changedTouches[0].clientX;
+                    const touchEndY = e.changedTouches[0].clientY;
+                    const diffX = touchEndX - touchStartX;
+                    const diffY = touchEndY - touchStartY;
+
+                    // Trigger swipe if horizontal movement > 40px and dominant over vertical scroll
+                    if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+                        if (diffX < 0) {
+                            this.navigateLightbox(1);  // Swipe left -> Next
+                        } else {
+                            this.navigateLightbox(-1); // Swipe right -> Prev
+                        }
+                    }
+                }
+            }, { passive: true });
         }
     }
 
