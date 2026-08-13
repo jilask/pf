@@ -12,6 +12,13 @@ class ArchPortfolio {
         };
         this.currentWorkspace = 1;
         this.data = null;
+
+        this.currentLightboxIndex = 0;
+        this.lightboxItems = [];
+        this.previousFocusedElement = null;
+        this.isPromptExpanded = false;
+        this.lightboxKeydownHandler = null;
+
         this.init();
     }
 
@@ -60,6 +67,7 @@ class ArchPortfolio {
         this.setupSystemMonitor();
         this.setupSystemMetrics();
         this.setupNavigation();
+        this.setupGalleryLightbox();
         await this.loadAllData();
         this.loadSection('about');
         this.startSystemUpdates();
@@ -892,6 +900,282 @@ ACHIEVEMENTS
         setTimeout(() => {
             notification.remove();
         }, 3000);
+    }
+
+    setupGalleryLightbox() {
+        const closeBtn = document.getElementById('lightbox-close-btn');
+        const prevBtn = document.getElementById('lightbox-prev-btn');
+        const nextBtn = document.getElementById('lightbox-next-btn');
+        const modal = document.getElementById('gallery-lightbox');
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => this.closeGalleryLightbox());
+        }
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => this.navigateLightbox(-1));
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => this.navigateLightbox(1));
+        }
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    this.closeGalleryLightbox();
+                }
+            });
+        }
+    }
+
+    openGalleryLightbox(itemId) {
+        if (!this.data || !this.data.gallery) return;
+        const items = Array.isArray(this.data.gallery) ? this.data.gallery : (this.data.gallery.items || []);
+        if (items.length === 0) return;
+
+        this.lightboxItems = items;
+        let index = items.findIndex(item => item.id === itemId);
+        if (index === -1) index = 0;
+
+        this.currentLightboxIndex = index;
+        this.previousFocusedElement = document.activeElement;
+        this.isPromptExpanded = false;
+
+        this.updateLightboxContent();
+
+        const modal = document.getElementById('gallery-lightbox');
+        if (modal) {
+            modal.hidden = false;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            const closeBtn = document.getElementById('lightbox-close-btn');
+            if (closeBtn) closeBtn.focus();
+        }
+
+        if (this.lightboxKeydownHandler) {
+            document.removeEventListener('keydown', this.lightboxKeydownHandler);
+        }
+        this.lightboxKeydownHandler = (e) => this.handleLightboxKeydown(e);
+        document.addEventListener('keydown', this.lightboxKeydownHandler);
+    }
+
+    closeGalleryLightbox() {
+        const modal = document.getElementById('gallery-lightbox');
+        if (!modal || modal.hidden) return;
+
+        modal.hidden = true;
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+
+        if (this.lightboxKeydownHandler) {
+            document.removeEventListener('keydown', this.lightboxKeydownHandler);
+            this.lightboxKeydownHandler = null;
+        }
+
+        if (this.previousFocusedElement && typeof this.previousFocusedElement.focus === 'function') {
+            this.previousFocusedElement.focus();
+        }
+    }
+
+    navigateLightbox(direction) {
+        if (!this.lightboxItems || this.lightboxItems.length === 0) return;
+
+        const total = this.lightboxItems.length;
+        this.currentLightboxIndex = (this.currentLightboxIndex + direction + total) % total;
+        this.isPromptExpanded = false;
+        this.updateLightboxContent();
+    }
+
+    togglePromptDetails() {
+        this.isPromptExpanded = !this.isPromptExpanded;
+        const promptContainer = document.getElementById('lightbox-prompt-container');
+        const toggleBtnText = document.getElementById('prompt-toggle-text');
+        const toggleBtn = document.getElementById('prompt-toggle-btn');
+
+        if (promptContainer) {
+            if (this.isPromptExpanded) {
+                promptContainer.classList.add('expanded');
+            } else {
+                promptContainer.classList.remove('expanded');
+            }
+        }
+        if (toggleBtnText) {
+            toggleBtnText.textContent = this.isPromptExpanded ? '▼ Hide prompt details' : '► Behind the image / Full details';
+        }
+        if (toggleBtn) {
+            toggleBtn.setAttribute('aria-expanded', this.isPromptExpanded ? 'true' : 'false');
+        }
+    }
+
+    navigateToRelatedProject(projectId) {
+        this.closeGalleryLightbox();
+        this.switchWorkspace(2);
+        const navItem = document.querySelector('[data-command="portfolio"]');
+        if (navItem) {
+            this.updateActiveNav(navItem);
+        }
+        this.showProject(projectId);
+    }
+
+    handleLightboxKeydown(e) {
+        const modal = document.getElementById('gallery-lightbox');
+        if (!modal || modal.hidden) return;
+
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            this.closeGalleryLightbox();
+            return;
+        }
+
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            this.navigateLightbox(-1);
+            return;
+        }
+
+        if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            this.navigateLightbox(1);
+            return;
+        }
+
+        if (e.key === 'Tab') {
+            const focusables = modal.querySelectorAll(
+                'button:not([disabled]), [tabindex="0"]:not([disabled]), a[href]:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
+            );
+            const focusableArray = Array.from(focusables);
+            if (focusableArray.length === 0) return;
+
+            const firstEl = focusableArray[0];
+            const lastEl = focusableArray[focusableArray.length - 1];
+
+            if (e.shiftKey) {
+                if (document.activeElement === firstEl || !modal.contains(document.activeElement)) {
+                    e.preventDefault();
+                    lastEl.focus();
+                }
+            } else {
+                if (document.activeElement === lastEl || !modal.contains(document.activeElement)) {
+                    e.preventDefault();
+                    firstEl.focus();
+                }
+            }
+        }
+    }
+
+    updateLightboxContent() {
+        if (!this.lightboxItems || this.lightboxItems.length === 0) return;
+
+        const item = this.lightboxItems[this.currentLightboxIndex];
+        if (!item) return;
+
+        const total = this.lightboxItems.length;
+        const indexDisplay = `[${this.currentLightboxIndex + 1}/${total}]`;
+        const fileName = (item.full || item.id).split('/').pop();
+
+        const windowTitle = document.getElementById('lightbox-window-title');
+        if (windowTitle) {
+            windowTitle.textContent = `VIEWER // ${fileName} ${indexDisplay}`;
+        }
+
+        const mediaWrapper = document.getElementById('lightbox-media-wrapper');
+        if (mediaWrapper) {
+            if (item.mediaType === 'video') {
+                mediaWrapper.innerHTML = `
+                    <video src="${item.full}" 
+                           controls 
+                           autoplay 
+                           loop 
+                           playsinline
+                           class="lightbox-media-video" 
+                           aria-label="${item.title} video">
+                        Your browser does not support HTML5 video playback.
+                    </video>
+                `;
+            } else {
+                mediaWrapper.innerHTML = `
+                    <img src="${item.full}" 
+                         alt="${item.title} full resolution artwork" 
+                         class="lightbox-media-img"
+                         onerror="this.onerror=null; this.src='${item.thumb}';">
+                `;
+            }
+        }
+
+        let relatedProjectInfo = null;
+        if (item.relatedProject && this.data && this.data.portfolio && Array.isArray(this.data.portfolio.projects)) {
+            relatedProjectInfo = this.data.portfolio.projects.find(p => p.id === item.relatedProject);
+        }
+
+        const isLongPrompt = item.prompt && item.prompt.length > 90;
+        const promptSummary = isLongPrompt ? item.prompt.slice(0, 90) + '...' : item.prompt;
+
+        const metaPanel = document.getElementById('lightbox-meta-panel');
+        if (metaPanel) {
+            metaPanel.innerHTML = `
+                <div class="lightbox-meta-header">
+                    <h3 class="lightbox-title">${item.title}</h3>
+                    <span class="gallery-category-badge ${item.category || 'general'}">${(item.category || 'General').toUpperCase()}</span>
+                </div>
+
+                <div class="lightbox-meta-row">
+                    <span class="lightbox-meta-item">🛠️ <strong>Tool:</strong> ${item.tool || 'N/A'}</span>
+                    <span class="lightbox-meta-item">📅 <strong>Date:</strong> ${item.date || 'N/A'}</span>
+                </div>
+
+                ${item.tags && item.tags.length ? `
+                    <div class="lightbox-tags-container">
+                        ${item.tags.map(tag => `<span class="gallery-tag">#${tag}</span>`).join('')}
+                    </div>
+                ` : ''}
+
+                <div class="lightbox-prompt-section">
+                    <div class="prompt-header-row">
+                        <span class="prompt-label">🤖 PROMPT LOGIC:</span>
+                        ${isLongPrompt || item.negativePrompt ? `
+                            <button id="prompt-toggle-btn" 
+                                    class="prompt-toggle-btn" 
+                                    type="button" 
+                                    aria-expanded="${this.isPromptExpanded ? 'true' : 'false'}"
+                                    onclick="window.portfolio.togglePromptDetails()">
+                                <span id="prompt-toggle-text">${this.isPromptExpanded ? '▼ Hide prompt details' : '► Behind the image / Full details'}</span>
+                            </button>
+                        ` : ''}
+                    </div>
+
+                    <div id="lightbox-prompt-container" class="lightbox-prompt-container ${this.isPromptExpanded ? 'expanded' : ''}">
+                        <div class="prompt-text prompt-summary">${promptSummary}</div>
+                        <div class="prompt-text prompt-full">${item.prompt}</div>
+                        
+                        ${item.negativePrompt ? `
+                            <div class="negative-prompt-block">
+                                <span class="negative-prompt-label">🚫 Negative Prompt:</span>
+                                <div class="negative-prompt-text">${item.negativePrompt}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                ${relatedProjectInfo ? `
+                    <div class="lightbox-project-section">
+                        <button type="button" 
+                                class="lightbox-project-link-btn" 
+                                onclick="window.portfolio.navigateToRelatedProject('${item.relatedProject}')"
+                                aria-label="View case study for ${relatedProjectInfo.title}">
+                            <span class="project-link-icon">🔗</span> Related Project: <strong>${relatedProjectInfo.title}</strong> →
+                        </button>
+                    </div>
+                ` : (item.relatedProject ? `
+                    <div class="lightbox-project-section">
+                        <button type="button" 
+                                class="lightbox-project-link-btn" 
+                                onclick="window.portfolio.navigateToRelatedProject('${item.relatedProject}')"
+                                aria-label="View case study for related project">
+                            <span class="project-link-icon">🔗</span> Related Project: <strong>${item.relatedProject}</strong> →
+                        </button>
+                    </div>
+                ` : '')}
+            `;
+        }
     }
 }
 
