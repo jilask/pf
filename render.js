@@ -545,10 +545,13 @@ function renderGalleryEmptyState(options) {
                 <span class="empty-header-title">QUERY // [0 MATCHES]</span>
             </div>
             <div class="empty-body">
-                <div class="empty-status-code">[ ERR_404: NO_MATCHING_ARTIFACTS ]</div>
-                <h3 class="empty-title">No gallery items match the selected filter criteria</h3>
+                <div class="empty-cmd-line">
+                    <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~/gallery</span><span style="color: var(--accent-yellow);">$</span> find . -type f -matches "active_filters"
+                </div>
+                <div class="empty-status-code">[ERR_404: NO_MATCHING_ARTIFACTS]</div>
+                <h3 class="empty-title">$ no results found for current filters</h3>
                 <div class="empty-desc">
-                    Your active filter combination returned zero results:
+                    Zero artwork or motion items matched the active filter combination:
                     <div class="empty-active-filters">
                         ${category ? `<span class="empty-tag">category: <code>"${category}"</code></span>` : ''}
                         ${tags ? `<span class="empty-tag">tags: <code>[${tags.map(t => '#' + t).join(', ')}]</code></span>` : ''}
@@ -557,8 +560,8 @@ function renderGalleryEmptyState(options) {
                 <button type="button" 
                         class="gallery-reset-btn" 
                         onclick="window.portfolio && window.portfolio.resetGalleryFilters()"
-                        aria-label="Reset all gallery filters to default">
-                    <span aria-hidden="true">↺</span> RESET ALL FILTERS
+                        aria-label="Clear active filters and show all items">
+                    <span aria-hidden="true">↺</span> CLEAR FILTERS // SHOW ALL ITEMS
                 </button>
             </div>
         </div>
