@@ -1134,7 +1134,7 @@ ACHIEVEMENTS
             if (btnEl) {
                 const originalHtml = btnEl.innerHTML;
                 btnEl.classList.add('copied');
-                btnEl.innerHTML = '<span class="copy-icon" aria-hidden="true">✓</span> <span class="copy-btn-text">Copied!</span>';
+                btnEl.innerHTML = '<span class="copy-icon" aria-hidden="true">✓</span> <span class="copy-btn-text">Copied!</span> <span class="sr-only" aria-live="polite">Prompt copied to clipboard successfully</span>';
                 btnEl.setAttribute('aria-label', 'Prompt copied to clipboard!');
                 setTimeout(() => {
                     btnEl.classList.remove('copied');
