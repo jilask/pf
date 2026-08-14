@@ -17,7 +17,14 @@ class ArchPortfolio {
         this.lightboxItems = [];
         this.previousFocusedElement = null;
         this.isPromptExpanded = false;
+        this.isPromptRevealedInModal = false;
         this.lightboxKeydownHandler = null;
+
+        // Gallery Filter, Sort & Guess mode state
+        this.galleryFilterCategory = 'all';
+        this.gallerySelectedTags = new Set();
+        this.gallerySortOption = 'date-desc';
+        this.promptRevealMode = false;
 
         this.init();
     }
@@ -955,9 +962,206 @@ ACHIEVEMENTS
         }
     }
 
+    getAllGalleryTags() {
+        if (!this.data || !this.data.gallery) return [];
+        const items = Array.isArray(this.data.gallery) ? this.data.gallery : (this.data.gallery.items || []);
+        const tagSet = new Set();
+        items.forEach(item => {
+            if (Array.isArray(item.tags)) {
+                item.tags.forEach(t => tagSet.add(t));
+            }
+        });
+        return Array.from(tagSet);
+    }
+
+    getFilteredAndSortedGalleryItems() {
+        if (!this.data || !this.data.gallery) return [];
+        let items = Array.isArray(this.data.gallery) ? [...this.data.gallery] : (Array.isArray(this.data.gallery.items) ? [...this.data.gallery.items] : []);
+
+        // 1. Filter by category
+        if (this.galleryFilterCategory && this.galleryFilterCategory !== 'all') {
+            items = items.filter(item => (item.category || '').toLowerCase() === this.galleryFilterCategory.toLowerCase());
+        }
+
+        // 2. Filter by selected tags (multi-select filter)
+        if (this.gallerySelectedTags && this.gallerySelectedTags.size > 0) {
+            const selectedArr = Array.from(this.gallerySelectedTags);
+            items = items.filter(item => {
+                const itemTags = (item.tags || []).map(t => t.toLowerCase());
+                return selectedArr.every(st => itemTags.includes(st.toLowerCase()));
+            });
+        }
+
+        // 3. Sort filtered set
+        if (this.gallerySortOption === 'featured-first') {
+            items.sort((a, b) => {
+                if (a.featured && !b.featured) return -1;
+                if (!a.featured && b.featured) return 1;
+                return new Date(b.date || 0) - new Date(a.date || 0);
+            });
+        } else if (this.gallerySortOption === 'date-asc') {
+            items.sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+        } else if (this.gallerySortOption === 'title-asc') {
+            items.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        } else {
+            // 'date-desc' (newest first)
+            items.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+        }
+
+        return items;
+    }
+
+    setGalleryCategory(category) {
+        this.galleryFilterCategory = category || 'all';
+        this.updateGalleryDisplay();
+    }
+
+    toggleGalleryTag(tag) {
+        if (!tag) return;
+        if (this.gallerySelectedTags.has(tag)) {
+            this.gallerySelectedTags.delete(tag);
+        } else {
+            this.gallerySelectedTags.add(tag);
+        }
+        this.updateGalleryDisplay();
+    }
+
+    setGallerySort(sortOption) {
+        this.gallerySortOption = sortOption || 'date-desc';
+        this.updateGalleryDisplay();
+    }
+
+    togglePromptRevealMode(enabled) {
+        this.promptRevealMode = typeof enabled === 'boolean' ? enabled : !this.promptRevealMode;
+        const checkbox = document.getElementById('prompt-reveal-checkbox');
+        if (checkbox && checkbox.checked !== this.promptRevealMode) {
+            checkbox.checked = this.promptRevealMode;
+        }
+    }
+
+    resetGalleryFilters() {
+        this.galleryFilterCategory = 'all';
+        this.gallerySelectedTags.clear();
+        this.updateGalleryDisplay();
+    }
+
+    updateGalleryDisplay() {
+        const allItems = Array.isArray(this.data && this.data.gallery) ? this.data.gallery : (this.data && this.data.gallery && this.data.gallery.items ? this.data.gallery.items : []);
+        const filteredItems = this.getFilteredAndSortedGalleryItems();
+
+        // Update gallery grid in place
+        const gridContainer = document.getElementById('gallery-grid');
+        if (gridContainer && typeof renderGallery === 'function') {
+            renderGallery(filteredItems, gridContainer, {
+                category: this.galleryFilterCategory,
+                tags: Array.from(this.gallerySelectedTags)
+            });
+        }
+
+        // Update category filter buttons
+        document.querySelectorAll('.gallery-filter-btn').forEach(btn => {
+            const cat = btn.getAttribute('data-category');
+            const isActive = cat === this.galleryFilterCategory;
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+
+        // Update tag filter chips
+        document.querySelectorAll('.gallery-tag-chip').forEach(chip => {
+            const tag = chip.getAttribute('data-tag');
+            const isActive = this.gallerySelectedTags.has(tag);
+            chip.classList.toggle('active', isActive);
+            chip.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+
+        // Update sort selector if value differs
+        const sortSelect = document.getElementById('gallery-sort-select');
+        if (sortSelect && sortSelect.value !== this.gallerySortOption) {
+            sortSelect.value = this.gallerySortOption;
+        }
+
+        // Update status text
+        const countStatus = document.getElementById('gallery-count-status');
+        if (countStatus) {
+            const hasFilters = this.galleryFilterCategory !== 'all' || this.gallerySelectedTags.size > 0;
+            let filterDetails = '';
+            if (hasFilters) {
+                const parts = [];
+                if (this.galleryFilterCategory !== 'all') parts.push(`category: ${this.galleryFilterCategory}`);
+                if (this.gallerySelectedTags.size > 0) parts.push(`tags: ${Array.from(this.gallerySelectedTags).map(t => '#' + t).join(', ')}`);
+                filterDetails = ` [filtered by ${parts.join(' & ')}]`;
+            }
+            countStatus.innerHTML = `Showing <strong style="color: var(--accent-cyan);">${filteredItems.length}</strong> of <strong style="color: var(--accent-green);">${allItems.length}</strong> items${filterDetails}`;
+        }
+
+        // Update clear filters button
+        const clearBtn = document.getElementById('clear-filters-btn');
+        if (clearBtn) {
+            const hasActiveFilters = this.galleryFilterCategory !== 'all' || this.gallerySelectedTags.size > 0;
+            clearBtn.style.display = hasActiveFilters ? 'inline-flex' : 'none';
+        }
+    }
+
+    async copyCurrentPrompt(btnEl) {
+        if (!this.lightboxItems || !this.lightboxItems[this.currentLightboxIndex]) return;
+        const item = this.lightboxItems[this.currentLightboxIndex];
+        const textToCopy = item.prompt || '';
+        if (!textToCopy) return;
+
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(textToCopy);
+            } else {
+                // Fallback for non-https / older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = textToCopy;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
+
+            if (btnEl) {
+                const originalHtml = btnEl.innerHTML;
+                btnEl.classList.add('copied');
+                btnEl.innerHTML = '<span class="copy-icon" aria-hidden="true">✓</span> <span class="copy-btn-text">Copied!</span>';
+                btnEl.setAttribute('aria-label', 'Prompt copied to clipboard!');
+                setTimeout(() => {
+                    btnEl.classList.remove('copied');
+                    btnEl.innerHTML = originalHtml;
+                    btnEl.setAttribute('aria-label', 'Copy prompt to clipboard');
+                }, 1500);
+            }
+        } catch (err) {
+            console.error('Failed to copy prompt:', err);
+        }
+    }
+
+    revealPromptInLightbox(btnEl) {
+        this.isPromptRevealedInModal = true;
+        const guessBox = document.getElementById('prompt-guess-box');
+        const promptContainer = document.getElementById('lightbox-prompt-container');
+        
+        if (guessBox && promptContainer) {
+            guessBox.style.opacity = '0';
+            guessBox.style.transform = 'translateY(-4px)';
+            setTimeout(() => {
+                guessBox.style.display = 'none';
+                promptContainer.style.display = 'block';
+                promptContainer.classList.add('prompt-revealed-anim');
+            }, 150);
+        } else {
+            this.updateLightboxContent();
+        }
+    }
+
     openGalleryLightbox(itemId) {
         if (!this.data || !this.data.gallery) return;
-        const items = Array.isArray(this.data.gallery) ? this.data.gallery : (this.data.gallery.items || []);
+        const items = this.getFilteredAndSortedGalleryItems();
         if (items.length === 0) return;
 
         this.lightboxItems = items;
@@ -967,6 +1171,7 @@ ACHIEVEMENTS
         this.currentLightboxIndex = index;
         this.previousFocusedElement = document.activeElement;
         this.isPromptExpanded = false;
+        this.isPromptRevealedInModal = false;
 
         this.updateLightboxContent();
 
@@ -1020,6 +1225,7 @@ ACHIEVEMENTS
         const total = this.lightboxItems.length;
         this.currentLightboxIndex = (this.currentLightboxIndex + direction + total) % total;
         this.isPromptExpanded = false;
+        this.isPromptRevealedInModal = false;
         this.updateLightboxContent();
 
         // Update return focus target to match newly navigated item in gallery grid
@@ -1170,6 +1376,7 @@ ACHIEVEMENTS
 
         const isLongPrompt = item.prompt && item.prompt.length > 90;
         const promptSummary = isLongPrompt ? item.prompt.slice(0, 90) + '...' : item.prompt;
+        const isConcealed = this.promptRevealMode && !this.isPromptRevealedInModal;
 
         const metaPanel = document.getElementById('lightbox-meta-panel');
         if (metaPanel) {
@@ -1192,36 +1399,72 @@ ACHIEVEMENTS
 
                 <div class="lightbox-prompt-section">
                     <div class="prompt-header-row">
-                        <span class="prompt-label">🤖 PROMPT LOGIC:</span>
-                        ${isLongPrompt || item.negativePrompt ? `
-                            <button id="prompt-toggle-btn" 
-                                    class="prompt-toggle-btn" 
+                        <div class="prompt-label-group">
+                            <span class="prompt-label">🤖 PROMPT LOGIC:</span>
+                        </div>
+                        <div class="prompt-actions-group">
+                            <button id="copy-prompt-btn" 
+                                    class="copy-prompt-btn" 
                                     type="button" 
-                                    aria-expanded="${this.isPromptExpanded ? 'true' : 'false'}"
-                                    onclick="window.portfolio.togglePromptDetails()">
-                                <span id="prompt-toggle-text">${this.isPromptExpanded ? '▼ Hide prompt details' : '► Behind the image / Full details'}</span>
+                                    aria-label="Copy prompt to clipboard"
+                                    onclick="window.portfolio && window.portfolio.copyCurrentPrompt(this)">
+                                <span class="copy-icon" aria-hidden="true">📋</span> <span class="copy-btn-text">Copy prompt</span>
                             </button>
-                        ` : ''}
+                            ${isLongPrompt || item.negativePrompt ? `
+                                <button id="prompt-toggle-btn" 
+                                        class="prompt-toggle-btn" 
+                                        type="button" 
+                                        aria-expanded="${this.isPromptExpanded ? 'true' : 'false'}"
+                                        onclick="window.portfolio && window.portfolio.togglePromptDetails()">
+                                    <span id="prompt-toggle-text">${this.isPromptExpanded ? '▼ Hide prompt details' : '► Behind the image / Full details'}</span>
+                                </button>
+                            ` : ''}
+                        </div>
                     </div>
 
-                    <div id="lightbox-prompt-container" class="lightbox-prompt-container ${this.isPromptExpanded ? 'expanded' : ''}">
-                        <div class="prompt-text prompt-summary">${promptSummary}</div>
-                        <div class="prompt-text prompt-full">${item.prompt}</div>
-                        
-                        ${item.negativePrompt ? `
-                            <div class="negative-prompt-block">
-                                <span class="negative-prompt-label">🚫 Negative Prompt:</span>
-                                <div class="negative-prompt-text">${item.negativePrompt}</div>
-                            </div>
-                        ` : ''}
-                    </div>
+                    ${isConcealed ? `
+                        <div class="prompt-guess-box" id="prompt-guess-box">
+                            <div class="guess-badge">🎮 GUESS THE PROMPT MODE</div>
+                            <div class="guess-instruction">Prompt hidden behind encrypted barrier. Can you deduce the generation prompt?</div>
+                            <button type="button" 
+                                    class="reveal-prompt-btn" 
+                                    id="reveal-prompt-btn"
+                                    onclick="window.portfolio && window.portfolio.revealPromptInLightbox(this)"
+                                    aria-label="Reveal the hidden AI generation prompt">
+                                👁️ REVEAL PROMPT // [DECRYPT]
+                            </button>
+                        </div>
+                        <div id="lightbox-prompt-container" class="lightbox-prompt-container prompt-hidden-mode ${this.isPromptExpanded ? 'expanded' : ''}" style="display: none;">
+                            <div class="prompt-text prompt-summary">${promptSummary}</div>
+                            <div class="prompt-text prompt-full">${item.prompt}</div>
+                            
+                            ${item.negativePrompt ? `
+                                <div class="negative-prompt-block">
+                                    <span class="negative-prompt-label">🚫 Negative Prompt:</span>
+                                    <div class="negative-prompt-text">${item.negativePrompt}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : `
+                        <div id="lightbox-prompt-container" class="lightbox-prompt-container ${this.isPromptExpanded ? 'expanded' : ''}">
+                            <div class="prompt-text prompt-summary">${promptSummary}</div>
+                            <div class="prompt-text prompt-full">${item.prompt}</div>
+                            
+                            ${item.negativePrompt ? `
+                                <div class="negative-prompt-block">
+                                    <span class="negative-prompt-label">🚫 Negative Prompt:</span>
+                                    <div class="negative-prompt-text">${item.negativePrompt}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `}
                 </div>
 
                 ${relatedProjectInfo ? `
                     <div class="lightbox-project-section">
                         <button type="button" 
                                 class="lightbox-project-link-btn" 
-                                onclick="window.portfolio.navigateToRelatedProject('${item.relatedProject}')"
+                                onclick="window.portfolio && window.portfolio.navigateToRelatedProject('${item.relatedProject}')"
                                 aria-label="View case study for ${relatedProjectInfo.title}">
                             <span class="project-link-icon">🔗</span> Related Project: <strong>${relatedProjectInfo.title}</strong> →
                         </button>
@@ -1230,7 +1473,7 @@ ACHIEVEMENTS
                     <div class="lightbox-project-section">
                         <button type="button" 
                                 class="lightbox-project-link-btn" 
-                                onclick="window.portfolio.navigateToRelatedProject('${item.relatedProject}')"
+                                onclick="window.portfolio && window.portfolio.navigateToRelatedProject('${item.relatedProject}')"
                                 aria-label="View case study for related project">
                             <span class="project-link-icon">🔗</span> Related Project: <strong>${item.relatedProject}</strong> →
                         </button>
