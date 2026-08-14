@@ -1075,12 +1075,10 @@ body::after {
     transition: all 0.2s ease;
 }
 
-.gallery-filter-btn:hover,
-.gallery-filter-btn:focus-visible {
+.gallery-filter-btn:hover {
     border-color: var(--accent-blue);
     color: var(--accent-blue);
     background: rgba(97, 175, 239, 0.12);
-    outline: none;
 }
 
 .gallery-filter-btn.active {
@@ -1237,12 +1235,10 @@ body::after {
     transition: all 0.2s ease;
 }
 
-.gallery-tag-chip:hover,
-.gallery-tag-chip:focus-visible {
+.gallery-tag-chip:hover {
     border-color: var(--accent-green);
     color: var(--accent-green);
     background: rgba(152, 195, 121, 0.1);
-    outline: none;
 }
 
 .gallery-tag-chip.active {
@@ -1268,12 +1264,10 @@ body::after {
     gap: 4px;
 }
 
-.gallery-clear-filters-btn:hover,
-.gallery-clear-filters-btn:focus-visible {
+.gallery-clear-filters-btn:hover {
     background: var(--accent-red);
     color: #fff;
     box-shadow: 0 0 8px rgba(235, 87, 87, 0.4);
-    outline: none;
 }
 
 /* Gallery Status Line */
@@ -2349,6 +2343,14 @@ button {
 .nav-item:focus-visible,
 .contact-item:focus-visible,
 .portfolio-item:focus-visible,
+.gallery-filter-btn:focus-visible,
+.gallery-tag-chip:focus-visible,
+.gallery-sort-select:focus-visible,
+.gallery-clear-filters-btn:focus-visible,
+.gallery-reset-btn:focus-visible,
+.gallery-card:focus-visible,
+.copy-prompt-btn:focus-visible,
+.reveal-prompt-btn:focus-visible,
 #ascii-animation:focus-visible {
     outline: 2px solid var(--accent-cyan) !important;
     outline-offset: 2px !important;
