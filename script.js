@@ -1100,6 +1100,12 @@ ACHIEVEMENTS
             const hasActiveFilters = this.galleryFilterCategory !== 'all' || this.gallerySelectedTags.size > 0;
             clearBtn.style.display = hasActiveFilters ? 'inline-flex' : 'none';
         }
+
+        // If lightbox modal is currently open, close it automatically to prevent desync
+        const modal = document.getElementById('gallery-lightbox');
+        if (modal && !modal.hidden) {
+            this.closeGalleryLightbox();
+        }
     }
 
     async copyCurrentPrompt(btnEl) {
