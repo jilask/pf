@@ -88,26 +88,48 @@ function renderCard(item, type) {
                 'video': { label: 'Video / Motion', class: 'video' }
             };
             const catInfo = catMap[item.category] || { label: item.category || 'General', class: 'general' };
-            const mediaBadge = item.mediaType === 'video' ? `<span class="gallery-type-badge">VIDEO</span>` : '';
+            const isVideo = item.mediaType === 'video';
+            const mediaBadge = isVideo ? `<span class="gallery-type-badge video"><span aria-hidden="true">▶</span> VIDEO</span>` : '';
             const featuredBadge = item.featured
                 ? `<span class="gallery-featured-badge" aria-label="Featured item"><span aria-hidden="true">★</span> FEATURED</span>`
                 : '';
 
             const altText = `${item.title} - ${catInfo.label} artwork thumbnail`;
+            const overlayText = isVideo ? 'PLAY // LIGHTBOX' : 'VIEW // DETAILS';
+
+            // Responsive image source switching with srcset / sizes
+            // Supports WebP/AVIF asset pipelines if defined in item data, with SVG/raster fallback
+            const srcsetAttr = item.srcset
+                ? `srcset="${item.srcset}"`
+                : (item.full && item.full !== item.thumb
+                    ? `srcset="${item.thumb} 400w, ${item.full} 800w"`
+                    : `srcset="${item.thumb} 400w"`);
+
+            const sizesAttr = `sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"`;
+
+            const videoIndicator = isVideo ? `
+                <div class="gallery-video-center-indicator" aria-hidden="true">
+                    <span class="video-play-glyph">▶</span>
+                </div>
+            ` : '';
 
             return `
-                <article class="gallery-card${item.featured ? ' is-featured' : ''}" 
+                <article class="gallery-card${item.featured ? ' is-featured' : ''}${isVideo ? ' is-video-item' : ''}" 
                          data-id="${item.id}" 
                          data-category="${item.category}" 
+                         data-media-type="${item.mediaType || 'image'}"
                          role="button" 
                          tabindex="0" 
-                         aria-label="View details for ${item.title}" 
+                         aria-label="${isVideo ? 'Play video' : 'View details'} for ${item.title}" 
                          onclick="window.portfolio && window.portfolio.openGalleryLightbox('${item.id}')" 
                          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); window.portfolio && window.portfolio.openGalleryLightbox('${item.id}');}">
                     <div class="gallery-thumb-wrap skeleton-loading">
                         <img src="${item.thumb}" 
+                             ${srcsetAttr}
+                             ${sizesAttr}
                              alt="${altText}" 
                              loading="lazy" 
+                             decoding="async"
                              width="400" 
                              height="300" 
                              class="gallery-thumb"
@@ -120,8 +142,9 @@ function renderCard(item, type) {
                         </div>
                         ${featuredBadge}
                         ${mediaBadge}
+                        ${videoIndicator}
                         <div class="gallery-thumb-overlay">
-                            <span class="view-prompt">VIEW // DETAILS</span>
+                            <span class="view-prompt">${overlayText}</span>
                         </div>
                     </div>
                     <div class="gallery-info">
@@ -382,10 +405,13 @@ function renderSection(sectionType, data) {
             const selectedTags = (portfolio && portfolio.gallerySelectedTags) ? Array.from(portfolio.gallerySelectedTags) : [];
             const currentSort = (portfolio && portfolio.gallerySortOption) ? portfolio.gallerySortOption : 'date-desc';
             const promptRevealMode = portfolio ? !!portfolio.promptRevealMode : false;
+            const visibleCount = (portfolio && portfolio.galleryVisibleCount) ? portfolio.galleryVisibleCount : 12;
 
-            const displayItems = (portfolio && typeof portfolio.getFilteredAndSortedGalleryItems === 'function')
+            const filteredItems = (portfolio && typeof portfolio.getFilteredAndSortedGalleryItems === 'function')
                 ? portfolio.getFilteredAndSortedGalleryItems()
                 : allItems;
+
+            const visibleItems = filteredItems.slice(0, visibleCount);
 
             // Extract all unique tags across all items
             const tagSet = new Set();
@@ -405,11 +431,13 @@ function renderSection(sectionType, data) {
                 filterDetails = ` [filtered by ${parts.join(' & ')}]`;
             }
 
+            const catalogTotalNote = filteredItems.length !== allItems.length ? ` (total in catalog: ${allItems.length})` : '';
+
             return `
                 <h2 class="section-title"># AI Art & Motion Gallery</h2>
                 <div class="terminal-text" style="margin-top: 16px;">
                     <div class="command-output">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> ls gallery/ --filter --sort
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> ls gallery/ --filter --sort --paginate
                     </div>
 
                     <!-- Gallery Controls Bar -->
@@ -511,12 +539,17 @@ function renderSection(sectionType, data) {
 
                     <!-- Items Count & Status Info Line -->
                     <div id="gallery-count-status" class="gallery-count-status" aria-live="polite">
-                        Showing <strong style="color: var(--accent-cyan);">${displayItems.length}</strong> of <strong style="color: var(--accent-green);">${allItems.length}</strong> items${filterDetails}
+                        Showing <strong style="color: var(--accent-cyan);">${visibleItems.length}</strong> of <strong style="color: var(--accent-green);">${filteredItems.length}</strong> items${catalogTotalNote}${filterDetails}
                     </div>
 
                     <!-- Gallery Cards Grid -->
                     <div class="gallery-grid" id="gallery-grid">
-                        ${renderGallery(displayItems, null, { category: currentCategory, tags: selectedTags })}
+                        ${renderGallery(visibleItems, null, { category: currentCategory, tags: selectedTags })}
+                    </div>
+
+                    <!-- Gallery Pagination Controls -->
+                    <div id="gallery-pagination-wrap" class="gallery-pagination-wrap">
+                        ${renderGalleryPagination(filteredItems.length, visibleItems.length)}
                     </div>
                 </div>
             `;
@@ -525,6 +558,39 @@ function renderSection(sectionType, data) {
         default:
             return '';
     }
+}
+
+/**
+ * Renders pagination / load-more controls based on filtered vs visible item counts.
+ * @param {number} totalFiltered - Total count of matching items
+ * @param {number} visibleCount - Count of currently visible items
+ * @returns {string} HTML markup string
+ */
+function renderGalleryPagination(totalFiltered, visibleCount) {
+    if (totalFiltered > visibleCount) {
+        const remaining = totalFiltered - visibleCount;
+        const nextBatch = Math.min(12, remaining);
+        return `
+            <div class="gallery-load-more-container">
+                <button type="button" 
+                        id="gallery-load-more-btn" 
+                        class="gallery-load-more-btn" 
+                        onclick="window.portfolio && window.portfolio.loadMoreGalleryItems()"
+                        aria-label="Load ${nextBatch} more items (${remaining} remaining in view)">
+                    <span class="load-more-icon" aria-hidden="true">↓</span>
+                    <span class="load-more-text">LOAD MORE ARTIFACTS // [${remaining} REMAINING]</span>
+                </button>
+            </div>
+        `;
+    }
+    if (totalFiltered > 0 && totalFiltered <= visibleCount && totalFiltered >= 8) {
+        return `
+            <div class="gallery-all-loaded-indicator" role="status">
+                <span class="terminal-prompt-char" aria-hidden="true">&gt;</span> ALL MATCHING ARTIFACTS LOADED // [${totalFiltered}/${totalFiltered}]
+            </div>
+        `;
+    }
+    return '';
 }
 
 /**
@@ -666,5 +732,6 @@ if (typeof window !== 'undefined') {
     window.renderCard = renderCard;
     window.renderSection = renderSection;
     window.renderGallery = renderGallery;
+    window.renderGalleryPagination = renderGalleryPagination;
     window.renderProjectDetails = renderProjectDetails;
 }

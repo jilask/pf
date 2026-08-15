@@ -25,6 +25,8 @@ class ArchPortfolio {
         this.gallerySelectedTags = new Set();
         this.gallerySortOption = 'date-desc';
         this.promptRevealMode = false;
+        this.galleryPageSize = 12;
+        this.galleryVisibleCount = 12;
 
         this.init();
     }
@@ -1013,6 +1015,7 @@ ACHIEVEMENTS
 
     setGalleryCategory(category) {
         this.galleryFilterCategory = category || 'all';
+        this.galleryVisibleCount = this.galleryPageSize;
         this.updateGalleryDisplay();
     }
 
@@ -1023,11 +1026,18 @@ ACHIEVEMENTS
         } else {
             this.gallerySelectedTags.add(tag);
         }
+        this.galleryVisibleCount = this.galleryPageSize;
         this.updateGalleryDisplay();
     }
 
     setGallerySort(sortOption) {
         this.gallerySortOption = sortOption || 'date-desc';
+        this.galleryVisibleCount = this.galleryPageSize;
+        this.updateGalleryDisplay();
+    }
+
+    loadMoreGalleryItems() {
+        this.galleryVisibleCount += this.galleryPageSize;
         this.updateGalleryDisplay();
     }
 
@@ -1042,20 +1052,28 @@ ACHIEVEMENTS
     resetGalleryFilters() {
         this.galleryFilterCategory = 'all';
         this.gallerySelectedTags.clear();
+        this.galleryVisibleCount = this.galleryPageSize;
         this.updateGalleryDisplay();
     }
 
     updateGalleryDisplay() {
         const allItems = Array.isArray(this.data && this.data.gallery) ? this.data.gallery : (this.data && this.data.gallery && this.data.gallery.items ? this.data.gallery.items : []);
         const filteredItems = this.getFilteredAndSortedGalleryItems();
+        const visibleItems = filteredItems.slice(0, this.galleryVisibleCount);
 
         // Update gallery grid in place
         const gridContainer = document.getElementById('gallery-grid');
         if (gridContainer && typeof renderGallery === 'function') {
-            renderGallery(filteredItems, gridContainer, {
+            renderGallery(visibleItems, gridContainer, {
                 category: this.galleryFilterCategory,
                 tags: Array.from(this.gallerySelectedTags)
             });
+        }
+
+        // Update pagination controls in place
+        const paginationWrap = document.getElementById('gallery-pagination-wrap');
+        if (paginationWrap && typeof renderGalleryPagination === 'function') {
+            paginationWrap.innerHTML = renderGalleryPagination(filteredItems.length, visibleItems.length);
         }
 
         // Update category filter buttons
@@ -1091,7 +1109,8 @@ ACHIEVEMENTS
                 if (this.gallerySelectedTags.size > 0) parts.push(`tags: ${Array.from(this.gallerySelectedTags).map(t => '#' + t).join(', ')}`);
                 filterDetails = ` [filtered by ${parts.join(' & ')}]`;
             }
-            countStatus.innerHTML = `Showing <strong style="color: var(--accent-cyan);">${filteredItems.length}</strong> of <strong style="color: var(--accent-green);">${allItems.length}</strong> items${filterDetails}`;
+            const catalogTotalNote = filteredItems.length !== allItems.length ? ` (total in catalog: ${allItems.length})` : '';
+            countStatus.innerHTML = `Showing <strong style="color: var(--accent-cyan);">${visibleItems.length}</strong> of <strong style="color: var(--accent-green);">${filteredItems.length}</strong> items${catalogTotalNote}${filterDetails}`;
         }
 
         // Update clear filters button
@@ -1209,6 +1228,15 @@ ACHIEVEMENTS
     closeGalleryLightbox() {
         const modal = document.getElementById('gallery-lightbox');
         if (!modal || modal.hidden) return;
+
+        // Pause any playing videos when closing lightbox
+        const mediaWrapper = document.getElementById('lightbox-media-wrapper');
+        if (mediaWrapper) {
+            const video = mediaWrapper.querySelector('video');
+            if (video) {
+                video.pause();
+            }
+        }
 
         modal.hidden = true;
         modal.classList.remove('active');
@@ -1353,13 +1381,20 @@ ACHIEVEMENTS
 
         const mediaWrapper = document.getElementById('lightbox-media-wrapper');
         if (mediaWrapper) {
+            // Stop and clean up any existing video element
+            const prevVideo = mediaWrapper.querySelector('video');
+            if (prevVideo) {
+                prevVideo.pause();
+                prevVideo.removeAttribute('src');
+                prevVideo.load();
+            }
+
             if (item.mediaType === 'video') {
                 mediaWrapper.innerHTML = `
                     <video src="${item.full}" 
                            controls 
-                           autoplay 
-                           loop 
                            playsinline
+                           preload="metadata"
                            class="lightbox-media-video" 
                            aria-label="${item.title} - ${item.tool || 'Generative AI'} video presentation">
                         Your browser does not support HTML5 video playback.
