@@ -79,7 +79,12 @@ class ArchPortfolio {
         this.setupGalleryLightbox();
         await this.loadAllData();
         this.loadSection('about');
-        this.startSystemUpdates();
+        if (typeof this.startSystemUpdates === 'function') {
+            this.startSystemUpdates();
+        } else if (typeof this.updateSystemMetrics === 'function') {
+            this.updateSystemMetrics();
+            setInterval(() => this.updateSystemMetrics(), 3000);
+        }
     }
 
     setupWaybar() {
