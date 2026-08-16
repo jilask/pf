@@ -660,6 +660,13 @@ class ArchPortfolio {
         }
     }
 
+    startSystemUpdates() {
+        this.updateSystemMetrics();
+        setInterval(() => {
+            this.updateSystemMetrics();
+        }, 3000);
+    }
+
     updateActiveNav(activeItem) {
         document.querySelectorAll('.nav-item').forEach(item => {
             item.classList.remove('active');
