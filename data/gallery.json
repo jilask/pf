@@ -354,26 +354,26 @@
       {
         "type": "image",
         "thumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
-        "full": "./assets/gallery/cyber-jacket-cover-thumb.svg",
-        "caption": "Front view"
+        "full": "./assets/gallery/cyber-jacket-front-full.svg",
+        "caption": "Front view — silhouette and collar architecture"
       },
       {
         "type": "image",
         "thumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
-        "full": "./assets/gallery/cyber-jacket-cover-thumb.svg",
-        "caption": "Side detail"
+        "full": "./assets/gallery/cyber-jacket-side-full.svg",
+        "caption": "Side detail — kinetic seam and strap hardware"
       },
       {
         "type": "image",
         "thumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
-        "full": "./assets/gallery/cyber-jacket-cover-thumb.svg",
-        "caption": "Back view"
+        "full": "./assets/gallery/cyber-jacket-back-full.svg",
+        "caption": "Back view — thermal vents and luminescent panel"
       },
       {
         "type": "video",
-        "thumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
-        "full": "./assets/gallery/cyber-jacket-cover-thumb.svg",
-        "caption": "Motion study — fabric drape"
+        "thumb": "./assets/gallery/cyber-jacket-motion-thumb.svg",
+        "full": "./assets/gallery/cyber-jacket-motion-thumb.svg",
+        "caption": "Motion study — fabric drape and dynamic lighting"
       }
     ]
   }
