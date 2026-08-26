@@ -338,5 +338,43 @@
     "tags": ["Video", "Motion", "Terminal", "AnimateDiff"],
     "date": "2024-12-18",
     "featured": false
+  },
+  {
+    "id": "cyber-jacket-study",
+    "title": "Cyber Jacket — Multi-Angle Study",
+    "category": "fashion",
+    "coverThumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
+    "tool": "ComfyUI + SDXL, ControlNet",
+    "prompt": "[TODO: add prompt]",
+    "negativePrompt": "[TODO: add negative prompt]",
+    "tags": ["Fashion", "ControlNet", "Case Study"],
+    "date": "2025-01-15",
+    "featured": true,
+    "media": [
+      {
+        "type": "image",
+        "thumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
+        "full": "./assets/gallery/cyber-jacket-cover-thumb.svg",
+        "caption": "Front view"
+      },
+      {
+        "type": "image",
+        "thumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
+        "full": "./assets/gallery/cyber-jacket-cover-thumb.svg",
+        "caption": "Side detail"
+      },
+      {
+        "type": "image",
+        "thumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
+        "full": "./assets/gallery/cyber-jacket-cover-thumb.svg",
+        "caption": "Back view"
+      },
+      {
+        "type": "video",
+        "thumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
+        "full": "./assets/gallery/cyber-jacket-cover-thumb.svg",
+        "caption": "Motion study — fabric drape"
+      }
+    ]
   }
 ]

@@ -1369,10 +1369,15 @@ ACHIEVEMENTS
         const item = this.lightboxItems[this.currentLightboxIndex];
         if (!item) return;
 
+        const isCaseStudy = Array.isArray(item.media) && item.media.length > 0;
+        const isVideo = !isCaseStudy && item.mediaType === 'video';
+        const fullSrc = item.full || (isCaseStudy && item.media[0] && item.media[0].full) || item.coverThumb || '';
+        const thumbSrc = item.thumb || (isCaseStudy && item.media[0] && item.media[0].thumb) || item.coverThumb || '';
+
         const total = this.lightboxItems.length;
         const current = this.currentLightboxIndex + 1;
         const indexDisplay = `[${current}/${total}]`;
-        const fileName = (item.full || item.id).split('/').pop();
+        const fileName = (fullSrc || item.id).split('/').pop();
 
         const modal = document.getElementById('gallery-lightbox');
         if (modal) {
@@ -1401,9 +1406,9 @@ ACHIEVEMENTS
                 prevVideo.load();
             }
 
-            if (item.mediaType === 'video') {
+            if (isVideo) {
                 mediaWrapper.innerHTML = `
-                    <video src="${item.full}" 
+                    <video src="${fullSrc}" 
                            controls 
                            playsinline
                            preload="metadata"
@@ -1414,10 +1419,10 @@ ACHIEVEMENTS
                 `;
             } else {
                 mediaWrapper.innerHTML = `
-                    <img src="${item.full}" 
+                    <img src="${fullSrc}" 
                          alt="${item.title} - ${item.tool || 'Generative AI'} artwork (full resolution)" 
                          class="lightbox-media-img"
-                         onerror="this.onerror=null; this.src='${item.thumb}';">
+                         onerror="this.onerror=null; this.src='${thumbSrc}';">
                 `;
             }
         }

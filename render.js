@@ -88,8 +88,18 @@ function renderCard(item, type) {
                 'video': { label: 'Video / Motion', class: 'video' }
             };
             const catInfo = catMap[item.category] || { label: item.category || 'General', class: 'general' };
-            const isVideo = item.mediaType === 'video';
-            const mediaBadge = isVideo ? `<span class="gallery-type-badge video"><span aria-hidden="true">▶</span> VIDEO</span>` : '';
+            const isCaseStudy = Array.isArray(item.media) && item.media.length > 0;
+            const isVideo = !isCaseStudy && item.mediaType === 'video';
+
+            // Media type or case-study multi-view count badge
+            let mediaBadge = '';
+            if (isCaseStudy) {
+                const count = item.media.length;
+                mediaBadge = `<span class="gallery-type-badge case-study" aria-label="${count} items in case study"><span aria-hidden="true">❐</span> ${count} VIEWS</span>`;
+            } else if (isVideo) {
+                mediaBadge = `<span class="gallery-type-badge video"><span aria-hidden="true">▶</span> VIDEO</span>`;
+            }
+
             const featuredBadge = item.featured
                 ? `<span class="gallery-featured-badge" aria-label="Featured item"><span aria-hidden="true">★</span> FEATURED</span>`
                 : '';
@@ -97,13 +107,22 @@ function renderCard(item, type) {
             const altText = `${item.title} - ${catInfo.label} artwork thumbnail`;
             const overlayText = isVideo ? 'PLAY // LIGHTBOX' : 'VIEW // DETAILS';
 
+            // Thumbnail and full asset resolution: support coverThumb / media[0].thumb with fallback
+            const thumbSrc = isCaseStudy
+                ? (item.coverThumb || (item.media[0] && item.media[0].thumb) || item.thumb || '')
+                : (item.thumb || '');
+
+            const fullSrc = isCaseStudy
+                ? (item.full || (item.media[0] && item.media[0].full) || thumbSrc)
+                : (item.full || thumbSrc);
+
             // Responsive image source switching with srcset / sizes
             // Supports WebP/AVIF asset pipelines if defined in item data, with SVG/raster fallback
             const srcsetAttr = item.srcset
                 ? `srcset="${item.srcset}"`
-                : (item.full && item.full !== item.thumb
-                    ? `srcset="${item.thumb} 400w, ${item.full} 800w"`
-                    : `srcset="${item.thumb} 400w"`);
+                : (fullSrc && fullSrc !== thumbSrc
+                    ? `srcset="${thumbSrc} 400w, ${fullSrc} 800w"`
+                    : `srcset="${thumbSrc} 400w"`);
 
             const sizesAttr = `sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"`;
 
@@ -113,18 +132,20 @@ function renderCard(item, type) {
                 </div>
             ` : '';
 
+            const cardMediaType = isCaseStudy ? 'case-study' : (item.mediaType || 'image');
+
             return `
-                <article class="gallery-card${item.featured ? ' is-featured' : ''}${isVideo ? ' is-video-item' : ''}" 
+                <article class="gallery-card${item.featured ? ' is-featured' : ''}${isVideo ? ' is-video-item' : ''}${isCaseStudy ? ' is-case-study' : ''}" 
                          data-id="${item.id}" 
                          data-category="${item.category}" 
-                         data-media-type="${item.mediaType || 'image'}"
+                         data-media-type="${cardMediaType}"
                          role="button" 
                          tabindex="0" 
                          aria-label="${isVideo ? 'Play video' : 'View details'} for ${item.title}" 
                          onclick="window.portfolio && window.portfolio.openGalleryLightbox('${item.id}')" 
                          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); window.portfolio && window.portfolio.openGalleryLightbox('${item.id}');}">
                     <div class="gallery-thumb-wrap skeleton-loading">
-                        <img src="${item.thumb}" 
+                        <img src="${thumbSrc}" 
                              ${srcsetAttr}
                              ${sizesAttr}
                              alt="${altText}" 
