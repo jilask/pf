@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0814" />
+      <stop offset="50%" stop-color="#120c24" />
+      <stop offset="100%" stop-color="#050505" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8b5cf6" />
+      <stop offset="50%" stop-color="#61afef" />
+      <stop offset="100%" stop-color="#39ff14" />
+    </linearGradient>
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(139, 92, 246, 0.15)" stroke-width="1" />
+    </pattern>
+  </defs>
+  <rect width="600" height="450" fill="url(#bg)" />
+  <rect width="600" height="450" fill="url(#grid)" />
+  <circle cx="300" cy="190" r="110" fill="none" stroke="url(#accent)" stroke-width="2" opacity="0.6" stroke-dasharray="8 4" />
+  <text x="300" y="180" font-family="monospace" font-size="56" fill="#8b5cf6" text-anchor="middle">🧥</text>
+  <text x="300" y="250" font-family="'Fira Code', monospace" font-size="18" font-weight="bold" fill="#39ff14" text-anchor="middle">CYBER JACKET STUDY</text>
+  <text x="300" y="280" font-family="'Fira Code', monospace" font-size="12" fill="#8b5cf6" text-anchor="middle">// MULTI-ANGLE CASE STUDY [4 VIEWS]</text>
+  <rect x="20" y="20" width="560" height="410" fill="none" stroke="#8b5cf6" stroke-width="1" opacity="0.3" />
+</svg>

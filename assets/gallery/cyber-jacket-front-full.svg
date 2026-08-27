@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0814" />
+      <stop offset="50%" stop-color="#140e2b" />
+      <stop offset="100%" stop-color="#050505" />
+    </linearGradient>
+    <linearGradient id="neon1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#39ff14" />
+    </linearGradient>
+    <pattern id="grid1" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(139, 92, 246, 0.15)" stroke-width="1" />
+    </pattern>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg1)" />
+  <rect width="800" height="600" fill="url(#grid1)" />
+  <circle cx="400" cy="250" r="160" fill="none" stroke="url(#neon1)" stroke-width="2" opacity="0.7" stroke-dasharray="10 5" />
+  <text x="400" y="240" font-family="monospace" font-size="80" fill="#8b5cf6" text-anchor="middle">🧥</text>
+  <text x="400" y="340" font-family="'Fira Code', monospace" font-size="24" font-weight="bold" fill="#39ff14" text-anchor="middle">FRONT VIEW // SILHOUETTE</text>
+  <text x="400" y="380" font-family="'Fira Code', monospace" font-size="14" fill="#8b5cf6" text-anchor="middle">Collar Architecture &amp; Magnetic Closure Fasteners</text>
+  <rect x="25" y="25" width="750" height="550" fill="none" stroke="#8b5cf6" stroke-width="1" opacity="0.3" />
+</svg>
