@@ -1446,6 +1446,20 @@ body::after {
     transform: scale(1.05);
 }
 
+.gallery-badges-top-right {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 3;
+    max-width: calc(100% - 90px);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    pointer-events: none;
+}
+
 .gallery-type-badge {
     position: absolute;
     top: 8px;
@@ -1459,6 +1473,10 @@ body::after {
     font-weight: 700;
     letter-spacing: 0.5px;
     z-index: 2;
+}
+
+.gallery-badges-top-right .gallery-type-badge {
+    position: static;
 }
 
 .gallery-thumb-overlay {

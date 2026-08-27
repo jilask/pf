@@ -89,15 +89,18 @@ function renderCard(item, type) {
             };
             const catInfo = catMap[item.category] || { label: item.category || 'General', class: 'general' };
             const isCaseStudy = Array.isArray(item.media) && item.media.length > 0;
+            const hasVideoSubItem = isCaseStudy && item.media.some(m => m && (m.type === 'video' || (typeof m.full === 'string' && m.full.endsWith('.mp4')) || m.mediaType === 'video'));
             const isVideo = !isCaseStudy && item.mediaType === 'video';
 
-            // Media type or case-study multi-view count badge
+            // Media type or case-study multi-view count badge(s)
             let mediaBadge = '';
             if (isCaseStudy) {
                 const count = item.media.length;
-                mediaBadge = `<span class="gallery-type-badge case-study" aria-label="${count} items in case study"><span aria-hidden="true">❐</span> ${count} VIEWS</span>`;
+                const countBadge = `<span class="gallery-type-badge case-study" aria-label="${count} items in case study"><span aria-hidden="true">❐</span> ${count} VIEWS</span>`;
+                const videoBadge = hasVideoSubItem ? `<span class="gallery-type-badge video" aria-label="Includes video content"><span aria-hidden="true">▶</span> VIDEO</span>` : '';
+                mediaBadge = `<div class="gallery-badges-top-right">${countBadge}${videoBadge}</div>`;
             } else if (isVideo) {
-                mediaBadge = `<span class="gallery-type-badge video"><span aria-hidden="true">▶</span> VIDEO</span>`;
+                mediaBadge = `<div class="gallery-badges-top-right"><span class="gallery-type-badge video"><span aria-hidden="true">▶</span> VIDEO</span></div>`;
             }
 
             const featuredBadge = item.featured
