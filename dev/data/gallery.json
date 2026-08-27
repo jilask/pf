@@ -338,5 +338,43 @@
     "tags": ["Video", "Motion", "Terminal", "AnimateDiff"],
     "date": "2024-12-18",
     "featured": false
+  },
+  {
+    "id": "cyber-jacket-study",
+    "title": "Cyber Jacket — Multi-Angle Study",
+    "category": "fashion",
+    "coverThumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
+    "tool": "ComfyUI + SDXL, ControlNet",
+    "prompt": "[TODO: add prompt]",
+    "negativePrompt": "[TODO: add negative prompt]",
+    "tags": ["Fashion", "ControlNet", "Case Study"],
+    "date": "2025-01-15",
+    "featured": true,
+    "media": [
+      {
+        "type": "image",
+        "thumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
+        "full": "./assets/gallery/cyber-jacket-front-full.svg",
+        "caption": "Front view — silhouette and collar architecture"
+      },
+      {
+        "type": "image",
+        "thumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
+        "full": "./assets/gallery/cyber-jacket-side-full.svg",
+        "caption": "Side detail — kinetic seam and strap hardware"
+      },
+      {
+        "type": "image",
+        "thumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
+        "full": "./assets/gallery/cyber-jacket-back-full.svg",
+        "caption": "Back view — thermal vents and luminescent panel"
+      },
+      {
+        "type": "video",
+        "thumb": "./assets/gallery/cyber-jacket-motion-thumb.svg",
+        "full": "./assets/gallery/cyber-jacket-motion-thumb.svg",
+        "caption": "Motion study — fabric drape and dynamic lighting"
+      }
+    ]
   }
 ]

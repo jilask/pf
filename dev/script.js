@@ -14,6 +14,7 @@ class ArchPortfolio {
         this.data = null;
 
         this.currentLightboxIndex = 0;
+        this.currentCaseStudySubIndex = 0;
         this.lightboxItems = [];
         this.previousFocusedElement = null;
         this.isPromptExpanded = false;
@@ -933,10 +934,10 @@ ACHIEVEMENTS
             closeBtn.addEventListener('click', () => this.closeGalleryLightbox());
         }
         if (prevBtn) {
-            prevBtn.addEventListener('click', () => this.navigateLightbox(-1));
+            prevBtn.addEventListener('click', () => this.navigateLightboxStep(-1));
         }
         if (nextBtn) {
-            nextBtn.addEventListener('click', () => this.navigateLightbox(1));
+            nextBtn.addEventListener('click', () => this.navigateLightboxStep(1));
         }
         if (modal) {
             modal.addEventListener('click', (e) => {
@@ -966,9 +967,9 @@ ACHIEVEMENTS
                     // Trigger swipe if horizontal movement > 40px and dominant over vertical scroll
                     if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
                         if (diffX < 0) {
-                            this.navigateLightbox(1);  // Swipe left -> Next
+                            this.navigateLightboxStep(1);  // Swipe left -> Next
                         } else {
-                            this.navigateLightbox(-1); // Swipe right -> Prev
+                            this.navigateLightboxStep(-1); // Swipe right -> Prev
                         }
                     }
                 }
@@ -1206,6 +1207,7 @@ ACHIEVEMENTS
         if (index === -1) index = 0;
 
         this.currentLightboxIndex = index;
+        this.currentCaseStudySubIndex = 0;
         this.previousFocusedElement = document.activeElement;
         this.isPromptExpanded = false;
         this.isPromptRevealedInModal = false;
@@ -1265,11 +1267,41 @@ ACHIEVEMENTS
         }
     }
 
+    setCaseStudySubIndex(subIndex) {
+        if (!this.lightboxItems || !this.lightboxItems[this.currentLightboxIndex]) return;
+        const item = this.lightboxItems[this.currentLightboxIndex];
+        if (!item || !Array.isArray(item.media) || item.media.length === 0) return;
+
+        const targetIndex = Number(subIndex);
+        if (targetIndex >= 0 && targetIndex < item.media.length) {
+            this.currentCaseStudySubIndex = targetIndex;
+            this.updateLightboxContent();
+        }
+    }
+
+    navigateLightboxStep(direction) {
+        if (!this.lightboxItems || this.lightboxItems.length === 0) return;
+        const currentItem = this.lightboxItems[this.currentLightboxIndex];
+        const isCaseStudy = currentItem && Array.isArray(currentItem.media) && currentItem.media.length > 0;
+
+        if (isCaseStudy) {
+            const nextSub = this.currentCaseStudySubIndex + direction;
+            if (nextSub >= 0 && nextSub < currentItem.media.length) {
+                this.setCaseStudySubIndex(nextSub);
+                return;
+            }
+        }
+
+        // At sub-item boundaries or for regular single-media items, navigate between gallery entries
+        this.navigateLightbox(direction);
+    }
+
     navigateLightbox(direction) {
         if (!this.lightboxItems || this.lightboxItems.length === 0) return;
 
         const total = this.lightboxItems.length;
         this.currentLightboxIndex = (this.currentLightboxIndex + direction + total) % total;
+        this.currentCaseStudySubIndex = 0;
         this.isPromptExpanded = false;
         this.isPromptRevealedInModal = false;
         this.updateLightboxContent();
@@ -1327,13 +1359,13 @@ ACHIEVEMENTS
 
         if (e.key === 'ArrowLeft') {
             e.preventDefault();
-            this.navigateLightbox(-1);
+            this.navigateLightboxStep(-1);
             return;
         }
 
         if (e.key === 'ArrowRight') {
             e.preventDefault();
-            this.navigateLightbox(1);
+            this.navigateLightboxStep(1);
             return;
         }
 
@@ -1369,26 +1401,55 @@ ACHIEVEMENTS
         const item = this.lightboxItems[this.currentLightboxIndex];
         if (!item) return;
 
-        const total = this.lightboxItems.length;
-        const current = this.currentLightboxIndex + 1;
-        const indexDisplay = `[${current}/${total}]`;
-        const fileName = (item.full || item.id).split('/').pop();
+        const isCaseStudy = Array.isArray(item.media) && item.media.length > 0;
+        let isVideo = false;
+        let fullSrc = '';
+        let thumbSrc = '';
+        let activeCaption = '';
+        let indexDisplay = '';
+        let windowTitleText = '';
+
+        if (isCaseStudy) {
+            if (this.currentCaseStudySubIndex >= item.media.length) {
+                this.currentCaseStudySubIndex = 0;
+            }
+            const subIndex = this.currentCaseStudySubIndex;
+            const subItem = item.media[subIndex] || {};
+            isVideo = subItem.type === 'video' || (typeof subItem.full === 'string' && subItem.full.endsWith('.mp4'));
+            fullSrc = subItem.full || subItem.thumb || item.coverThumb || '';
+            thumbSrc = subItem.thumb || item.coverThumb || fullSrc;
+            activeCaption = subItem.caption || `View ${subIndex + 1}`;
+            indexDisplay = `[${subIndex + 1}/${item.media.length}]`;
+            windowTitleText = `CASE STUDY // ${item.title} // [${subIndex + 1}/${item.media.length}]`;
+        } else {
+            isVideo = item.mediaType === 'video';
+            fullSrc = item.full || item.thumb || '';
+            thumbSrc = item.thumb || fullSrc;
+            activeCaption = '';
+            const total = this.lightboxItems.length;
+            const current = this.currentLightboxIndex + 1;
+            indexDisplay = `[${current}/${total}]`;
+            const fileName = (fullSrc || item.id).split('/').pop();
+            windowTitleText = `VIEWER // ${fileName}`;
+        }
 
         const modal = document.getElementById('gallery-lightbox');
         if (modal) {
-            modal.setAttribute('aria-label', `Gallery Lightbox Viewer: ${item.title}`);
+            modal.setAttribute('aria-label', `Gallery Lightbox Viewer: ${item.title}${isCaseStudy ? ` - ${activeCaption}` : ''}`);
         }
 
         const windowTitle = document.getElementById('lightbox-window-title');
         if (windowTitle) {
-            windowTitle.textContent = `VIEWER // ${fileName}`;
-            windowTitle.title = `VIEWER // ${fileName}`;
+            windowTitle.textContent = windowTitleText;
+            windowTitle.title = windowTitleText;
         }
 
         const counterEl = document.getElementById('lightbox-counter');
         if (counterEl) {
             counterEl.textContent = indexDisplay;
-            counterEl.setAttribute('aria-label', `Item ${current} of ${total}`);
+            counterEl.setAttribute('aria-label', isCaseStudy
+                ? `Sub-item ${this.currentCaseStudySubIndex + 1} of ${item.media.length} (${item.title})`
+                : `Item ${this.currentLightboxIndex + 1} of ${this.lightboxItems.length}`);
         }
 
         const mediaWrapper = document.getElementById('lightbox-media-wrapper');
@@ -1401,24 +1462,92 @@ ACHIEVEMENTS
                 prevVideo.load();
             }
 
-            if (item.mediaType === 'video') {
+            const captionMarkup = (isCaseStudy && activeCaption) ? `
+                <div class="lightbox-media-caption" role="status" aria-live="polite" aria-label="Media caption">
+                    <span class="caption-icon" aria-hidden="true">▸</span>
+                    <span class="caption-text">${activeCaption}</span>
+                </div>
+            ` : '';
+
+            if (isVideo) {
                 mediaWrapper.innerHTML = `
-                    <video src="${item.full}" 
-                           controls 
-                           playsinline
-                           preload="metadata"
-                           class="lightbox-media-video" 
-                           aria-label="${item.title} - ${item.tool || 'Generative AI'} video presentation">
-                        Your browser does not support HTML5 video playback.
-                    </video>
+                    <div class="lightbox-media-main-wrap">
+                        <video src="${fullSrc}" 
+                               controls 
+                               playsinline
+                               preload="metadata"
+                               class="lightbox-media-video" 
+                               aria-label="${item.title} - ${activeCaption || item.tool || 'Generative AI'} video presentation">
+                            Your browser does not support HTML5 video playback.
+                        </video>
+                        ${captionMarkup}
+                    </div>
                 `;
             } else {
                 mediaWrapper.innerHTML = `
-                    <img src="${item.full}" 
-                         alt="${item.title} - ${item.tool || 'Generative AI'} artwork (full resolution)" 
-                         class="lightbox-media-img"
-                         onerror="this.onerror=null; this.src='${item.thumb}';">
+                    <div class="lightbox-media-main-wrap">
+                        <img src="${fullSrc}" 
+                             alt="${item.title} - ${activeCaption || item.tool || 'Generative AI'} artwork (full resolution)" 
+                             class="lightbox-media-img"
+                             onerror="this.onerror=null; this.src='${thumbSrc}';">
+                        ${captionMarkup}
+                    </div>
                 `;
+            }
+        }
+
+        // Live announcement for screen readers
+        const liveAnnouncer = document.getElementById('lightbox-live-caption');
+        if (liveAnnouncer) {
+            if (isCaseStudy && activeCaption) {
+                liveAnnouncer.textContent = `View ${this.currentCaseStudySubIndex + 1} of ${item.media.length}: ${activeCaption}`;
+            } else if (item.title) {
+                liveAnnouncer.textContent = `${item.title}${item.tool ? ` (${item.tool})` : ''}`;
+            }
+        }
+
+        // Sub-navigation thumbnail strip
+        const subnavContainer = document.getElementById('lightbox-subnav-container');
+        if (subnavContainer) {
+            const activeElementWasSubnav = subnavContainer.contains(document.activeElement);
+            if (isCaseStudy) {
+                subnavContainer.style.display = 'block';
+                subnavContainer.innerHTML = `
+                    <div class="lightbox-subnav-bar" role="tablist" aria-label="Case study views">
+                        <span class="lightbox-subnav-label"><span class="terminal-prompt-char" aria-hidden="true">&gt;</span> VIEWS [${item.media.length}]:</span>
+                        <div class="lightbox-subnav-strip">
+                            ${item.media.map((sub, idx) => {
+                                const isActive = idx === this.currentCaseStudySubIndex;
+                                const isSubVid = sub.type === 'video' || (typeof sub.full === 'string' && sub.full.endsWith('.mp4'));
+                                const subThumb = sub.thumb || item.coverThumb || sub.full;
+                                const subTitle = sub.caption || `View ${idx + 1}`;
+                                return `
+                                    <button type="button" 
+                                            role="tab"
+                                            class="lightbox-subnav-item ${isActive ? 'active' : ''}${isSubVid ? ' is-video' : ''}" 
+                                            aria-selected="${isActive ? 'true' : 'false'}"
+                                            aria-current="${isActive ? 'true' : 'false'}"
+                                            aria-label="View ${idx + 1} of ${item.media.length}: ${subTitle}${isActive ? ' (currently selected)' : ''}"
+                                            onclick="window.portfolio && window.portfolio.setCaseStudySubIndex(${idx})">
+                                        <img src="${subThumb}" alt="" class="subnav-thumb" loading="lazy">
+                                        <span class="subnav-badge" aria-hidden="true">${isSubVid ? '▶' : (idx + 1)}</span>
+                                        <span class="subnav-title">${subTitle}</span>
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+
+                if (activeElementWasSubnav) {
+                    const newButtons = subnavContainer.querySelectorAll('.lightbox-subnav-item');
+                    if (newButtons[this.currentCaseStudySubIndex]) {
+                        newButtons[this.currentCaseStudySubIndex].focus();
+                    }
+                }
+            } else {
+                subnavContainer.style.display = 'none';
+                subnavContainer.innerHTML = '';
             }
         }
 
@@ -1438,6 +1567,13 @@ ACHIEVEMENTS
                     <h3 class="lightbox-title" id="lightbox-item-title">${item.title}</h3>
                     <span class="gallery-category-badge ${item.category || 'general'}">${(item.category || 'General').toUpperCase()}</span>
                 </div>
+
+                ${isCaseStudy && activeCaption ? `
+                    <div class="lightbox-subitem-info">
+                        <span class="subitem-label"><span aria-hidden="true">📷</span> ACTIVE VIEW [${this.currentCaseStudySubIndex + 1}/${item.media.length}]:</span>
+                        <span class="subitem-caption">${activeCaption}</span>
+                    </div>
+                ` : ''}
 
                 <div class="lightbox-meta-row">
                     <span class="lightbox-meta-item">🛠️ <strong>Tool:</strong> ${item.tool || 'N/A'}</span>

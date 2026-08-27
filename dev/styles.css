@@ -54,6 +54,19 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 14px;
 }
 
+/* Accessible screen-reader only utility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 body {
     font-family: 'Share Tech Mono', 'Fira Code', monospace;
     background: var(--bg-desktop);
@@ -1446,6 +1459,20 @@ body::after {
     transform: scale(1.05);
 }
 
+.gallery-badges-top-right {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 3;
+    max-width: calc(100% - 90px);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    pointer-events: none;
+}
+
 .gallery-type-badge {
     position: absolute;
     top: 8px;
@@ -1459,6 +1486,10 @@ body::after {
     font-weight: 700;
     letter-spacing: 0.5px;
     z-index: 2;
+}
+
+.gallery-badges-top-right .gallery-type-badge {
+    position: static;
 }
 
 .gallery-thumb-overlay {
@@ -1598,6 +1629,16 @@ body::after {
     display: inline-flex;
     align-items: center;
     gap: 3px;
+}
+
+.gallery-type-badge.case-study {
+    background: rgba(0, 0, 0, 0.85);
+    color: var(--accent-blue);
+    border: 1px solid var(--accent-blue);
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.35);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .gallery-video-center-indicator {
@@ -2734,6 +2775,7 @@ button {
     position: relative;
     background: #050709;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 16px;
@@ -2742,15 +2784,25 @@ button {
 
 .lightbox-media-wrapper {
     width: 100%;
-    height: 100%;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 0;
+}
+
+.lightbox-media-main-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .lightbox-media-img {
     max-width: 100%;
-    max-height: calc(85vh - 70px);
+    max-height: calc(85vh - 120px);
     object-fit: contain;
     border-radius: 4px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
@@ -2758,10 +2810,162 @@ button {
 
 .lightbox-media-video {
     max-width: 100%;
-    max-height: calc(85vh - 70px);
+    max-height: calc(85vh - 120px);
     border-radius: 4px;
     outline: none;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.lightbox-media-caption {
+    margin-top: 8px;
+    font-family: 'Fira Code', monospace;
+    font-size: 11px;
+    color: var(--accent-cyan);
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(57, 255, 20, 0.35);
+    border-radius: 4px;
+    padding: 4px 10px;
+    text-align: center;
+    max-width: 90%;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-media-caption .caption-icon {
+    color: var(--accent-green);
+    font-size: 10px;
+}
+
+/* Case Study Lightbox Sub-Navigation */
+.lightbox-subnav-container {
+    width: 100%;
+    padding-top: 10px;
+    z-index: 5;
+}
+
+.lightbox-subnav-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(8, 12, 16, 0.92);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    border-radius: 6px;
+    padding: 6px 10px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-subnav-label {
+    font-family: 'Fira Code', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.lightbox-subnav-strip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding: 2px 0;
+    flex: 1;
+}
+
+.lightbox-subnav-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Fira Code', monospace;
+    font-size: 10px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    min-height: 36px;
+    text-align: left;
+}
+
+.lightbox-subnav-item:hover,
+.lightbox-subnav-item:focus-visible {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: var(--accent-blue);
+    color: #fff;
+    outline: none;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.35);
+}
+
+.lightbox-subnav-item.active {
+    background: rgba(139, 92, 246, 0.3);
+    border-color: var(--accent-cyan);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.35);
+}
+
+.subnav-thumb {
+    width: 28px;
+    height: 22px;
+    object-fit: cover;
+    border-radius: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+}
+
+.subnav-badge {
+    background: rgba(0, 0, 0, 0.7);
+    color: var(--accent-yellow);
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 2px;
+    border: 1px solid var(--accent-yellow);
+    flex-shrink: 0;
+}
+
+.lightbox-subnav-item.active .subnav-badge {
+    background: var(--accent-cyan);
+    color: #000;
+    border-color: var(--accent-cyan);
+}
+
+.subnav-title {
+    font-size: 10px;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lightbox-subitem-info {
+    background: rgba(139, 92, 246, 0.15);
+    border: 1px solid var(--accent-blue);
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-family: 'Fira Code', monospace;
+    font-size: 11px;
+}
+
+.subitem-label {
+    color: var(--accent-blue);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.subitem-caption {
+    color: var(--accent-green);
+    font-weight: 500;
 }
 
 /* Lightbox Navigation Buttons */
@@ -3249,18 +3453,52 @@ button {
         flex: none;
         width: 100%;
         height: auto;
-        max-height: 48vh;
+        max-height: 52vh;
         min-height: 220px;
-        padding: 8px;
+        padding: 8px 6px;
         background: #000000;
         flex-shrink: 0;
     }
 
     .lightbox-media-img,
     .lightbox-media-video {
-        max-height: 45vh;
+        max-height: 38vh;
         max-width: 100%;
         object-fit: contain;
+    }
+
+    .lightbox-media-caption {
+        font-size: 10px;
+        padding: 3px 8px;
+        margin-top: 6px;
+        max-width: 95%;
+    }
+
+    .lightbox-subnav-container {
+        padding-top: 6px;
+    }
+
+    .lightbox-subnav-bar {
+        padding: 4px 6px;
+        gap: 6px;
+    }
+
+    .lightbox-subnav-strip {
+        gap: 6px;
+        scroll-snap-type: x proximity;
+    }
+
+    .lightbox-subnav-item {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 4px 8px;
+        scroll-snap-align: start;
+        box-sizing: border-box;
+    }
+
+    .subnav-title {
+        max-width: 90px;
+        font-size: 9px;
     }
 
     .lightbox-nav-btn {
