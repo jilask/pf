@@ -28,6 +28,7 @@ class ArchPortfolio {
         this.promptRevealMode = false;
         this.galleryPageSize = 12;
         this.galleryVisibleCount = 12;
+        this.currentRenderedLightboxItemId = null;
 
         this.init();
     }
@@ -975,6 +976,28 @@ ACHIEVEMENTS
                 }
             }, { passive: true });
         }
+
+        // Delegated event handling for gallery cards to optimize event memory and eliminate per-card handlers
+        const portfolioContent = document.getElementById('portfolio-content');
+        if (portfolioContent) {
+            portfolioContent.addEventListener('click', (e) => {
+                const card = e.target.closest('.gallery-card');
+                if (card && card.dataset && card.dataset.id) {
+                    this.openGalleryLightbox(card.dataset.id);
+                }
+            });
+            portfolioContent.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    const card = e.target.closest('.gallery-card');
+                    if (card && card.dataset && card.dataset.id && (e.target === card || card.contains(e.target))) {
+                        if (e.target === card) {
+                            e.preventDefault();
+                            this.openGalleryLightbox(card.dataset.id);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     getAllGalleryTags() {
@@ -1255,6 +1278,7 @@ ACHIEVEMENTS
         modal.hidden = true;
         modal.classList.remove('active');
         document.body.style.overflow = '';
+        this.currentRenderedLightboxItemId = null;
 
         if (this.lightboxKeydownHandler) {
             document.removeEventListener('keydown', this.lightboxKeydownHandler);
@@ -1452,6 +1476,8 @@ ACHIEVEMENTS
                 : `Item ${this.currentLightboxIndex + 1} of ${this.lightboxItems.length}`);
         }
 
+        const isSameItemSubnav = isCaseStudy && (this.currentRenderedLightboxItemId === item.id);
+
         const mediaWrapper = document.getElementById('lightbox-media-wrapper');
         if (mediaWrapper) {
             // Stop and clean up any existing video element
@@ -1509,40 +1535,53 @@ ACHIEVEMENTS
         // Sub-navigation thumbnail strip
         const subnavContainer = document.getElementById('lightbox-subnav-container');
         if (subnavContainer) {
-            const activeElementWasSubnav = subnavContainer.contains(document.activeElement);
             if (isCaseStudy) {
-                subnavContainer.style.display = 'block';
-                subnavContainer.innerHTML = `
-                    <div class="lightbox-subnav-bar" role="tablist" aria-label="Case study views">
-                        <span class="lightbox-subnav-label"><span class="terminal-prompt-char" aria-hidden="true">&gt;</span> VIEWS [${item.media.length}]:</span>
-                        <div class="lightbox-subnav-strip">
-                            ${item.media.map((sub, idx) => {
-                                const isActive = idx === this.currentCaseStudySubIndex;
-                                const isSubVid = sub.type === 'video' || (typeof sub.full === 'string' && sub.full.endsWith('.mp4'));
-                                const subThumb = sub.thumb || item.coverThumb || sub.full;
-                                const subTitle = sub.caption || `View ${idx + 1}`;
-                                return `
-                                    <button type="button" 
-                                            role="tab"
-                                            class="lightbox-subnav-item ${isActive ? 'active' : ''}${isSubVid ? ' is-video' : ''}" 
-                                            aria-selected="${isActive ? 'true' : 'false'}"
-                                            aria-current="${isActive ? 'true' : 'false'}"
-                                            aria-label="View ${idx + 1} of ${item.media.length}: ${subTitle}${isActive ? ' (currently selected)' : ''}"
-                                            onclick="window.portfolio && window.portfolio.setCaseStudySubIndex(${idx})">
-                                        <img src="${subThumb}" alt="" class="subnav-thumb" loading="lazy">
-                                        <span class="subnav-badge" aria-hidden="true">${isSubVid ? '▶' : (idx + 1)}</span>
-                                        <span class="subnav-title">${subTitle}</span>
-                                    </button>
-                                `;
-                            }).join('')}
+                if (isSameItemSubnav) {
+                    // Update active state in-place without rebuilding DOM
+                    const subnavButtons = subnavContainer.querySelectorAll('.lightbox-subnav-item');
+                    subnavButtons.forEach((btn, idx) => {
+                        const isActive = idx === this.currentCaseStudySubIndex;
+                        btn.classList.toggle('active', isActive);
+                        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                        btn.setAttribute('aria-current', isActive ? 'true' : 'false');
+                        const subTitle = (item.media[idx] && item.media[idx].caption) || `View ${idx + 1}`;
+                        btn.setAttribute('aria-label', `View ${idx + 1} of ${item.media.length}: ${subTitle}${isActive ? ' (currently selected)' : ''}`);
+                    });
+                } else {
+                    const activeElementWasSubnav = subnavContainer.contains(document.activeElement);
+                    subnavContainer.style.display = 'block';
+                    subnavContainer.innerHTML = `
+                        <div class="lightbox-subnav-bar" role="tablist" aria-label="Case study views">
+                            <span class="lightbox-subnav-label"><span class="terminal-prompt-char" aria-hidden="true">&gt;</span> VIEWS [${item.media.length}]:</span>
+                            <div class="lightbox-subnav-strip">
+                                ${item.media.map((sub, idx) => {
+                                    const isActive = idx === this.currentCaseStudySubIndex;
+                                    const isSubVid = sub.type === 'video' || (typeof sub.full === 'string' && sub.full.endsWith('.mp4'));
+                                    const subThumb = sub.thumb || item.coverThumb || sub.full;
+                                    const subTitle = sub.caption || `View ${idx + 1}`;
+                                    return `
+                                        <button type="button" 
+                                                role="tab"
+                                                class="lightbox-subnav-item ${isActive ? 'active' : ''}${isSubVid ? ' is-video' : ''}" 
+                                                aria-selected="${isActive ? 'true' : 'false'}"
+                                                aria-current="${isActive ? 'true' : 'false'}"
+                                                aria-label="View ${idx + 1} of ${item.media.length}: ${subTitle}${isActive ? ' (currently selected)' : ''}"
+                                                onclick="window.portfolio && window.portfolio.setCaseStudySubIndex(${idx})">
+                                            <img src="${subThumb}" alt="" class="subnav-thumb" loading="lazy">
+                                            <span class="subnav-badge" aria-hidden="true">${isSubVid ? '▶' : (idx + 1)}</span>
+                                            <span class="subnav-title">${subTitle}</span>
+                                        </button>
+                                    `;
+                                }).join('')}
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
 
-                if (activeElementWasSubnav) {
-                    const newButtons = subnavContainer.querySelectorAll('.lightbox-subnav-item');
-                    if (newButtons[this.currentCaseStudySubIndex]) {
-                        newButtons[this.currentCaseStudySubIndex].focus();
+                    if (activeElementWasSubnav) {
+                        const newButtons = subnavContainer.querySelectorAll('.lightbox-subnav-item');
+                        if (newButtons[this.currentCaseStudySubIndex]) {
+                            newButtons[this.currentCaseStudySubIndex].focus();
+                        }
                     }
                 }
             } else {
@@ -1550,6 +1589,21 @@ ACHIEVEMENTS
                 subnavContainer.innerHTML = '';
             }
         }
+
+        // If this is the same case study item and only the sub-view changed, update the active caption and avoid full metadata panel re-render
+        const metaPanel = document.getElementById('lightbox-meta-panel');
+        if (isSameItemSubnav && metaPanel) {
+            const subitemInfo = metaPanel.querySelector('.lightbox-subitem-info');
+            if (subitemInfo && activeCaption) {
+                subitemInfo.innerHTML = `
+                    <span class="subitem-label"><span aria-hidden="true">📷</span> ACTIVE VIEW [${this.currentCaseStudySubIndex + 1}/${item.media.length}]:</span>
+                    <span class="subitem-caption">${activeCaption}</span>
+                `;
+            }
+            return;
+        }
+
+        this.currentRenderedLightboxItemId = item.id;
 
         let relatedProjectInfo = null;
         if (item.relatedProject && this.data && this.data.portfolio && Array.isArray(this.data.portfolio.projects)) {
@@ -1560,7 +1614,6 @@ ACHIEVEMENTS
         const promptSummary = isLongPrompt ? item.prompt.slice(0, 90) + '...' : item.prompt;
         const isConcealed = this.promptRevealMode && !this.isPromptRevealedInModal;
 
-        const metaPanel = document.getElementById('lightbox-meta-panel');
         if (metaPanel) {
             metaPanel.innerHTML = `
                 <div class="lightbox-meta-header">
