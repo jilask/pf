@@ -54,6 +54,19 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 14px;
 }
 
+/* Accessible screen-reader only utility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 body {
     font-family: 'Share Tech Mono', 'Fira Code', monospace;
     background: var(--bg-desktop);

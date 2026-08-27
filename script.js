@@ -1463,7 +1463,7 @@ ACHIEVEMENTS
             }
 
             const captionMarkup = (isCaseStudy && activeCaption) ? `
-                <div class="lightbox-media-caption" role="note" aria-label="Media caption">
+                <div class="lightbox-media-caption" role="status" aria-live="polite" aria-label="Media caption">
                     <span class="caption-icon" aria-hidden="true">▸</span>
                     <span class="caption-text">${activeCaption}</span>
                 </div>
@@ -1496,9 +1496,20 @@ ACHIEVEMENTS
             }
         }
 
+        // Live announcement for screen readers
+        const liveAnnouncer = document.getElementById('lightbox-live-caption');
+        if (liveAnnouncer) {
+            if (isCaseStudy && activeCaption) {
+                liveAnnouncer.textContent = `View ${this.currentCaseStudySubIndex + 1} of ${item.media.length}: ${activeCaption}`;
+            } else if (item.title) {
+                liveAnnouncer.textContent = `${item.title}${item.tool ? ` (${item.tool})` : ''}`;
+            }
+        }
+
         // Sub-navigation thumbnail strip
         const subnavContainer = document.getElementById('lightbox-subnav-container');
         if (subnavContainer) {
+            const activeElementWasSubnav = subnavContainer.contains(document.activeElement);
             if (isCaseStudy) {
                 subnavContainer.style.display = 'block';
                 subnavContainer.innerHTML = `
@@ -1515,7 +1526,8 @@ ACHIEVEMENTS
                                             role="tab"
                                             class="lightbox-subnav-item ${isActive ? 'active' : ''}${isSubVid ? ' is-video' : ''}" 
                                             aria-selected="${isActive ? 'true' : 'false'}"
-                                            aria-label="View ${idx + 1} of ${item.media.length}: ${subTitle}"
+                                            aria-current="${isActive ? 'true' : 'false'}"
+                                            aria-label="View ${idx + 1} of ${item.media.length}: ${subTitle}${isActive ? ' (currently selected)' : ''}"
                                             onclick="window.portfolio && window.portfolio.setCaseStudySubIndex(${idx})">
                                         <img src="${subThumb}" alt="" class="subnav-thumb" loading="lazy">
                                         <span class="subnav-badge" aria-hidden="true">${isSubVid ? '▶' : (idx + 1)}</span>
@@ -1526,6 +1538,13 @@ ACHIEVEMENTS
                         </div>
                     </div>
                 `;
+
+                if (activeElementWasSubnav) {
+                    const newButtons = subnavContainer.querySelectorAll('.lightbox-subnav-item');
+                    if (newButtons[this.currentCaseStudySubIndex]) {
+                        newButtons[this.currentCaseStudySubIndex].focus();
+                    }
+                }
             } else {
                 subnavContainer.style.display = 'none';
                 subnavContainer.innerHTML = '';
