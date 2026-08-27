@@ -680,19 +680,67 @@ function renderGallery(items, containerEl, emptyStateOptions) {
             </article>
         `;
         gridHtml = Array(6).fill(skeletonCardHtml).join('');
-    } else {
-        const list = Array.isArray(items) ? items : [];
-        gridHtml = list.length > 0
-            ? list.map(item => renderCard(item, 'gallery_item')).join('')
-            : renderGalleryEmptyState(emptyStateOptions);
+        if (containerEl) {
+            const target = typeof containerEl === 'string' ? document.querySelector(containerEl) : containerEl;
+            if (target) target.innerHTML = gridHtml;
+        }
+        return gridHtml;
     }
 
+    const list = Array.isArray(items) ? items : [];
+
+    if (list.length === 0) {
+        gridHtml = renderGalleryEmptyState(emptyStateOptions);
+        if (containerEl) {
+            const target = typeof containerEl === 'string' ? document.querySelector(containerEl) : containerEl;
+            if (target) target.innerHTML = gridHtml;
+        }
+        return gridHtml;
+    }
+
+    // If containerEl is provided, perform targeted DOM reconciliation to avoid recreating loaded image nodes
     if (containerEl) {
         const target = typeof containerEl === 'string' ? document.querySelector(containerEl) : containerEl;
         if (target) {
-            target.innerHTML = gridHtml;
+            const existingCards = target.querySelectorAll('.gallery-card:not(.skeleton-card)');
+            const hasEmptyStateOrSkeleton = target.querySelector('.gallery-empty-state, .skeleton-card') !== null;
+
+            if (existingCards.length > 0 && !hasEmptyStateOrSkeleton) {
+                const cardMap = new Map();
+                existingCards.forEach(card => {
+                    const id = card.getAttribute('data-id');
+                    if (id) cardMap.set(id, card);
+                });
+
+                const newCardElements = [];
+                const tempContainer = document.createElement('div');
+
+                list.forEach(item => {
+                    if (cardMap.has(item.id)) {
+                        newCardElements.push(cardMap.get(item.id));
+                    } else {
+                        tempContainer.innerHTML = renderCard(item, 'gallery_item');
+                        const newCard = tempContainer.firstElementChild;
+                        if (newCard) newCardElements.push(newCard);
+                    }
+                });
+
+                if (typeof target.replaceChildren === 'function') {
+                    target.replaceChildren(...newCardElements);
+                } else {
+                    target.innerHTML = '';
+                    newCardElements.forEach(el => target.appendChild(el));
+                }
+                return '';
+            } else {
+                gridHtml = list.map(item => renderCard(item, 'gallery_item')).join('');
+                target.innerHTML = gridHtml;
+                return gridHtml;
+            }
         }
     }
+
+    gridHtml = list.map(item => renderCard(item, 'gallery_item')).join('');
     return gridHtml;
 }
 
