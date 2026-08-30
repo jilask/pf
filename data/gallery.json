@@ -4,9 +4,12 @@
     "title": "[TODO: real title]",
     "category": "fashion",
     "coverThumb": "assets/gallery/fashion/jacket/jacket-cover-thumb.webp",
-    "tool": "[TODO]",
+    "tool": "Nano Banana 2 Lite",
     "prompt": "[TODO: shared/primary prompt]",
-    "tags": ["[TODO]"],
+    "tags": [
+      "Nano Banana 2 Lite",
+      "Flux 3.0 video"
+    ],
     "date": "2026-08-30",
     "featured": true,
     "media": [
@@ -65,9 +68,11 @@
     "title": "[TODO: real title]",
     "category": "fashion",
     "coverThumb": "assets/gallery/fashion/dress/dress-cover-thumb.webp",
-    "tool": "[TODO]",
+    "tool": "ChatGPT Image 2.0",
     "prompt": "[TODO: shared/primary prompt]",
-    "tags": ["[TODO]"],
+    "tags": [
+      "[TODO]"
+    ],
     "date": "2026-08-30",
     "featured": false,
     "media": [
@@ -90,9 +95,9 @@
     "title": "[TODO: real title]",
     "category": "fashion",
     "coverThumb": "assets/gallery/fashion/jumper/jumper-cover-thumb.webp",
-    "tool": "[TODO]",
+    "tool": "ChatGPT Image 2.0",
     "prompt": "[TODO: shared/primary prompt]",
-    "tags": ["[TODO]"],
+    "tags": "ChatGPT Image 2.0",
     "date": "2026-08-30",
     "featured": false,
     "media": [
@@ -117,9 +122,9 @@
     "mediaType": "image",
     "thumb": "assets/gallery/character/dragon-sheet-thumb.webp",
     "full": "assets/gallery/character/dragon-sheet-full.webp",
-    "tool": "[TODO: tool used]",
+    "tool": "ChatGPT Image 2.0",
     "prompt": "[TODO: add prompt]",
-    "tags": ["[TODO]"],
+    "tags": "ChatGPT Image 2.0",
     "date": "2026-08-30",
     "featured": false
   },
@@ -130,9 +135,9 @@
     "mediaType": "image",
     "thumb": "assets/gallery/character/knight-sheet-thumb.webp",
     "full": "assets/gallery/character/knight-sheet-full.webp",
-    "tool": "[TODO: tool used]",
+    "tool": "ChatGPT Image 2.0",
     "prompt": "[TODO: add prompt]",
-    "tags": ["[TODO]"],
+    "tags": "ChatGPT Image 2.0",
     "date": "2026-08-30",
     "featured": false
   },
@@ -143,9 +148,9 @@
     "mediaType": "image",
     "thumb": "assets/gallery/landscape/landscape-thumb.webp",
     "full": "assets/gallery/landscape/landscape-full.webp",
-    "tool": "[TODO: tool used]",
+    "tool": "ChatGPT Image 2.0",
     "prompt": "[TODO: add prompt]",
-    "tags": ["[TODO]"],
+    "tags": "ChatGPT Image 2.0",
     "date": "2026-08-30",
     "featured": false
   },
@@ -156,9 +161,9 @@
     "mediaType": "video",
     "thumb": "assets/gallery/video/dragon-rider-pov-poster.webp",
     "full": "assets/gallery/video/dragon-rider-pov.mp4",
-    "tool": "[TODO: tool used]",
+    "tool": "Flux 3.0 video",
     "prompt": "[TODO: add prompt]",
-    "tags": ["[TODO]"],
+    "tags": "Flux 3.0 video",
     "date": "2026-08-30",
     "featured": false
   },
@@ -169,9 +174,9 @@
     "mediaType": "video",
     "thumb": "assets/gallery/video/knight-cowboy-poster.webp",
     "full": "assets/gallery/video/knight-cowboy.mp4",
-    "tool": "[TODO: tool used]",
+    "tool": "Gemini Omni Video 1.1 Flash",
     "prompt": "[TODO: add prompt]",
-    "tags": ["[TODO]"],
+    "tags": "Gemini Omni Video 1.1 Flash",
     "date": "2026-08-30",
     "featured": false
   },
@@ -182,9 +187,9 @@
     "mediaType": "video",
     "thumb": "assets/gallery/video/orange-cat-poster.webp",
     "full": "assets/gallery/video/orange-cat.mp4",
-    "tool": "[TODO: tool used]",
+    "tool": "Flux 3.0 video",
     "prompt": "[TODO: add prompt]",
-    "tags": ["[TODO]"],
+    "tags": "Flux 3.0 video",
     "date": "2026-08-30",
     "featured": false
   },
@@ -195,9 +200,9 @@
     "mediaType": "video",
     "thumb": "assets/gallery/video/rainy-window-poster.webp",
     "full": "assets/gallery/video/rainy-window.mp4",
-    "tool": "[TODO: tool used]",
+    "tool": "Gemini Omni Video 1.1 Flash",
     "prompt": "[TODO: add prompt]",
-    "tags": ["[TODO]"],
+    "tags": "Gemini Omni Video 1.1 Flash",
     "date": "2026-08-30",
     "featured": false
   }
