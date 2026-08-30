@@ -1546,6 +1546,9 @@ ACHIEVEMENTS
                         btn.setAttribute('aria-current', isActive ? 'true' : 'false');
                         const subTitle = (item.media[idx] && item.media[idx].caption) || `View ${idx + 1}`;
                         btn.setAttribute('aria-label', `View ${idx + 1} of ${item.media.length}: ${subTitle}${isActive ? ' (currently selected)' : ''}`);
+                        if (isActive && typeof btn.scrollIntoView === 'function') {
+                            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                        }
                     });
                 } else {
                     const activeElementWasSubnav = subnavContainer.contains(document.activeElement);
@@ -1576,6 +1579,11 @@ ACHIEVEMENTS
                             </div>
                         </div>
                     `;
+
+                    const initialActiveBtn = subnavContainer.querySelectorAll('.lightbox-subnav-item')[this.currentCaseStudySubIndex];
+                    if (initialActiveBtn && typeof initialActiveBtn.scrollIntoView === 'function') {
+                        initialActiveBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                    }
 
                     if (activeElementWasSubnav) {
                         const newButtons = subnavContainer.querySelectorAll('.lightbox-subnav-item');

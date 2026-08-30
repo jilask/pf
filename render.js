@@ -85,6 +85,7 @@ function renderCard(item, type) {
             const catMap = {
                 'fashion': { label: 'Fashion / Commercial', class: 'fashion' },
                 'character': { label: 'Character / Stylized', class: 'character' },
+                'landscape': { label: 'Landscape / Environment', class: 'landscape' },
                 'video': { label: 'Video / Motion', class: 'video' }
             };
             const catInfo = catMap[item.category] || { label: item.category || 'General', class: 'general' };
@@ -121,9 +122,10 @@ function renderCard(item, type) {
 
             // Responsive image source switching with srcset / sizes
             // Supports WebP/AVIF asset pipelines if defined in item data, with SVG/raster fallback
+            const isFullAnImage = fullSrc && typeof fullSrc === 'string' && !fullSrc.endsWith('.mp4');
             const srcsetAttr = item.srcset
                 ? `srcset="${item.srcset}"`
-                : (fullSrc && fullSrc !== thumbSrc
+                : (isFullAnImage && fullSrc !== thumbSrc
                     ? `srcset="${thumbSrc} 400w, ${fullSrc} 800w"`
                     : `srcset="${thumbSrc} 400w"`);
 
@@ -490,6 +492,13 @@ function renderSection(sectionType, data) {
                                         aria-pressed="${currentCategory === 'character' ? 'true' : 'false'}"
                                         onclick="window.portfolio && window.portfolio.setGalleryCategory('character')">
                                     [CHARACTER]
+                                </button>
+                                <button type="button" 
+                                        class="gallery-filter-btn ${currentCategory === 'landscape' ? 'active' : ''}" 
+                                        data-category="landscape" 
+                                        aria-pressed="${currentCategory === 'landscape' ? 'true' : 'false'}"
+                                        onclick="window.portfolio && window.portfolio.setGalleryCategory('landscape')">
+                                    [LANDSCAPE]
                                 </button>
                                 <button type="button" 
                                         class="gallery-filter-btn ${currentCategory === 'video' ? 'active' : ''}" 
