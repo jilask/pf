@@ -138,6 +138,9 @@ function renderCard(item, type) {
             ` : '';
 
             const cardMediaType = isCaseStudy ? 'case-study' : (item.mediaType || 'image');
+            const itemTags = Array.isArray(item.tags)
+                ? item.tags
+                : (typeof item.tags === 'string' && item.tags.trim() ? [item.tags.trim()] : []);
 
             return `
                 <article class="gallery-card${item.featured ? ' is-featured' : ''}${isVideo ? ' is-video-item' : ''}${isCaseStudy ? ' is-case-study' : ''}" 
@@ -159,7 +162,7 @@ function renderCard(item, type) {
                              width="400" 
                              height="300" 
                              class="gallery-thumb"
-                             onload="this.classList.add('loaded'); if (this.parentElement) this.parentElement.classList.remove('skeleton-loading');"
+                             onload="this.classList.add('loaded'); if (this.parentElement) this.parentElement.parentElement ? this.parentElement.classList.remove('skeleton-loading') : null;"
                              onerror="this.style.display='none'; if (this.nextElementSibling) this.nextElementSibling.style.display='flex'; if (this.parentElement) this.parentElement.classList.remove('skeleton-loading');">
                         <div class="gallery-fallback" style="display: none;" role="img" aria-label="Image failed to load: ${item.title}">
                             <span class="fallback-icon" aria-hidden="true">⚠️</span>
@@ -182,9 +185,9 @@ function renderCard(item, type) {
                             <span class="gallery-tool">${item.tool || ''}</span>
                             <span class="gallery-date">${item.date || ''}</span>
                         </div>
-                        ${item.tags && item.tags.length ? `
+                        ${itemTags.length ? `
                             <div class="gallery-tags">
-                                ${item.tags.map(tag => `<span class="gallery-tag">#${tag}</span>`).join('')}
+                                ${itemTags.map(tag => `<span class="gallery-tag">#${tag}</span>`).join('')}
                             </div>
                         ` : ''}
                     </div>
@@ -444,6 +447,8 @@ function renderSection(sectionType, data) {
             allItems.forEach(item => {
                 if (Array.isArray(item.tags)) {
                     item.tags.forEach(t => tagSet.add(t));
+                } else if (typeof item.tags === 'string' && item.tags.trim()) {
+                    tagSet.add(item.tags.trim());
                 }
             });
             const allTags = Array.from(tagSet);

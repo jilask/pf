@@ -97,7 +97,9 @@
     "coverThumb": "assets/gallery/fashion/jumper/jumper-cover-thumb.webp",
     "tool": "ChatGPT Image 2.0",
     "prompt": "[TODO: shared/primary prompt]",
-    "tags": "ChatGPT Image 2.0",
+    "tags": [
+      "ChatGPT Image 2.0"
+    ],
     "date": "2026-08-30",
     "featured": false,
     "media": [
@@ -124,7 +126,9 @@
     "full": "assets/gallery/character/dragon-sheet-full.webp",
     "tool": "ChatGPT Image 2.0",
     "prompt": "[TODO: add prompt]",
-    "tags": "ChatGPT Image 2.0",
+    "tags": [
+      "ChatGPT Image 2.0"
+    ],
     "date": "2026-08-30",
     "featured": false
   },
@@ -137,7 +141,9 @@
     "full": "assets/gallery/character/knight-sheet-full.webp",
     "tool": "ChatGPT Image 2.0",
     "prompt": "[TODO: add prompt]",
-    "tags": "ChatGPT Image 2.0",
+    "tags": [
+      "ChatGPT Image 2.0"
+    ],
     "date": "2026-08-30",
     "featured": false
   },
@@ -150,7 +156,9 @@
     "full": "assets/gallery/landscape/landscape-full.webp",
     "tool": "ChatGPT Image 2.0",
     "prompt": "[TODO: add prompt]",
-    "tags": "ChatGPT Image 2.0",
+    "tags": [
+      "ChatGPT Image 2.0"
+    ],
     "date": "2026-08-30",
     "featured": false
   },
@@ -163,7 +171,9 @@
     "full": "assets/gallery/video/dragon-rider-pov.mp4",
     "tool": "Flux 3.0 video",
     "prompt": "[TODO: add prompt]",
-    "tags": "Flux 3.0 video",
+    "tags": [
+      "Flux 3.0 video"
+    ],
     "date": "2026-08-30",
     "featured": false
   },
@@ -176,7 +186,9 @@
     "full": "assets/gallery/video/knight-cowboy.mp4",
     "tool": "Gemini Omni Video 1.1 Flash",
     "prompt": "[TODO: add prompt]",
-    "tags": "Gemini Omni Video 1.1 Flash",
+    "tags": [
+      "Gemini Omni Video 1.1 Flash"
+    ],
     "date": "2026-08-30",
     "featured": false
   },
@@ -189,7 +201,9 @@
     "full": "assets/gallery/video/orange-cat.mp4",
     "tool": "Flux 3.0 video",
     "prompt": "[TODO: add prompt]",
-    "tags": "Flux 3.0 video",
+    "tags": [
+      "Flux 3.0 video"
+    ],
     "date": "2026-08-30",
     "featured": false
   },
@@ -202,7 +216,9 @@
     "full": "assets/gallery/video/rainy-window.mp4",
     "tool": "Gemini Omni Video 1.1 Flash",
     "prompt": "[TODO: add prompt]",
-    "tags": "Gemini Omni Video 1.1 Flash",
+    "tags": [
+      "Gemini Omni Video 1.1 Flash"
+    ],
     "date": "2026-08-30",
     "featured": false
   }
