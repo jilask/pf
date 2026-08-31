@@ -1,380 +1,231 @@
 [
   {
-    "id": "cyberpunk-couture",
-    "title": "Cyberpunk Couture 2077",
+    "id": "jacket-case-study",
+    "title": "Diner Denim — AI Fashion Campaign",
     "category": "fashion",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/cyberpunk-couture-thumb.svg",
-    "full": "./assets/gallery/cyberpunk-couture-full.svg",
-    "tool": "ComfyUI + SDXL",
-    "prompt": "High fashion avant-garde cyberpunk apparel, glowing neon fiber optics, editorial photography, 8k resolution, sleek volumetric lighting",
-    "negativePrompt": "blurry, low quality, deformed, duplicate limbs, artifacts",
-    "tags": ["Fashion", "Cyberpunk", "SDXL", "ComfyUI"],
-    "date": "2024-05-15",
-    "featured": true,
-    "relatedProject": "ai-fashion"
-  },
-  {
-    "id": "mecha-samurai",
-    "title": "Ronin-01 Mecha Samurai",
-    "category": "character",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/mecha-samurai-thumb.svg",
-    "full": "./assets/gallery/mecha-samurai-full.svg",
-    "tool": "Flux.1 Dev",
-    "prompt": "Stylized retro mecha samurai warrior with glowing katana, anime aesthetic, detailed armor plating, cinematic atmospheric lighting",
-    "negativePrompt": "disfigured, extra limbs, bad proportions, noisy",
-    "tags": ["Character", "Mecha", "Anime", "Flux"],
-    "date": "2024-06-02",
-    "featured": true,
-    "relatedProject": "comfyui-nodes"
-  },
-  {
-    "id": "neon-drive-loop",
-    "title": "Synthwave Neon Highway",
-    "category": "video",
-    "mediaType": "video",
-    "thumb": "./assets/gallery/neon-drive-thumb.svg",
-    "full": "./assets/gallery/neon-drive-full.svg",
-    "tool": "ComfyUI + AnimateDiff",
-    "prompt": "Looping synthwave car driving down infinite neon highway at dusk, retro 80s aesthetic, camera tracking shot, smooth motion",
-    "negativePrompt": "flicker, jitter, unstable motion, low frame rate",
-    "tags": ["Video", "Motion", "Synthwave", "AnimateDiff"],
-    "date": "2024-06-20",
-    "featured": false
-  },
-  {
-    "id": "ethereal-runway",
-    "title": "Holographic Ethereal Gown",
-    "category": "fashion",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/ethereal-runway-thumb.svg",
-    "full": "./assets/gallery/ethereal-runway-full.svg",
-    "tool": "Midjourney v6",
-    "prompt": "Ethereal translucent silk gown on holographic runway, futuristic high fashion, octane render, soft studio lighting, ultra detailed",
-    "negativePrompt": "overexposed, dark shadows, low contrast",
-    "tags": ["Fashion", "Futuristic", "Midjourney"],
-    "date": "2024-07-10",
-    "featured": false,
-    "relatedProject": "ai-fashion"
-  },
-  {
-    "id": "quantum-android",
-    "title": "Quantum Android Unit 09",
-    "category": "character",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/quantum-android-thumb.svg",
-    "full": "./assets/gallery/quantum-android-full.svg",
-    "tool": "ComfyUI + Flux",
-    "prompt": "Portrait of quantum android with glass faceplate revealing glowing neural circuitry, stylized sci-fi digital art, sharp focus",
-    "negativePrompt": "grainy, blurry, low resolution, ugly",
-    "tags": ["Character", "Android", "Sci-Fi", "Flux"],
-    "date": "2024-08-01",
-    "featured": true
-  },
-  {
-    "id": "neo-tokyo-kimono",
-    "title": "Neo-Tokyo Cyber Kimono",
-    "category": "fashion",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/cyberpunk-couture-thumb.svg",
-    "full": "./assets/gallery/cyberpunk-couture-full.svg",
-    "tool": "SDXL 1.0 + ControlNet",
-    "prompt": "Futuristic cyberpunk kimono infused with fiber-optic embroidery, rain-slicked Tokyo alley background, neon reflections",
-    "negativePrompt": "oversaturated, distorted, messy textures",
-    "tags": ["Fashion", "Cyberpunk", "Tokyo", "SDXL"],
-    "date": "2024-08-12",
-    "featured": false
-  },
-  {
-    "id": "cyber-geisha",
-    "title": "Android Geisha Unit 04",
-    "category": "character",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/quantum-android-thumb.svg",
-    "full": "./assets/gallery/quantum-android-full.svg",
-    "tool": "Flux.1 Dev",
-    "prompt": "Ornate android geisha with polished white porcelain chassis, exposed golden gears and glowing cyan eye sensors",
-    "negativePrompt": "deformed hands, bad anatomy, blur",
-    "tags": ["Character", "Android", "Cyberpunk", "Flux"],
-    "date": "2024-08-18",
-    "featured": false
-  },
-  {
-    "id": "matrix-rain-tunnel",
-    "title": "Matrix Neural Tunnel",
-    "category": "video",
-    "mediaType": "video",
-    "thumb": "./assets/gallery/neon-drive-thumb.svg",
-    "full": "./assets/gallery/neon-drive-full.svg",
-    "tool": "Deforum + Stable Diffusion",
-    "prompt": "First-person zoom into an infinite vortex of glowing emerald terminal code and neural synapses, 60fps smooth loop",
-    "negativePrompt": "choppy, glitchy frame breaks, dull colors",
-    "tags": ["Video", "Motion", "Terminal", "Deforum"],
-    "date": "2024-08-25",
-    "featured": true
-  },
-  {
-    "id": "techwear-infiltrator",
-    "title": "Urban Infiltrator Techwear",
-    "category": "fashion",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/ethereal-runway-thumb.svg",
-    "full": "./assets/gallery/ethereal-runway-full.svg",
-    "tool": "Midjourney v6",
-    "prompt": "Matte black tactical techwear parka with magnetic straps, modular pouches, waterproof reflective accents, dystopian atmosphere",
-    "negativePrompt": "glossy, bright, cartoon, unrealistic",
-    "tags": ["Fashion", "Techwear", "Midjourney"],
-    "date": "2024-09-02",
-    "featured": false,
-    "relatedProject": "ai-fashion"
-  },
-  {
-    "id": "synth-monk",
-    "title": "Cyber Monk of Neo-Kyoto",
-    "category": "character",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/mecha-samurai-thumb.svg",
-    "full": "./assets/gallery/mecha-samurai-full.svg",
-    "tool": "ComfyUI + Flux",
-    "prompt": "Cybernetic monk meditating before a holographic mandala, saffron robes with integrated solar circuits, misty mountain temple",
-    "negativePrompt": "bad hands, extra fingers, poor lighting",
-    "tags": ["Character", "Cyberpunk", "Sci-Fi", "Flux"],
-    "date": "2024-09-10",
-    "featured": false
-  },
-  {
-    "id": "orbital-station-flyby",
-    "title": "Orbital Station Zenith Flyby",
-    "category": "video",
-    "mediaType": "video",
-    "thumb": "./assets/gallery/neon-drive-thumb.svg",
-    "full": "./assets/gallery/neon-drive-full.svg",
-    "tool": "SVD (Stable Video Diffusion)",
-    "prompt": "Cinematic camera flyby of massive spinning orbital ring habitat with glowing solar arrays and docked starships, photorealistic",
-    "negativePrompt": "low-res, jittery, flickering stars",
-    "tags": ["Video", "Motion", "Sci-Fi", "SVD"],
-    "date": "2024-09-18",
-    "featured": false
-  },
-  {
-    "id": "aurora-silk",
-    "title": "Aurora Borealis Luminescent Cape",
-    "category": "fashion",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/cyberpunk-couture-thumb.svg",
-    "full": "./assets/gallery/cyberpunk-couture-full.svg",
-    "tool": "Flux.1 Schnell",
-    "prompt": "Flowing cape woven with electroluminescent silk shifting between violet, emerald, and cyan gradients, midnight snowscape",
-    "negativePrompt": "static, dull, flat lighting",
-    "tags": ["Fashion", "Futuristic", "Flux"],
-    "date": "2024-09-24",
-    "featured": true
-  },
-  {
-    "id": "neon-rebel",
-    "title": "Street Netrunner Vex",
-    "category": "character",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/mecha-samurai-thumb.svg",
-    "full": "./assets/gallery/mecha-samurai-full.svg",
-    "tool": "SDXL + LoRA",
-    "prompt": "Cyberpunk netrunner with dual sub-dermal cyberdecks, neon visor, graffiti-tagged alleyway, cinematic lighting",
-    "negativePrompt": "amateur, bad drawing, distorted face",
-    "tags": ["Character", "Cyberpunk", "SDXL"],
-    "date": "2024-10-01",
-    "featured": false
-  },
-  {
-    "id": "mecha-assembly-sequence",
-    "title": "Titan Mech Factory Assembly",
-    "category": "video",
-    "mediaType": "video",
-    "thumb": "./assets/gallery/neon-drive-thumb.svg",
-    "full": "./assets/gallery/neon-drive-full.svg",
-    "tool": "AnimateDiff + SDXL",
-    "prompt": "Automated robotic arms welding and assembling a giant bipedal battle mech with sparks flying, industrial timelapse loop",
-    "negativePrompt": "blurry, inconsistent geometry, bad frame interpolation",
-    "tags": ["Video", "Motion", "Mecha", "AnimateDiff"],
-    "date": "2024-10-08",
-    "featured": true
-  },
-  {
-    "id": "chrome-ballgown",
-    "title": "Liquid Mercury Ballgown",
-    "category": "fashion",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/ethereal-runway-thumb.svg",
-    "full": "./assets/gallery/ethereal-runway-full.svg",
-    "tool": "Midjourney v6",
-    "prompt": "Reflective liquid chrome sculpture gown reflecting geometric neon lighting, Paris fashion week runway, ultra sharp detail",
-    "negativePrompt": "low contrast, matte textures, duplicate models",
-    "tags": ["Fashion", "Midjourney"],
-    "date": "2024-10-15",
-    "featured": false
-  },
-  {
-    "id": "orbital-pilot",
-    "title": "Deep Space Void Navigator",
-    "category": "character",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/quantum-android-thumb.svg",
-    "full": "./assets/gallery/quantum-android-full.svg",
-    "tool": "Flux.1 Dev",
-    "prompt": "Close-up portrait of void navigator in gold-tinted pressurized helmet reflecting star clusters and nebula gas clouds",
-    "negativePrompt": "scratchy, blurry, low resolution",
-    "tags": ["Character", "Sci-Fi", "Flux"],
-    "date": "2024-10-22",
-    "featured": false
-  },
-  {
-    "id": "glitch-bloom-morph",
-    "title": "Digital Flora Glitch Morph",
-    "category": "video",
-    "mediaType": "video",
-    "thumb": "./assets/gallery/neon-drive-thumb.svg",
-    "full": "./assets/gallery/neon-drive-full.svg",
-    "tool": "ComfyUI + AnimateDiff",
-    "prompt": "Bioluminescent alien flower blooming and glitch-shifting through infrared color spectrums in seamless hypnotic loop",
-    "negativePrompt": "flickering black screens, artifacts",
-    "tags": ["Video", "Motion", "AnimateDiff"],
-    "date": "2024-10-29",
-    "featured": false
-  },
-  {
-    "id": "solar-punk-drape",
-    "title": "Solarpunk Photosynthetic Vestment",
-    "category": "fashion",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/cyberpunk-couture-thumb.svg",
-    "full": "./assets/gallery/cyberpunk-couture-full.svg",
-    "tool": "SDXL 1.0",
-    "prompt": "Organic solarpunk gown composed of living ivy and microscopic solar collectors, golden hour rooftop greenhouse setting",
-    "negativePrompt": "dark, grimy, dead vegetation",
-    "tags": ["Fashion", "Futuristic", "SDXL"],
-    "date": "2024-11-04",
-    "featured": false
-  },
-  {
-    "id": "shadow-assassin",
-    "title": "Kunoichi Stealth Operative",
-    "category": "character",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/mecha-samurai-thumb.svg",
-    "full": "./assets/gallery/mecha-samurai-full.svg",
-    "tool": "Flux.1 Dev",
-    "prompt": "Dynamic stealth operative crouching on skyscraper ledge overlooking rainy neon megacity, optical camo active",
-    "negativePrompt": "bad anatomy, cartoonish",
-    "tags": ["Character", "Cyberpunk", "Anime", "Flux"],
-    "date": "2024-11-12",
-    "featured": true
-  },
-  {
-    "id": "neural-network-pulse",
-    "title": "Synaptic Quantum Pulse",
-    "category": "video",
-    "mediaType": "video",
-    "thumb": "./assets/gallery/neon-drive-thumb.svg",
-    "full": "./assets/gallery/neon-drive-full.svg",
-    "tool": "Deforum + Stable Diffusion",
-    "prompt": "Macro visualization of electrical signals pulsing through dense bio-neural networks, volumetric glowing particles, 60fps",
-    "negativePrompt": "low frame rate, stuttering camera",
-    "tags": ["Video", "Motion", "Deforum"],
-    "date": "2024-11-19",
-    "featured": false
-  },
-  {
-    "id": "void-runner-streetwear",
-    "title": "Void Runner Kinetic Streetwear",
-    "category": "fashion",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/ethereal-runway-thumb.svg",
-    "full": "./assets/gallery/ethereal-runway-full.svg",
-    "tool": "Midjourney v6",
-    "prompt": "High-velocity cybernetic parkour outfit with kinetic energy dampers and orange hazard piping, futuristic alleyway",
-    "negativePrompt": "monochrome, stiff pose, bad hands",
-    "tags": ["Fashion", "Techwear", "Cyberpunk", "Midjourney"],
-    "date": "2024-11-26",
-    "featured": false
-  },
-  {
-    "id": "rogue-ai-avatar",
-    "title": "Sentient Core AI Hologram",
-    "category": "character",
-    "mediaType": "image",
-    "thumb": "./assets/gallery/quantum-android-thumb.svg",
-    "full": "./assets/gallery/quantum-android-full.svg",
-    "tool": "ComfyUI + Flux",
-    "prompt": "Ethereal translucent digital avatar floating above quantum mainframe server racks, geometric data halos around head",
-    "negativePrompt": "solid human skin, low resolution",
-    "tags": ["Character", "Android", "Sci-Fi", "Flux"],
-    "date": "2024-12-03",
-    "featured": false
-  },
-  {
-    "id": "hyperdrive-jump",
-    "title": "Hyperdrive Starburst Transit",
-    "category": "video",
-    "mediaType": "video",
-    "thumb": "./assets/gallery/neon-drive-thumb.svg",
-    "full": "./assets/gallery/neon-drive-full.svg",
-    "tool": "SVD (Stable Video Diffusion)",
-    "prompt": "Spaceship bridge viewport perspective entering hyperspace, stars stretching into relativistic chromatic streaks",
-    "negativePrompt": "static stars, choppy acceleration",
-    "tags": ["Video", "Motion", "Sci-Fi", "SVD"],
-    "date": "2024-12-10",
-    "featured": true
-  },
-  {
-    "id": "holographic-interface",
-    "title": "Cyberdeck UI Spatial Matrix",
-    "category": "video",
-    "mediaType": "video",
-    "thumb": "./assets/gallery/neon-drive-thumb.svg",
-    "full": "./assets/gallery/neon-drive-full.svg",
-    "tool": "ComfyUI + AnimateDiff",
-    "prompt": "Floating holographic terminal interfaces updating live telemetry and wireframe 3D topology maps in rapid sequence",
-    "negativePrompt": "low contrast, blurry text",
-    "tags": ["Video", "Motion", "Terminal", "AnimateDiff"],
-    "date": "2024-12-18",
-    "featured": false
-  },
-  {
-    "id": "cyber-jacket-study",
-    "title": "Cyber Jacket — Multi-Angle Study",
-    "category": "fashion",
-    "coverThumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
-    "tool": "ComfyUI + SDXL, ControlNet",
-    "prompt": "[TODO: add prompt]",
-    "negativePrompt": "[TODO: add negative prompt]",
-    "tags": ["Fashion", "ControlNet", "Case Study"],
-    "date": "2025-01-15",
+    "coverThumb": "assets/gallery/fashion/jacket/jacket-cover-thumb.webp",
+    "tool": "Nano Banana 2 Lite",
+    "prompt": "[TODO: shared/primary prompt]",
+    "tags": [
+      "Nano Banana 2 Lite",
+      "Flux 3.0 video"
+    ],
+    "date": "2026-08-30",
     "featured": true,
     "media": [
       {
         "type": "image",
-        "thumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
-        "full": "./assets/gallery/cyber-jacket-front-full.svg",
-        "caption": "Front view — silhouette and collar architecture"
+        "thumb": "assets/gallery/fashion/jacket/jacket-input-thumb.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-input-full.webp",
+        "caption": "Input reference"
       },
       {
         "type": "image",
-        "thumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
-        "full": "./assets/gallery/cyber-jacket-side-full.svg",
-        "caption": "Side detail — kinetic seam and strap hardware"
+        "thumb": "assets/gallery/fashion/jacket/jacket-output-thumb.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-output-full.webp",
+        "caption": "Full-body diner editorial shot"
       },
       {
         "type": "image",
-        "thumb": "./assets/gallery/cyber-jacket-cover-thumb.svg",
-        "full": "./assets/gallery/cyber-jacket-back-full.svg",
-        "caption": "Back view — thermal vents and luminescent panel"
+        "thumb": "assets/gallery/fashion/jacket/jacket-output2-thumb.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-output2-full.webp",
+        "caption": "Seated by the window, afternoon light"
+      },
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jacket/jacket-output3-thumb.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-output3-full.webp",
+        "caption": "Side profile, booth backdrop"
+      },
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jacket/jacket-output4-thumb.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-output4-full.webp",
+        "caption": "Standing portrait by the window"
+      },
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jacket/jacket-output5-thumb.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-output5-full.webp",
+        "caption": "Coffee break — close-up detail"
+      },
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jacket/jacket-output6-thumb.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-output6-full.webp",
+        "caption": "Wide diner booth composition"
       },
       {
         "type": "video",
-        "thumb": "./assets/gallery/cyber-jacket-motion-thumb.svg",
-        "full": "./assets/gallery/cyber-jacket-motion-thumb.svg",
-        "caption": "Motion study — fabric drape and dynamic lighting"
+        "thumb": "assets/gallery/fashion/jacket/jacket-video-poster.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-video-full.mp4",
+        "caption": "Motion study — diner campaign teaser"
       }
     ]
+  },
+  {
+    "id": "dress-case-study",
+    "title": "Amber Wrap Dress — Evening Editorial",
+    "category": "fashion",
+    "coverThumb": "assets/gallery/fashion/dress/dress-cover-thumb.webp",
+    "tool": "ChatGPT Image 2.0",
+    "prompt": "[TODO: shared/primary prompt]",
+    "tags": [
+      "ChatGPT Image 2.0",
+      "Fashion",
+      "Evening Wear",
+      "Editorial"
+    ],
+    "date": "2026-08-30",
+    "featured": false,
+    "media": [
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/dress/dress-input-thumb.webp",
+        "full": "assets/gallery/fashion/dress/dress-input-full.webp",
+        "caption": "Input reference"
+      },
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/dress/dress-output-thumb.webp",
+        "full": "assets/gallery/fashion/dress/dress-output-full.webp",
+        "caption": "Evening editorial — dramatic curtain backdrop"
+      }
+    ]
+  },
+  {
+    "id": "jumper-case-study",
+    "title": "Emerald Statement Jumpsuit",
+    "category": "fashion",
+    "coverThumb": "assets/gallery/fashion/jumper/jumper-cover-thumb.webp",
+    "tool": "ChatGPT Image 2.0",
+    "prompt": "[TODO: shared/primary prompt]",
+    "tags": [
+      "ChatGPT Image 2.0",
+      "Fashion",
+      "Jumpsuit",
+      "Editorial"
+    ],
+    "date": "2026-08-30",
+    "featured": false,
+    "media": [
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jumper/jumper-input-thumb.webp",
+        "full": "assets/gallery/fashion/jumper/jumper-input-full.webp",
+        "caption": "Input reference"
+      },
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jumper/jumper-output-thumb.webp",
+        "full": "assets/gallery/fashion/jumper/jumper-output-full.webp",
+        "caption": "Evening portrait — warm ambient lounge setting"
+      }
+    ]
+  },
+  {
+    "id": "dragon-sheet",
+    "title": "Dragon Sheet",
+    "category": "character",
+    "mediaType": "image",
+    "thumb": "assets/gallery/character/dragon-sheet-thumb.webp",
+    "full": "assets/gallery/character/dragon-sheet-full.webp",
+    "tool": "ChatGPT Image 2.0",
+    "prompt": "[TODO: add prompt]",
+    "tags": [
+      "ChatGPT Image 2.0"
+    ],
+    "date": "2026-08-30",
+    "featured": false
+  },
+  {
+    "id": "knight-sheet",
+    "title": "Knight Sheet",
+    "category": "character",
+    "mediaType": "image",
+    "thumb": "assets/gallery/character/knight-sheet-thumb.webp",
+    "full": "assets/gallery/character/knight-sheet-full.webp",
+    "tool": "ChatGPT Image 2.0",
+    "prompt": "[TODO: add prompt]",
+    "tags": [
+      "ChatGPT Image 2.0"
+    ],
+    "date": "2026-08-30",
+    "featured": false
+  },
+  {
+    "id": "landscape",
+    "title": "Landscape",
+    "category": "landscape",
+    "mediaType": "image",
+    "thumb": "assets/gallery/landscape/landscape-thumb.webp",
+    "full": "assets/gallery/landscape/landscape-full.webp",
+    "tool": "ChatGPT Image 2.0",
+    "prompt": "[TODO: add prompt]",
+    "tags": [
+      "ChatGPT Image 2.0"
+    ],
+    "date": "2026-08-30",
+    "featured": false
+  },
+  {
+    "id": "dragon-rider-pov",
+    "title": "Dragon Rider Pov",
+    "category": "video",
+    "mediaType": "video",
+    "thumb": "assets/gallery/video/dragon-rider-pov-poster.webp",
+    "full": "assets/gallery/video/dragon-rider-pov.mp4",
+    "tool": "Flux 3.0 video",
+    "prompt": "[TODO: add prompt]",
+    "tags": [
+      "Flux 3.0 video"
+    ],
+    "date": "2026-08-30",
+    "featured": false
+  },
+  {
+    "id": "knight-cowboy",
+    "title": "Knight Cowboy",
+    "category": "video",
+    "mediaType": "video",
+    "thumb": "assets/gallery/video/knight-cowboy-poster.webp",
+    "full": "assets/gallery/video/knight-cowboy.mp4",
+    "tool": "Gemini Omni Video 1.1 Flash",
+    "prompt": "[TODO: add prompt]",
+    "tags": [
+      "Gemini Omni Video 1.1 Flash"
+    ],
+    "date": "2026-08-30",
+    "featured": false
+  },
+  {
+    "id": "orange-cat",
+    "title": "Orange Cat",
+    "category": "video",
+    "mediaType": "video",
+    "thumb": "assets/gallery/video/orange-cat-poster.webp",
+    "full": "assets/gallery/video/orange-cat.mp4",
+    "tool": "Flux 3.0 video",
+    "prompt": "[TODO: add prompt]",
+    "tags": [
+      "Flux 3.0 video"
+    ],
+    "date": "2026-08-30",
+    "featured": false
+  },
+  {
+    "id": "rainy-window",
+    "title": "Rainy Window",
+    "category": "video",
+    "mediaType": "video",
+    "thumb": "assets/gallery/video/rainy-window-poster.webp",
+    "full": "assets/gallery/video/rainy-window.mp4",
+    "tool": "Gemini Omni Video 1.1 Flash",
+    "prompt": "[TODO: add prompt]",
+    "tags": [
+      "Gemini Omni Video 1.1 Flash"
+    ],
+    "date": "2026-08-30",
+    "featured": false
   }
 ]

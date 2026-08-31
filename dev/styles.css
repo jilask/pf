@@ -1568,6 +1568,12 @@ body::after {
     border: 1px solid var(--accent-green);
 }
 
+.gallery-category-badge.landscape {
+    background: rgba(14, 165, 233, 0.2);
+    color: #38bdf8;
+    border: 1px solid #38bdf8;
+}
+
 .gallery-category-badge.general {
     background: rgba(255, 255, 255, 0.1);
     color: var(--text-secondary);
