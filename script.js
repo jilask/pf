@@ -25,7 +25,7 @@ class ArchPortfolio {
         this.galleryFilterCategory = 'all';
         this.gallerySelectedTags = new Set();
         this.gallerySortOption = 'date-desc';
-        this.promptRevealMode = false;
+        this.promptRevealMode = true;
         this.galleryPageSize = 12;
         this.galleryVisibleCount = 12;
         this.currentRenderedLightboxItemId = null;

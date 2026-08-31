@@ -433,7 +433,7 @@ function renderSection(sectionType, data) {
             const currentCategory = (portfolio && portfolio.galleryFilterCategory) ? portfolio.galleryFilterCategory : 'all';
             const selectedTags = (portfolio && portfolio.gallerySelectedTags) ? Array.from(portfolio.gallerySelectedTags) : [];
             const currentSort = (portfolio && portfolio.gallerySortOption) ? portfolio.gallerySortOption : 'date-desc';
-            const promptRevealMode = portfolio ? !!portfolio.promptRevealMode : false;
+            const promptRevealMode = portfolio ? !!portfolio.promptRevealMode : true;
             const visibleCount = (portfolio && portfolio.galleryVisibleCount) ? portfolio.galleryVisibleCount : 12;
 
             const filteredItems = (portfolio && typeof portfolio.getFilteredAndSortedGalleryItems === 'function')
