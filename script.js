@@ -25,7 +25,7 @@ class ArchPortfolio {
         this.galleryFilterCategory = 'all';
         this.gallerySelectedTags = new Set();
         this.gallerySortOption = 'date-desc';
-        this.promptRevealMode = false;
+        this.promptRevealMode = true;
         this.galleryPageSize = 12;
         this.galleryVisibleCount = 12;
         this.currentRenderedLightboxItemId = null;
@@ -1007,6 +1007,8 @@ ACHIEVEMENTS
         items.forEach(item => {
             if (Array.isArray(item.tags)) {
                 item.tags.forEach(t => tagSet.add(t));
+            } else if (typeof item.tags === 'string' && item.tags.trim()) {
+                tagSet.add(item.tags.trim());
             }
         });
         return Array.from(tagSet);
@@ -1025,7 +1027,10 @@ ACHIEVEMENTS
         if (this.gallerySelectedTags && this.gallerySelectedTags.size > 0) {
             const selectedArr = Array.from(this.gallerySelectedTags);
             items = items.filter(item => {
-                const itemTags = (item.tags || []).map(t => t.toLowerCase());
+                const rawTags = Array.isArray(item.tags)
+                    ? item.tags
+                    : (typeof item.tags === 'string' && item.tags.trim() ? [item.tags.trim()] : []);
+                const itemTags = rawTags.map(t => t.toLowerCase());
                 return selectedArr.every(st => itemTags.includes(st.toLowerCase()));
             });
         }
@@ -1546,6 +1551,9 @@ ACHIEVEMENTS
                         btn.setAttribute('aria-current', isActive ? 'true' : 'false');
                         const subTitle = (item.media[idx] && item.media[idx].caption) || `View ${idx + 1}`;
                         btn.setAttribute('aria-label', `View ${idx + 1} of ${item.media.length}: ${subTitle}${isActive ? ' (currently selected)' : ''}`);
+                        if (isActive && typeof btn.scrollIntoView === 'function') {
+                            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                        }
                     });
                 } else {
                     const activeElementWasSubnav = subnavContainer.contains(document.activeElement);
@@ -1576,6 +1584,11 @@ ACHIEVEMENTS
                             </div>
                         </div>
                     `;
+
+                    const initialActiveBtn = subnavContainer.querySelectorAll('.lightbox-subnav-item')[this.currentCaseStudySubIndex];
+                    if (initialActiveBtn && typeof initialActiveBtn.scrollIntoView === 'function') {
+                        initialActiveBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                    }
 
                     if (activeElementWasSubnav) {
                         const newButtons = subnavContainer.querySelectorAll('.lightbox-subnav-item');
@@ -1613,6 +1626,9 @@ ACHIEVEMENTS
         const isLongPrompt = item.prompt && item.prompt.length > 90;
         const promptSummary = isLongPrompt ? item.prompt.slice(0, 90) + '...' : item.prompt;
         const isConcealed = this.promptRevealMode && !this.isPromptRevealedInModal;
+        const itemTags = Array.isArray(item.tags)
+            ? item.tags
+            : (typeof item.tags === 'string' && item.tags.trim() ? [item.tags.trim()] : []);
 
         if (metaPanel) {
             metaPanel.innerHTML = `
@@ -1633,9 +1649,9 @@ ACHIEVEMENTS
                     <span class="lightbox-meta-item">📅 <strong>Date:</strong> ${item.date || 'N/A'}</span>
                 </div>
 
-                ${item.tags && item.tags.length ? `
+                ${itemTags.length ? `
                     <div class="lightbox-tags-container">
-                        ${item.tags.map(tag => `<span class="gallery-tag">#${tag}</span>`).join('')}
+                        ${itemTags.map(tag => `<span class="gallery-tag">#${tag}</span>`).join('')}
                     </div>
                 ` : ''}
 

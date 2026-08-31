@@ -85,6 +85,7 @@ function renderCard(item, type) {
             const catMap = {
                 'fashion': { label: 'Fashion / Commercial', class: 'fashion' },
                 'character': { label: 'Character / Stylized', class: 'character' },
+                'landscape': { label: 'Landscape / Environment', class: 'landscape' },
                 'video': { label: 'Video / Motion', class: 'video' }
             };
             const catInfo = catMap[item.category] || { label: item.category || 'General', class: 'general' };
@@ -121,9 +122,10 @@ function renderCard(item, type) {
 
             // Responsive image source switching with srcset / sizes
             // Supports WebP/AVIF asset pipelines if defined in item data, with SVG/raster fallback
+            const isFullAnImage = fullSrc && typeof fullSrc === 'string' && !fullSrc.endsWith('.mp4');
             const srcsetAttr = item.srcset
                 ? `srcset="${item.srcset}"`
-                : (fullSrc && fullSrc !== thumbSrc
+                : (isFullAnImage && fullSrc !== thumbSrc
                     ? `srcset="${thumbSrc} 400w, ${fullSrc} 800w"`
                     : `srcset="${thumbSrc} 400w"`);
 
@@ -136,6 +138,9 @@ function renderCard(item, type) {
             ` : '';
 
             const cardMediaType = isCaseStudy ? 'case-study' : (item.mediaType || 'image');
+            const itemTags = Array.isArray(item.tags)
+                ? item.tags
+                : (typeof item.tags === 'string' && item.tags.trim() ? [item.tags.trim()] : []);
 
             return `
                 <article class="gallery-card${item.featured ? ' is-featured' : ''}${isVideo ? ' is-video-item' : ''}${isCaseStudy ? ' is-case-study' : ''}" 
@@ -157,7 +162,7 @@ function renderCard(item, type) {
                              width="400" 
                              height="300" 
                              class="gallery-thumb"
-                             onload="this.classList.add('loaded'); if (this.parentElement) this.parentElement.classList.remove('skeleton-loading');"
+                             onload="this.classList.add('loaded'); if (this.parentElement) this.parentElement.parentElement ? this.parentElement.classList.remove('skeleton-loading') : null;"
                              onerror="this.style.display='none'; if (this.nextElementSibling) this.nextElementSibling.style.display='flex'; if (this.parentElement) this.parentElement.classList.remove('skeleton-loading');">
                         <div class="gallery-fallback" style="display: none;" role="img" aria-label="Image failed to load: ${item.title}">
                             <span class="fallback-icon" aria-hidden="true">⚠️</span>
@@ -180,9 +185,9 @@ function renderCard(item, type) {
                             <span class="gallery-tool">${item.tool || ''}</span>
                             <span class="gallery-date">${item.date || ''}</span>
                         </div>
-                        ${item.tags && item.tags.length ? `
+                        ${itemTags.length ? `
                             <div class="gallery-tags">
-                                ${item.tags.map(tag => `<span class="gallery-tag">#${tag}</span>`).join('')}
+                                ${itemTags.map(tag => `<span class="gallery-tag">#${tag}</span>`).join('')}
                             </div>
                         ` : ''}
                     </div>
@@ -428,7 +433,7 @@ function renderSection(sectionType, data) {
             const currentCategory = (portfolio && portfolio.galleryFilterCategory) ? portfolio.galleryFilterCategory : 'all';
             const selectedTags = (portfolio && portfolio.gallerySelectedTags) ? Array.from(portfolio.gallerySelectedTags) : [];
             const currentSort = (portfolio && portfolio.gallerySortOption) ? portfolio.gallerySortOption : 'date-desc';
-            const promptRevealMode = portfolio ? !!portfolio.promptRevealMode : false;
+            const promptRevealMode = portfolio ? !!portfolio.promptRevealMode : true;
             const visibleCount = (portfolio && portfolio.galleryVisibleCount) ? portfolio.galleryVisibleCount : 12;
 
             const filteredItems = (portfolio && typeof portfolio.getFilteredAndSortedGalleryItems === 'function')
@@ -442,6 +447,8 @@ function renderSection(sectionType, data) {
             allItems.forEach(item => {
                 if (Array.isArray(item.tags)) {
                     item.tags.forEach(t => tagSet.add(t));
+                } else if (typeof item.tags === 'string' && item.tags.trim()) {
+                    tagSet.add(item.tags.trim());
                 }
             });
             const allTags = Array.from(tagSet);
@@ -490,6 +497,13 @@ function renderSection(sectionType, data) {
                                         aria-pressed="${currentCategory === 'character' ? 'true' : 'false'}"
                                         onclick="window.portfolio && window.portfolio.setGalleryCategory('character')">
                                     [CHARACTER]
+                                </button>
+                                <button type="button" 
+                                        class="gallery-filter-btn ${currentCategory === 'landscape' ? 'active' : ''}" 
+                                        data-category="landscape" 
+                                        aria-pressed="${currentCategory === 'landscape' ? 'true' : 'false'}"
+                                        onclick="window.portfolio && window.portfolio.setGalleryCategory('landscape')">
+                                    [LANDSCAPE]
                                 </button>
                                 <button type="button" 
                                         class="gallery-filter-btn ${currentCategory === 'video' ? 'active' : ''}" 
