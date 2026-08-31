@@ -65,13 +65,16 @@
   },
   {
     "id": "dress-case-study",
-    "title": "[TODO: real title]",
+    "title": "Amber Wrap Dress — Evening Editorial",
     "category": "fashion",
     "coverThumb": "assets/gallery/fashion/dress/dress-cover-thumb.webp",
     "tool": "ChatGPT Image 2.0",
     "prompt": "[TODO: shared/primary prompt]",
     "tags": [
-      "[TODO]"
+      "ChatGPT Image 2.0",
+      "Fashion",
+      "Evening Wear",
+      "Editorial"
     ],
     "date": "2026-08-30",
     "featured": false,
@@ -86,19 +89,22 @@
         "type": "image",
         "thumb": "assets/gallery/fashion/dress/dress-output-thumb.webp",
         "full": "assets/gallery/fashion/dress/dress-output-full.webp",
-        "caption": "[TODO: caption, e.g. angle/setting]"
+        "caption": "Evening editorial — dramatic curtain backdrop"
       }
     ]
   },
   {
     "id": "jumper-case-study",
-    "title": "[TODO: real title]",
+    "title": "Emerald Statement Jumpsuit",
     "category": "fashion",
     "coverThumb": "assets/gallery/fashion/jumper/jumper-cover-thumb.webp",
     "tool": "ChatGPT Image 2.0",
     "prompt": "[TODO: shared/primary prompt]",
     "tags": [
-      "ChatGPT Image 2.0"
+      "ChatGPT Image 2.0",
+      "Fashion",
+      "Jumpsuit",
+      "Editorial"
     ],
     "date": "2026-08-30",
     "featured": false,
@@ -113,7 +119,7 @@
         "type": "image",
         "thumb": "assets/gallery/fashion/jumper/jumper-output-thumb.webp",
         "full": "assets/gallery/fashion/jumper/jumper-output-full.webp",
-        "caption": "[TODO: caption, e.g. angle/setting]"
+        "caption": "Evening portrait — warm ambient lounge setting"
       }
     ]
   },
