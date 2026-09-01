@@ -80,7 +80,18 @@ class ArchPortfolio {
         this.setupNavigation();
         this.setupGalleryLightbox();
         await this.loadAllData();
-        this.loadSection('about');
+
+        // Check for direct link / auto-open pane flag or query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryOpen = urlParams.get('open');
+        const initialPane = window.__initialPane || (document.body && document.body.dataset ? document.body.dataset.openPane : null) || queryOpen;
+
+        if (initialPane && initialPane.toLowerCase() === 'gallery') {
+            this.navigateToSection('gallery');
+        } else {
+            this.loadSection('about');
+        }
+
         if (typeof this.startSystemUpdates === 'function') {
             this.startSystemUpdates();
         } else if (typeof this.updateSystemMetrics === 'function') {
@@ -420,23 +431,30 @@ class ArchPortfolio {
         setInterval(() => this.updateSystemInfo(), 5000);
     }
 
+    navigateToSection(command) {
+        const navItem = document.querySelector(`.nav-item[data-command="${command}"]`);
+        const targetWorkspace = command === 'gallery' ? 3 : 2;
+
+        this.switchWorkspace(targetWorkspace);
+        this.executeCommand(command);
+        if (navItem) {
+            this.updateActiveNav(navItem);
+        }
+
+        if (window.innerWidth < 768) {
+            const targetWindow = document.getElementById('portfolio-window');
+            if (targetWindow) {
+                targetWindow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    }
+
     setupNavigation() {
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => {
             const handleNav = () => {
                 const command = item.dataset.command;
-                const targetWorkspace = command === 'gallery' ? 3 : 2;
-
-                this.switchWorkspace(targetWorkspace);
-                this.executeCommand(command);
-                this.updateActiveNav(item);
-
-                if (window.innerWidth < 768) {
-                    const targetWindow = document.getElementById('portfolio-window');
-                    if (targetWindow) {
-                        targetWindow.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                }
+                this.navigateToSection(command);
             };
 
             item.addEventListener('click', handleNav);
