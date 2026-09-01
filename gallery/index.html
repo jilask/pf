@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AliJ A. Shaikh - AI Art & Motion Gallery</title>
+    <meta name="description" content="AI Art & Motion Gallery of AliJ A. Shaikh, Senior AI Architect & Prompt Engineer. Generative AI, motion design, and creative workflows.">
+    <meta name="keywords" content="AI Architect, Prompt Engineer, Generative AI, Python, Flutter, ComfyUI, Arch Linux, Tiling WM, Gallery, AI Art">
+    <meta name="author" content="AliJ A. Shaikh">
+    <link rel="canonical" href="https://jilask.github.io/pf/gallery/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jilask.github.io/pf/gallery/">
+    <meta property="og:title" content="AliJ A. Shaikh - AI Art & Motion Gallery">
+    <meta property="og:description" content="AI Art & Motion Gallery of AliJ A. Shaikh, Senior AI Architect & Prompt Engineer. Generative AI, motion design, and creative workflows.">
+    <meta property="og:image" content="https://jilask.github.io/pf/assets/og-image.png">
+    <meta property="og:site_name" content="AliJ A. Shaikh Portfolio">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://jilask.github.io/pf/gallery/">
+    <meta name="twitter:title" content="AliJ A. Shaikh - AI Art & Motion Gallery">
+    <meta name="twitter:description" content="AI Art & Motion Gallery of AliJ A. Shaikh, Senior AI Architect & Prompt Engineer. Generative AI, motion design, and creative workflows.">
+    <meta name="twitter:image" content="https://jilask.github.io/pf/assets/og-image.png">
+
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="theme-color" content="#0a0e0a">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=JetBrains+Mono:wght@300;400;500;700&family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        window.__initialPane = 'gallery';
+    </script>
+</head>
+
+<body data-open-pane="gallery">
+    <!-- Waybar/Taskbar -->
+    <header id="waybar" role="banner">
+        <div class="waybar-left">
+            <nav class="waybar-module workspace" aria-label="Workspaces">
+                <button class="workspace-item active" type="button" aria-label="Workspace 1" aria-current="page">1</button>
+                <button class="workspace-item" type="button" aria-label="Workspace 2">2</button>
+                <button class="workspace-item" type="button" aria-label="Workspace 3">3</button>
+                <button class="workspace-item" type="button" aria-label="Workspace 4">4</button>
+                <button class="workspace-item" type="button" aria-label="Workspace 5">5</button>
+            </nav>
+            <div class="waybar-module window-title">
+                <h1 id="current-window" class="waybar-h1">AliJ A. Shaikh - Portfolio</h1>
+            </div>
+        </div>
+
+        <div class="waybar-center">
+            <div class="waybar-module clock" aria-label="Current system time">
+                <span id="current-time" aria-live="off"></span>
+            </div>
+        </div>
+
+        <div class="waybar-right">
+            <div class="waybar-module system-info" role="region" aria-label="System status">
+                <span class="sys-item" aria-label="CPU usage">
+                    <i class="icon" aria-hidden="true">🖥️</i>
+                    <span id="cpu-usage">45%</span>
+                </span>
+                <span class="sys-item" aria-label="Memory usage">
+                    <i class="icon" aria-hidden="true">💾</i>
+                    <span id="memory-usage">2.1G</span>
+                </span>
+                <span class="sys-item" aria-label="Network status">
+                    <i class="icon" aria-hidden="true">🌐</i>
+                    <span id="network-status">WiFi</span>
+                </span>
+                <span class="sys-item" aria-label="Battery level">
+                    <i class="icon" aria-hidden="true">🔋</i>
+                    <span id="battery">100%</span>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Desktop Environment -->
+    <main id="desktop">
+        <!-- Tiling Window Manager Layout -->
+        <div id="window-grid">
+            <!-- Top Left: Animated ASCII Visualization -->
+            <section class="window-pane" id="ascii-viz" aria-label="System Visualization">
+                <div class="window-header">
+                    <div class="window-controls">
+                        <button class="control close" type="button" aria-label="Close window" tabindex="-1"></button>
+                        <button class="control minimize" type="button" aria-label="Minimize window" tabindex="-1"></button>
+                        <button class="control maximize" type="button" aria-label="Maximize window" tabindex="-1"></button>
+                    </div>
+                    <h2 class="window-title">VISUALIZATION // SYSTEM-01</h2>
+                </div>
+                <div class="window-content">
+                    <div id="ascii-animation" role="button" tabindex="0" aria-label="Interactive ASCII AI Core face. Press Enter or Space to interact.">
+                        <div class="ascii-frame"></div>
+                        <div class="ascii-status"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Top Center: System Monitor -->
+            <section class="window-pane" id="system-monitor" aria-label="Process Monitor">
+                <div class="window-header">
+                    <div class="window-controls">
+                        <button class="control close" type="button" aria-label="Close window" tabindex="-1"></button>
+                        <button class="control minimize" type="button" aria-label="Minimize window" tabindex="-1"></button>
+                        <button class="control maximize" type="button" aria-label="Maximize window" tabindex="-1"></button>
+                    </div>
+                    <h2 class="window-title">PROCESS MONITOR // KERNEL CORE</h2>
+                </div>
+                <div class="window-content">
+                    <div id="htop-display" aria-live="off"></div>
+                </div>
+            </section>
+
+            <!-- Top Right: Portfolio Content -->
+            <section class="window-pane main-window" id="portfolio-window" aria-label="Portfolio Content Terminal">
+                <div class="window-header">
+                    <div class="window-controls">
+                        <button class="control close" type="button" aria-label="Close window" tabindex="-1"></button>
+                        <button class="control minimize" type="button" aria-label="Minimize window" tabindex="-1"></button>
+                        <button class="control maximize" type="button" aria-label="Maximize window" tabindex="-1"></button>
+                    </div>
+                    <h2 class="window-title">USER@SYSTEM: ~/portfolio</h2>
+                </div>
+                <div class="window-content">
+                    <div id="terminal-prompt">
+                        <span class="user">alij@portfolio</span><span class="separator">:</span><span
+                            class="path">~/portfolio</span><span class="prompt">$</span>
+                        <span id="typed-command"></span>
+                        <span id="cursor">_</span>
+                    </div>
+                    <div id="portfolio-content" role="region" aria-label="Active Portfolio View" aria-live="polite" aria-atomic="false">
+                        <!-- Dynamic content here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bottom Left: Navigation Terminal -->
+            <nav class="window-pane" id="nav-terminal" aria-label="Navigation Terminal">
+                <div class="window-header">
+                    <div class="window-controls">
+                        <button class="control close" type="button" aria-label="Close window" tabindex="-1"></button>
+                        <button class="control minimize" type="button" aria-label="Minimize window" tabindex="-1"></button>
+                        <button class="control maximize" type="button" aria-label="Maximize window" tabindex="-1"></button>
+                    </div>
+                    <h2 class="window-title">Navigation - zsh</h2>
+                </div>
+                <div class="window-content">
+                    <div class="nav-menu" role="tablist" aria-label="Portfolio Section Tabs">
+                        <button class="nav-item active" type="button" role="tab" aria-selected="true" data-command="about" aria-label="About Me section: cat about.md">
+                            <span class="nav-prompt" aria-hidden="true">➜</span> <span class="nav-cmd" aria-hidden="true">cat</span> <span
+                                class="nav-file" aria-hidden="true">about.md</span>
+                        </button>
+                        <button class="nav-item" type="button" role="tab" aria-selected="false" data-command="skills" aria-label="Skills section: cat skills.json">
+                            <span class="nav-prompt" aria-hidden="true">➜</span> <span class="nav-cmd" aria-hidden="true">cat</span> <span
+                                class="nav-file" aria-hidden="true">skills.json</span>
+                        </button>
+                        <button class="nav-item" type="button" role="tab" aria-selected="false" data-command="experience" aria-label="Experience section: cat experience.log">
+                            <span class="nav-prompt" aria-hidden="true">➜</span> <span class="nav-cmd" aria-hidden="true">cat</span> <span
+                                class="nav-file" aria-hidden="true">experience.log</span>
+                        </button>
+                        <button class="nav-item" type="button" role="tab" aria-selected="false" data-command="achievements" aria-label="Achievements section: cat achievements.txt">
+                            <span class="nav-prompt" aria-hidden="true">➜</span> <span class="nav-cmd" aria-hidden="true">cat</span> <span
+                                class="nav-file" aria-hidden="true">achievements.txt</span>
+                        </button>
+                        <button class="nav-item" type="button" role="tab" aria-selected="false" data-command="portfolio" aria-label="Projects section: ls -la projects/">
+                            <span class="nav-prompt" aria-hidden="true">➜</span> <span class="nav-cmd" aria-hidden="true">ls -la</span> <span
+                                class="nav-file" aria-hidden="true">projects/</span>
+                        </button>
+                        <button class="nav-item" type="button" role="tab" aria-selected="false" data-command="gallery" aria-label="Gallery section: ls gallery/">
+                            <span class="nav-prompt" aria-hidden="true">➜</span> <span class="nav-cmd" aria-hidden="true">ls</span> <span
+                                class="nav-file" aria-hidden="true">gallery/</span>
+                        </button>
+                        <button class="nav-item" type="button" role="tab" aria-selected="false" data-command="contact" aria-label="Contact section: contact --info">
+                            <span class="nav-prompt" aria-hidden="true">➜</span> <span class="nav-cmd" aria-hidden="true">contact</span> <span
+                                class="nav-file" aria-hidden="true">--info</span>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Bottom Center: System Stats with Metrics -->
+            <section class="window-pane" id="system-metrics" aria-label="Neural Metrics">
+                <div class="window-header">
+                    <div class="window-controls">
+                        <button class="control close" type="button" aria-label="Close window" tabindex="-1"></button>
+                        <button class="control minimize" type="button" aria-label="Minimize window" tabindex="-1"></button>
+                        <button class="control maximize" type="button" aria-label="Maximize window" tabindex="-1"></button>
+                    </div>
+                    <h2 class="window-title">NEURAL METRICS // LINK-STATUS</h2>
+                </div>
+                <div class="window-content">
+                    <div id="metrics-display" aria-live="off"></div>
+                </div>
+            </section>
+
+
+        </div>
+    </main>
+
+    <!-- Gallery Lightbox Modal -->
+    <div id="gallery-lightbox" class="lightbox-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="lightbox-window-title lightbox-item-title" hidden>
+        <div class="lightbox-window-pane">
+            <div class="window-header lightbox-header">
+                <div class="window-controls" aria-hidden="true">
+                    <span class="control close"></span>
+                    <span class="control minimize"></span>
+                    <span class="control maximize"></span>
+                </div>
+                <div class="lightbox-header-title-container">
+                    <h2 class="window-title lightbox-window-title" id="lightbox-window-title">VIEWER // image.png</h2>
+                    <span class="lightbox-counter-badge" id="lightbox-counter" aria-label="Item 1 of 5">[1/5]</span>
+                </div>
+                <button class="lightbox-close-btn" id="lightbox-close-btn" type="button" aria-label="Close gallery lightbox viewer">
+                    <span aria-hidden="true">✕</span> CLOSE <span class="close-shortcut-hint">[ESC]</span>
+                </button>
+            </div>
+            <div class="lightbox-body">
+                <div class="lightbox-media-container">
+                    <button id="lightbox-prev-btn" class="lightbox-nav-btn prev" type="button" aria-label="Previous gallery item">‹</button>
+                    <div id="lightbox-media-wrapper" class="lightbox-media-wrapper">
+                        <!-- Dynamic media content -->
+                    </div>
+                    <button id="lightbox-next-btn" class="lightbox-nav-btn next" type="button" aria-label="Next gallery item">›</button>
+                    <div id="lightbox-subnav-container" class="lightbox-subnav-container"></div>
+                    <div id="lightbox-live-caption" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+                </div>
+                <div class="lightbox-meta-panel" id="lightbox-meta-panel">
+                    <!-- Dynamic metadata content -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="render.js" defer></script>
+    <script src="script.js" defer></script>
+</body>
+
+</html>
