@@ -1172,7 +1172,7 @@ ACHIEVEMENTS
         if (!this.lightboxItems || !this.lightboxItems[this.currentLightboxIndex]) return;
         const item = this.lightboxItems[this.currentLightboxIndex];
         const textToCopy = item.prompt || '';
-        if (!textToCopy) return;
+        if (!textToCopy || textToCopy.trim().startsWith('[TODO')) return;
 
         try {
             if (navigator.clipboard && window.isSecureContext) {
@@ -1208,6 +1208,17 @@ ACHIEVEMENTS
     }
 
     revealPromptInLightbox(btnEl) {
+        if (!this.lightboxItems || !this.lightboxItems[this.currentLightboxIndex]) return;
+        const item = this.lightboxItems[this.currentLightboxIndex];
+        const hasValidPrompt = Boolean(
+            item &&
+            item.prompt &&
+            typeof item.prompt === 'string' &&
+            item.prompt.trim() !== '' &&
+            !item.prompt.trim().startsWith('[TODO')
+        );
+        if (!hasValidPrompt) return;
+
         this.isPromptRevealedInModal = true;
         const guessBox = document.getElementById('prompt-guess-box');
         const promptContainer = document.getElementById('lightbox-prompt-container');
@@ -1623,8 +1634,14 @@ ACHIEVEMENTS
             relatedProjectInfo = this.data.portfolio.projects.find(p => p.id === item.relatedProject);
         }
 
-        const isLongPrompt = item.prompt && item.prompt.length > 90;
-        const promptSummary = isLongPrompt ? item.prompt.slice(0, 90) + '...' : item.prompt;
+        const hasValidPrompt = Boolean(
+            item.prompt &&
+            typeof item.prompt === 'string' &&
+            item.prompt.trim() !== '' &&
+            !item.prompt.trim().startsWith('[TODO')
+        );
+        const isLongPrompt = hasValidPrompt && item.prompt.length > 90;
+        const promptSummary = hasValidPrompt ? (isLongPrompt ? item.prompt.slice(0, 90) + '...' : item.prompt) : '';
         const isConcealed = this.promptRevealMode && !this.isPromptRevealedInModal;
         const itemTags = Array.isArray(item.tags)
             ? item.tags
@@ -1655,68 +1672,70 @@ ACHIEVEMENTS
                     </div>
                 ` : ''}
 
-                <div class="lightbox-prompt-section">
-                    <div class="prompt-header-row">
-                        <div class="prompt-label-group">
-                            <span class="prompt-label">🤖 PROMPT LOGIC:</span>
-                        </div>
-                        <div class="prompt-actions-group">
-                            <button id="copy-prompt-btn" 
-                                    class="copy-prompt-btn" 
-                                    type="button" 
-                                    aria-label="Copy prompt to clipboard"
-                                    onclick="window.portfolio && window.portfolio.copyCurrentPrompt(this)">
-                                <span class="copy-icon" aria-hidden="true">📋</span> <span class="copy-btn-text">Copy prompt</span>
-                            </button>
-                            ${isLongPrompt || item.negativePrompt ? `
-                                <button id="prompt-toggle-btn" 
-                                        class="prompt-toggle-btn" 
+                ${hasValidPrompt ? `
+                    <div class="lightbox-prompt-section">
+                        <div class="prompt-header-row">
+                            <div class="prompt-label-group">
+                                <span class="prompt-label">🤖 PROMPT LOGIC:</span>
+                            </div>
+                            <div class="prompt-actions-group">
+                                <button id="copy-prompt-btn" 
+                                        class="copy-prompt-btn" 
                                         type="button" 
-                                        aria-expanded="${this.isPromptExpanded ? 'true' : 'false'}"
-                                        onclick="window.portfolio && window.portfolio.togglePromptDetails()">
-                                    <span id="prompt-toggle-text">${this.isPromptExpanded ? '▼ Hide prompt details' : '► Behind the image / Full details'}</span>
+                                        aria-label="Copy prompt to clipboard"
+                                        onclick="window.portfolio && window.portfolio.copyCurrentPrompt(this)">
+                                    <span class="copy-icon" aria-hidden="true">📋</span> <span class="copy-btn-text">Copy prompt</span>
                                 </button>
-                            ` : ''}
+                                ${isLongPrompt || item.negativePrompt ? `
+                                    <button id="prompt-toggle-btn" 
+                                            class="prompt-toggle-btn" 
+                                            type="button" 
+                                            aria-expanded="${this.isPromptExpanded ? 'true' : 'false'}"
+                                            onclick="window.portfolio && window.portfolio.togglePromptDetails()">
+                                        <span id="prompt-toggle-text">${this.isPromptExpanded ? '▼ Hide prompt details' : '► Behind the image / Full details'}</span>
+                                    </button>
+                                ` : ''}
+                            </div>
                         </div>
-                    </div>
 
-                    ${isConcealed ? `
-                        <div class="prompt-guess-box" id="prompt-guess-box">
-                            <div class="guess-badge">🎮 GUESS THE PROMPT MODE</div>
-                            <div class="guess-instruction">Prompt hidden behind encrypted barrier. Can you deduce the generation prompt?</div>
-                            <button type="button" 
-                                    class="reveal-prompt-btn" 
-                                    id="reveal-prompt-btn"
-                                    onclick="window.portfolio && window.portfolio.revealPromptInLightbox(this)"
-                                    aria-label="Reveal the hidden AI generation prompt">
-                                👁️ REVEAL PROMPT // [DECRYPT]
-                            </button>
-                        </div>
-                        <div id="lightbox-prompt-container" class="lightbox-prompt-container prompt-hidden-mode ${this.isPromptExpanded ? 'expanded' : ''}" style="display: none;">
-                            <div class="prompt-text prompt-summary">${promptSummary}</div>
-                            <div class="prompt-text prompt-full">${item.prompt}</div>
-                            
-                            ${item.negativePrompt ? `
-                                <div class="negative-prompt-block">
-                                    <span class="negative-prompt-label">🚫 Negative Prompt:</span>
-                                    <div class="negative-prompt-text">${item.negativePrompt}</div>
-                                </div>
-                            ` : ''}
-                        </div>
-                    ` : `
-                        <div id="lightbox-prompt-container" class="lightbox-prompt-container ${this.isPromptExpanded ? 'expanded' : ''}">
-                            <div class="prompt-text prompt-summary">${promptSummary}</div>
-                            <div class="prompt-text prompt-full">${item.prompt}</div>
-                            
-                            ${item.negativePrompt ? `
-                                <div class="negative-prompt-block">
-                                    <span class="negative-prompt-label">🚫 Negative Prompt:</span>
-                                    <div class="negative-prompt-text">${item.negativePrompt}</div>
-                                </div>
-                            ` : ''}
-                        </div>
-                    `}
-                </div>
+                        ${isConcealed ? `
+                            <div class="prompt-guess-box" id="prompt-guess-box">
+                                <div class="guess-badge">🎮 GUESS THE PROMPT MODE</div>
+                                <div class="guess-instruction">Prompt hidden behind encrypted barrier. Can you deduce the generation prompt?</div>
+                                <button type="button" 
+                                        class="reveal-prompt-btn" 
+                                        id="reveal-prompt-btn"
+                                        onclick="window.portfolio && window.portfolio.revealPromptInLightbox(this)"
+                                        aria-label="Reveal the hidden AI generation prompt">
+                                    👁️ REVEAL PROMPT // [DECRYPT]
+                                </button>
+                            </div>
+                            <div id="lightbox-prompt-container" class="lightbox-prompt-container prompt-hidden-mode ${this.isPromptExpanded ? 'expanded' : ''}" style="display: none;">
+                                <div class="prompt-text prompt-summary">${promptSummary}</div>
+                                <div class="prompt-text prompt-full">${item.prompt}</div>
+                                
+                                ${item.negativePrompt ? `
+                                    <div class="negative-prompt-block">
+                                        <span class="negative-prompt-label">🚫 Negative Prompt:</span>
+                                        <div class="negative-prompt-text">${item.negativePrompt}</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        ` : `
+                            <div id="lightbox-prompt-container" class="lightbox-prompt-container ${this.isPromptExpanded ? 'expanded' : ''}">
+                                <div class="prompt-text prompt-summary">${promptSummary}</div>
+                                <div class="prompt-text prompt-full">${item.prompt}</div>
+                                
+                                ${item.negativePrompt ? `
+                                    <div class="negative-prompt-block">
+                                        <span class="negative-prompt-label">🚫 Negative Prompt:</span>
+                                        <div class="negative-prompt-text">${item.negativePrompt}</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `}
+                    </div>
+                ` : ''}
 
                 ${relatedProjectInfo ? `
                     <div class="lightbox-project-section">
