@@ -1,0 +1,231 @@
+[
+  {
+    "id": "jacket-case-study",
+    "title": "Diner Denim — AI Fashion Campaign",
+    "category": "fashion",
+    "coverThumb": "assets/gallery/fashion/jacket/jacket-cover-thumb.webp",
+    "tool": "Nano Banana 2 Lite",
+    "prompt": "[TODO: shared/primary prompt]",
+    "tags": [
+      "Nano Banana 2 Lite",
+      "Flux 3.0 video"
+    ],
+    "date": "2026-08-30",
+    "featured": true,
+    "media": [
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jacket/jacket-input-thumb.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-input-full.webp",
+        "caption": "Input reference"
+      },
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jacket/jacket-output-thumb.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-output-full.webp",
+        "caption": "Full-body diner editorial shot"
+      },
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jacket/jacket-output2-thumb.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-output2-full.webp",
+        "caption": "Seated by the window, afternoon light"
+      },
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jacket/jacket-output3-thumb.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-output3-full.webp",
+        "caption": "Side profile, booth backdrop"
+      },
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jacket/jacket-output4-thumb.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-output4-full.webp",
+        "caption": "Standing portrait by the window"
+      },
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jacket/jacket-output5-thumb.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-output5-full.webp",
+        "caption": "Coffee break — close-up detail"
+      },
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jacket/jacket-output6-thumb.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-output6-full.webp",
+        "caption": "Wide diner booth composition"
+      },
+      {
+        "type": "video",
+        "thumb": "assets/gallery/fashion/jacket/jacket-video-poster.webp",
+        "full": "assets/gallery/fashion/jacket/jacket-video-full.mp4",
+        "caption": "Motion study — diner campaign teaser"
+      }
+    ]
+  },
+  {
+    "id": "dress-case-study",
+    "title": "Amber Wrap Dress — Evening Editorial",
+    "category": "fashion",
+    "coverThumb": "assets/gallery/fashion/dress/dress-cover-thumb.webp",
+    "tool": "ChatGPT Image 2.0",
+    "prompt": "[TODO: shared/primary prompt]",
+    "tags": [
+      "ChatGPT Image 2.0",
+      "Fashion",
+      "Evening Wear",
+      "Editorial"
+    ],
+    "date": "2026-08-30",
+    "featured": false,
+    "media": [
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/dress/dress-input-thumb.webp",
+        "full": "assets/gallery/fashion/dress/dress-input-full.webp",
+        "caption": "Input reference"
+      },
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/dress/dress-output-thumb.webp",
+        "full": "assets/gallery/fashion/dress/dress-output-full.webp",
+        "caption": "Evening editorial — dramatic curtain backdrop"
+      }
+    ]
+  },
+  {
+    "id": "jumper-case-study",
+    "title": "Emerald Statement Jumpsuit",
+    "category": "fashion",
+    "coverThumb": "assets/gallery/fashion/jumper/jumper-cover-thumb.webp",
+    "tool": "ChatGPT Image 2.0",
+    "prompt": "[TODO: shared/primary prompt]",
+    "tags": [
+      "ChatGPT Image 2.0",
+      "Fashion",
+      "Jumpsuit",
+      "Editorial"
+    ],
+    "date": "2026-08-30",
+    "featured": false,
+    "media": [
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jumper/jumper-input-thumb.webp",
+        "full": "assets/gallery/fashion/jumper/jumper-input-full.webp",
+        "caption": "Input reference"
+      },
+      {
+        "type": "image",
+        "thumb": "assets/gallery/fashion/jumper/jumper-output-thumb.webp",
+        "full": "assets/gallery/fashion/jumper/jumper-output-full.webp",
+        "caption": "Evening portrait — warm ambient lounge setting"
+      }
+    ]
+  },
+  {
+    "id": "dragon-sheet",
+    "title": "Dragon Sheet",
+    "category": "character",
+    "mediaType": "image",
+    "thumb": "assets/gallery/character/dragon-sheet-thumb.webp",
+    "full": "assets/gallery/character/dragon-sheet-full.webp",
+    "tool": "ChatGPT Image 2.0",
+    "prompt": "[TODO: add prompt]",
+    "tags": [
+      "ChatGPT Image 2.0"
+    ],
+    "date": "2026-08-30",
+    "featured": false
+  },
+  {
+    "id": "knight-sheet",
+    "title": "Knight Sheet",
+    "category": "character",
+    "mediaType": "image",
+    "thumb": "assets/gallery/character/knight-sheet-thumb.webp",
+    "full": "assets/gallery/character/knight-sheet-full.webp",
+    "tool": "ChatGPT Image 2.0",
+    "prompt": "[TODO: add prompt]",
+    "tags": [
+      "ChatGPT Image 2.0"
+    ],
+    "date": "2026-08-30",
+    "featured": false
+  },
+  {
+    "id": "landscape",
+    "title": "Landscape",
+    "category": "landscape",
+    "mediaType": "image",
+    "thumb": "assets/gallery/landscape/landscape-thumb.webp",
+    "full": "assets/gallery/landscape/landscape-full.webp",
+    "tool": "ChatGPT Image 2.0",
+    "prompt": "[TODO: add prompt]",
+    "tags": [
+      "ChatGPT Image 2.0"
+    ],
+    "date": "2026-08-30",
+    "featured": false
+  },
+  {
+    "id": "dragon-rider-pov",
+    "title": "Dragon Rider Pov",
+    "category": "video",
+    "mediaType": "video",
+    "thumb": "assets/gallery/video/dragon-rider-pov-poster.webp",
+    "full": "assets/gallery/video/dragon-rider-pov.mp4",
+    "tool": "Flux 3.0 video",
+    "prompt": "[TODO: add prompt]",
+    "tags": [
+      "Flux 3.0 video"
+    ],
+    "date": "2026-08-30",
+    "featured": false
+  },
+  {
+    "id": "knight-cowboy",
+    "title": "Knight Cowboy",
+    "category": "video",
+    "mediaType": "video",
+    "thumb": "assets/gallery/video/knight-cowboy-poster.webp",
+    "full": "assets/gallery/video/knight-cowboy.mp4",
+    "tool": "Gemini Omni Video 1.1 Flash",
+    "prompt": "[TODO: add prompt]",
+    "tags": [
+      "Gemini Omni Video 1.1 Flash"
+    ],
+    "date": "2026-08-30",
+    "featured": false
+  },
+  {
+    "id": "orange-cat",
+    "title": "Orange Cat",
+    "category": "video",
+    "mediaType": "video",
+    "thumb": "assets/gallery/video/orange-cat-poster.webp",
+    "full": "assets/gallery/video/orange-cat.mp4",
+    "tool": "Flux 3.0 video",
+    "prompt": "[TODO: add prompt]",
+    "tags": [
+      "Flux 3.0 video"
+    ],
+    "date": "2026-08-30",
+    "featured": false
+  },
+  {
+    "id": "rainy-window",
+    "title": "Rainy Window",
+    "category": "video",
+    "mediaType": "video",
+    "thumb": "assets/gallery/video/rainy-window-poster.webp",
+    "full": "assets/gallery/video/rainy-window.mp4",
+    "tool": "Gemini Omni Video 1.1 Flash",
+    "prompt": "[TODO: add prompt]",
+    "tags": [
+      "Gemini Omni Video 1.1 Flash"
+    ],
+    "date": "2026-08-30",
+    "featured": false
+  }
+]

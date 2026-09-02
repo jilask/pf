@@ -1,0 +1,5 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <rect x="1" y="1" width="62" height="62" rx="10" fill="#0a0e0a" stroke="#39ff14" stroke-width="2"/>
+  <text x="8" y="42" font-family="DejaVu Sans Mono, monospace" font-size="30" font-weight="bold" fill="#39ff14">&gt;</text>
+  <rect x="30" y="30" width="16" height="6" fill="#39ff14"/>
+</svg>
