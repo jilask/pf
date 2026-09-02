@@ -12,6 +12,24 @@ class ArchPortfolio {
         };
         this.currentWorkspace = 1;
         this.data = null;
+
+        this.currentLightboxIndex = 0;
+        this.currentCaseStudySubIndex = 0;
+        this.lightboxItems = [];
+        this.previousFocusedElement = null;
+        this.isPromptExpanded = false;
+        this.isPromptRevealedInModal = false;
+        this.lightboxKeydownHandler = null;
+
+        // Gallery Filter, Sort & Guess mode state
+        this.galleryFilterCategory = 'all';
+        this.gallerySelectedTags = new Set();
+        this.gallerySortOption = 'date-desc';
+        this.promptRevealMode = true;
+        this.galleryPageSize = 12;
+        this.galleryVisibleCount = 12;
+        this.currentRenderedLightboxItemId = null;
+
         this.init();
     }
 
@@ -30,12 +48,13 @@ class ArchPortfolio {
 
     async loadAllData() {
         try {
-            const [about, skills, experience, achievements, portfolio, contact] = await Promise.all([
+            const [about, skills, experience, achievements, portfolio, gallery, contact] = await Promise.all([
                 this.loadJson('./data/about.json'),
                 this.loadJson('./data/skills.json'),
                 this.loadJson('./data/experience.json'),
                 this.loadJson('./data/achievements.json'),
                 this.loadJson('./data/projects.json'),
+                this.loadJson('./data/gallery.json'),
                 this.loadJson('./data/contact.json')
             ]);
 
@@ -45,6 +64,7 @@ class ArchPortfolio {
                 experience,
                 achievements,
                 portfolio,
+                gallery,
                 contact
             };
         } catch (err) {
@@ -58,9 +78,26 @@ class ArchPortfolio {
         this.setupSystemMonitor();
         this.setupSystemMetrics();
         this.setupNavigation();
+        this.setupGalleryLightbox();
         await this.loadAllData();
-        this.loadSection('about');
-        this.startSystemUpdates();
+
+        // Check for direct link / auto-open pane flag or query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryOpen = urlParams.get('open');
+        const initialPane = window.__initialPane || (document.body && document.body.dataset ? document.body.dataset.openPane : null) || queryOpen;
+
+        if (initialPane && initialPane.toLowerCase() === 'gallery') {
+            this.navigateToSection('gallery');
+        } else {
+            this.loadSection('about');
+        }
+
+        if (typeof this.startSystemUpdates === 'function') {
+            this.startSystemUpdates();
+        } else if (typeof this.updateSystemMetrics === 'function') {
+            this.updateSystemMetrics();
+            setInterval(() => this.updateSystemMetrics(), 3000);
+        }
     }
 
     setupWaybar() {
@@ -354,6 +391,164 @@ class ArchPortfolio {
         setTimeout(scheduleMoodChange, 8000);
     }
 
+    setupWaybar() {
+        this.updateClock();
+        setInterval(() => this.updateClock(), 1000);
+
+        // Workspace switching via top bar
+        document.querySelectorAll('.workspace-item').forEach((item, index) => {
+            const handleWorkspaceClick = () => {
+                const targetWorkspace = index + 1;
+                this.switchWorkspace(targetWorkspace);
+
+                // Auto-load section if switching workspace via top bar
+                if (targetWorkspace === 3) {
+                    const galleryNavItem = document.querySelector('[data-command="gallery"]');
+                    if (galleryNavItem) {
+                        this.executeCommand('gallery');
+                        this.updateActiveNav(galleryNavItem);
+                    }
+                } else if (targetWorkspace === 2 && this.currentSection === 'gallery') {
+                    const aboutNavItem = document.querySelector('[data-command="about"]');
+                    if (aboutNavItem) {
+                        this.executeCommand('about');
+                        this.updateActiveNav(aboutNavItem);
+                    }
+                }
+            };
+
+            item.addEventListener('click', handleWorkspaceClick);
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleWorkspaceClick();
+                }
+            });
+        });
+
+        // Update system info
+        this.updateSystemInfo();
+        setInterval(() => this.updateSystemInfo(), 5000);
+    }
+
+    navigateToSection(command) {
+        const navItem = document.querySelector(`.nav-item[data-command="${command}"]`);
+        const targetWorkspace = command === 'gallery' ? 3 : 2;
+
+        this.switchWorkspace(targetWorkspace);
+        this.executeCommand(command);
+        if (navItem) {
+            this.updateActiveNav(navItem);
+        }
+
+        if (window.innerWidth < 768) {
+            const targetWindow = document.getElementById('portfolio-window');
+            if (targetWindow) {
+                targetWindow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    }
+
+    setupNavigation() {
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            const handleNav = () => {
+                const command = item.dataset.command;
+                this.navigateToSection(command);
+            };
+
+            item.addEventListener('click', handleNav);
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleNav();
+                }
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            this.applyWorkspaceLayout(this.currentWorkspace);
+        });
+    }
+
+    switchWorkspace(index) {
+        if (this.currentWorkspace === index) return;
+        this.currentWorkspace = index;
+
+        document.querySelectorAll('.workspace-item').forEach((w, i) => {
+            w.classList.remove('active');
+            w.removeAttribute('aria-current');
+            if (i === index - 1) {
+                w.classList.add('active');
+                w.setAttribute('aria-current', 'page');
+            }
+        });
+
+        const grid = document.getElementById('window-grid');
+        const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (isReducedMotion) {
+            this.applyWorkspaceLayout(index);
+            return;
+        }
+
+        grid.classList.add('workspace-transition-out');
+
+        setTimeout(() => {
+            this.applyWorkspaceLayout(index);
+
+            grid.classList.remove('workspace-transition-out');
+            grid.classList.add('workspace-transition-in');
+
+            setTimeout(() => {
+                grid.classList.remove('workspace-transition-in');
+            }, 250);
+        }, 250);
+    }
+
+    applyWorkspaceLayout(index) {
+        const systemMonitor = document.getElementById('system-monitor');
+        const systemMetrics = document.getElementById('system-metrics');
+        const mainWindow = document.getElementById('portfolio-window');
+        const asciiViz = document.getElementById('ascii-viz');
+        const navTerminal = document.getElementById('nav-terminal');
+
+        // Below 768px mobile breakpoint, allow CSS single-column stacked layout to manage display & grid properties
+        if (window.innerWidth < 768) {
+            [systemMonitor, systemMetrics, asciiViz, navTerminal].forEach(el => {
+                if (el) el.style.display = '';
+            });
+            if (mainWindow) {
+                mainWindow.style.gridColumn = '';
+                mainWindow.style.gridRow = '';
+            }
+            return;
+        }
+
+        if (index === 2 || index === 3) {
+            if (systemMonitor) systemMonitor.style.display = 'none';
+            if (systemMetrics) systemMetrics.style.display = 'none';
+
+            if (asciiViz) asciiViz.style.display = '';
+            if (navTerminal) navTerminal.style.display = '';
+
+            if (mainWindow) {
+                mainWindow.style.gridColumn = '2 / -1';
+                mainWindow.style.gridRow = '1 / -1';
+            }
+        } else {
+            if (systemMonitor) systemMonitor.style.display = '';
+            if (systemMetrics) systemMetrics.style.display = '';
+            if (asciiViz) asciiViz.style.display = '';
+            if (navTerminal) navTerminal.style.display = '';
+
+            if (mainWindow) {
+                mainWindow.style.gridColumn = '';
+                mainWindow.style.gridRow = '';
+            }
+        }
+    }
+
     setupSystemMonitor() {
         const htopDisplay = document.getElementById('htop-display');
         const cpuBar = '█'.repeat(Math.floor(this.systemStats.cpu / 2)) + '░'.repeat(50 - Math.floor(this.systemStats.cpu / 2));
@@ -453,126 +648,6 @@ class ArchPortfolio {
         `;
     }
 
-    setupNavigation() {
-        const navItems = document.querySelectorAll('.nav-item');
-        navItems.forEach(item => {
-            const handleNav = () => {
-                const command = item.dataset.command;
-
-                this.switchWorkspace(2);
-                this.executeCommand(command);
-                this.updateActiveNav(item);
-
-                if (window.innerWidth < 768) {
-                    const targetWindow = document.getElementById('portfolio-window');
-                    if (targetWindow) {
-                        targetWindow.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                }
-            };
-
-            item.addEventListener('click', handleNav);
-            item.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleNav();
-                }
-            });
-        });
-
-        window.addEventListener('resize', () => {
-            this.applyWorkspaceLayout(this.currentWorkspace);
-        });
-    }
-
-    switchWorkspace(index) {
-        if (this.currentWorkspace === index) return;
-        this.currentWorkspace = index;
-
-        document.querySelectorAll('.workspace-item').forEach((w, i) => {
-            w.classList.remove('active');
-            w.removeAttribute('aria-current');
-            if (i === index - 1) {
-                w.classList.add('active');
-                w.setAttribute('aria-current', 'page');
-            }
-        });
-
-        const grid = document.getElementById('window-grid');
-        const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        if (isReducedMotion) {
-            this.applyWorkspaceLayout(index);
-            return;
-        }
-
-        grid.classList.add('workspace-transition-out');
-
-        setTimeout(() => {
-            this.applyWorkspaceLayout(index);
-
-            grid.classList.remove('workspace-transition-out');
-            grid.classList.add('workspace-transition-in');
-
-            setTimeout(() => {
-                grid.classList.remove('workspace-transition-in');
-            }, 250);
-        }, 250);
-    }
-
-    applyWorkspaceLayout(index) {
-        const systemMonitor = document.getElementById('system-monitor');
-        const systemMetrics = document.getElementById('system-metrics');
-        const mainWindow = document.getElementById('portfolio-window');
-        const asciiViz = document.getElementById('ascii-viz');
-        const navTerminal = document.getElementById('nav-terminal');
-
-        // Below 768px mobile breakpoint, allow CSS single-column stacked layout to manage display & grid properties
-        if (window.innerWidth < 768) {
-            [systemMonitor, systemMetrics, asciiViz, navTerminal].forEach(el => {
-                if (el) el.style.display = '';
-            });
-            if (mainWindow) {
-                mainWindow.style.gridColumn = '';
-                mainWindow.style.gridRow = '';
-            }
-            return;
-        }
-
-        if (index === 2) {
-            if (systemMonitor) systemMonitor.style.display = 'none';
-            if (systemMetrics) systemMetrics.style.display = 'none';
-
-            if (asciiViz) asciiViz.style.display = '';
-            if (navTerminal) navTerminal.style.display = '';
-
-            if (mainWindow) {
-                mainWindow.style.gridColumn = '2 / -1';
-                mainWindow.style.gridRow = '1 / -1';
-            }
-        } else {
-            if (systemMonitor) systemMonitor.style.display = '';
-            if (systemMetrics) systemMetrics.style.display = '';
-            if (asciiViz) asciiViz.style.display = '';
-            if (navTerminal) navTerminal.style.display = '';
-
-            if (mainWindow) {
-                mainWindow.style.gridColumn = '';
-                mainWindow.style.gridRow = '';
-            }
-        }
-    }
-
-    startSystemUpdates() {
-        setInterval(() => {
-            this.setupSystemMonitor();
-        }, 15000);
-
-        setInterval(() => {
-            this.updateSystemMetrics();
-        }, 3000);
-    }
-
     updateSystemMetrics() {
         const uptimeElement = document.querySelector('.metric-value.eternal');
         if (uptimeElement) {
@@ -610,6 +685,13 @@ class ArchPortfolio {
         }
     }
 
+    startSystemUpdates() {
+        this.updateSystemMetrics();
+        setInterval(() => {
+            this.updateSystemMetrics();
+        }, 3000);
+    }
+
     updateActiveNav(activeItem) {
         document.querySelectorAll('.nav-item').forEach(item => {
             item.classList.remove('active');
@@ -626,6 +708,19 @@ class ArchPortfolio {
         if (this.currentLoadTimeout) {
             clearTimeout(this.currentLoadTimeout);
         }
+
+        // Restore main portfolio window if closed
+        const mainWindow = document.getElementById('portfolio-window');
+        if (mainWindow) {
+            mainWindow.style.display = '';
+            const mainContent = mainWindow.querySelector('.window-content');
+            if (mainContent) mainContent.style.display = '';
+            document.querySelectorAll('.window-pane').forEach(p => {
+                p.style.borderColor = 'var(--border-color)';
+            });
+            mainWindow.style.borderColor = 'var(--border-active)';
+        }
+
         this.typeCommand(command);
         this.currentLoadTimeout = setTimeout(() => {
             this.loadSection(command);
@@ -640,6 +735,7 @@ class ArchPortfolio {
             'experience': 'cat experience.log',
             'achievements': 'cat achievements.txt',
             'portfolio': 'ls -la projects/',
+            'gallery': 'ls gallery/',
             'contact': 'contact --info'
         };
 
@@ -664,6 +760,7 @@ class ArchPortfolio {
     }
 
     loadSection(section) {
+        this.currentSection = section;
         const contentArea = document.getElementById('portfolio-content');
         contentArea.innerHTML = '';
 
@@ -677,6 +774,7 @@ class ArchPortfolio {
             'experience': 'Professional Experience',
             'achievements': 'Key Achievements',
             'portfolio': 'Projects & Portfolio',
+            'gallery': 'AI Art & Motion Gallery',
             'contact': 'Contact Information'
         };
         windowTitle.textContent = titles[section] || 'Portfolio';
@@ -696,6 +794,9 @@ class ArchPortfolio {
                 break;
             case 'portfolio':
                 sectionElement.innerHTML = this.getPortfolioContent();
+                break;
+            case 'gallery':
+                sectionElement.innerHTML = this.getGalleryContent();
                 break;
             case 'contact':
                 sectionElement.innerHTML = this.getContactContent();
@@ -727,6 +828,10 @@ class ArchPortfolio {
 
     getPortfolioContent() {
         return renderSection('portfolio', this.data ? this.data.portfolio : null);
+    }
+
+    getGalleryContent() {
+        return renderSection('gallery', this.data ? this.data.gallery : null);
     }
 
     getContactContent() {
@@ -837,6 +942,841 @@ ACHIEVEMENTS
             notification.remove();
         }, 3000);
     }
+
+    setupGalleryLightbox() {
+        const closeBtn = document.getElementById('lightbox-close-btn');
+        const prevBtn = document.getElementById('lightbox-prev-btn');
+        const nextBtn = document.getElementById('lightbox-next-btn');
+        const modal = document.getElementById('gallery-lightbox');
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => this.closeGalleryLightbox());
+        }
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => this.navigateLightboxStep(-1));
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => this.navigateLightboxStep(1));
+        }
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    this.closeGalleryLightbox();
+                }
+            });
+
+            // Touch swipe gesture support for mobile viewers
+            let touchStartX = 0;
+            let touchStartY = 0;
+
+            modal.addEventListener('touchstart', (e) => {
+                if (e.touches && e.touches.length === 1) {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                }
+            }, { passive: true });
+
+            modal.addEventListener('touchend', (e) => {
+                if (e.changedTouches && e.changedTouches.length === 1) {
+                    const touchEndX = e.changedTouches[0].clientX;
+                    const touchEndY = e.changedTouches[0].clientY;
+                    const diffX = touchEndX - touchStartX;
+                    const diffY = touchEndY - touchStartY;
+
+                    // Trigger swipe if horizontal movement > 40px and dominant over vertical scroll
+                    if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+                        if (diffX < 0) {
+                            this.navigateLightboxStep(1);  // Swipe left -> Next
+                        } else {
+                            this.navigateLightboxStep(-1); // Swipe right -> Prev
+                        }
+                    }
+                }
+            }, { passive: true });
+        }
+
+        // Delegated event handling for gallery cards to optimize event memory and eliminate per-card handlers
+        const portfolioContent = document.getElementById('portfolio-content');
+        if (portfolioContent) {
+            portfolioContent.addEventListener('click', (e) => {
+                const card = e.target.closest('.gallery-card');
+                if (card && card.dataset && card.dataset.id) {
+                    this.openGalleryLightbox(card.dataset.id);
+                }
+            });
+            portfolioContent.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    const card = e.target.closest('.gallery-card');
+                    if (card && card.dataset && card.dataset.id && (e.target === card || card.contains(e.target))) {
+                        if (e.target === card) {
+                            e.preventDefault();
+                            this.openGalleryLightbox(card.dataset.id);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    getAllGalleryTags() {
+        if (!this.data || !this.data.gallery) return [];
+        const items = Array.isArray(this.data.gallery) ? this.data.gallery : (this.data.gallery.items || []);
+        const tagSet = new Set();
+        items.forEach(item => {
+            if (Array.isArray(item.tags)) {
+                item.tags.forEach(t => tagSet.add(t));
+            } else if (typeof item.tags === 'string' && item.tags.trim()) {
+                tagSet.add(item.tags.trim());
+            }
+        });
+        return Array.from(tagSet);
+    }
+
+    getFilteredAndSortedGalleryItems() {
+        if (!this.data || !this.data.gallery) return [];
+        let items = Array.isArray(this.data.gallery) ? [...this.data.gallery] : (Array.isArray(this.data.gallery.items) ? [...this.data.gallery.items] : []);
+
+        // 1. Filter by category
+        if (this.galleryFilterCategory && this.galleryFilterCategory !== 'all') {
+            items = items.filter(item => (item.category || '').toLowerCase() === this.galleryFilterCategory.toLowerCase());
+        }
+
+        // 2. Filter by selected tags (multi-select filter)
+        if (this.gallerySelectedTags && this.gallerySelectedTags.size > 0) {
+            const selectedArr = Array.from(this.gallerySelectedTags);
+            items = items.filter(item => {
+                const rawTags = Array.isArray(item.tags)
+                    ? item.tags
+                    : (typeof item.tags === 'string' && item.tags.trim() ? [item.tags.trim()] : []);
+                const itemTags = rawTags.map(t => t.toLowerCase());
+                return selectedArr.every(st => itemTags.includes(st.toLowerCase()));
+            });
+        }
+
+        // 3. Sort filtered set
+        if (this.gallerySortOption === 'featured-first') {
+            items.sort((a, b) => {
+                if (a.featured && !b.featured) return -1;
+                if (!a.featured && b.featured) return 1;
+                return new Date(b.date || 0) - new Date(a.date || 0);
+            });
+        } else if (this.gallerySortOption === 'date-asc') {
+            items.sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+        } else if (this.gallerySortOption === 'title-asc') {
+            items.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        } else {
+            // 'date-desc' (newest first)
+            items.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+        }
+
+        return items;
+    }
+
+    setGalleryCategory(category) {
+        this.galleryFilterCategory = category || 'all';
+        this.galleryVisibleCount = this.galleryPageSize;
+        this.updateGalleryDisplay();
+    }
+
+    toggleGalleryTag(tag) {
+        if (!tag) return;
+        if (this.gallerySelectedTags.has(tag)) {
+            this.gallerySelectedTags.delete(tag);
+        } else {
+            this.gallerySelectedTags.add(tag);
+        }
+        this.galleryVisibleCount = this.galleryPageSize;
+        this.updateGalleryDisplay();
+    }
+
+    setGallerySort(sortOption) {
+        this.gallerySortOption = sortOption || 'date-desc';
+        this.galleryVisibleCount = this.galleryPageSize;
+        this.updateGalleryDisplay();
+    }
+
+    loadMoreGalleryItems() {
+        this.galleryVisibleCount += this.galleryPageSize;
+        this.updateGalleryDisplay();
+    }
+
+    togglePromptRevealMode(enabled) {
+        this.promptRevealMode = typeof enabled === 'boolean' ? enabled : !this.promptRevealMode;
+        const checkbox = document.getElementById('prompt-reveal-checkbox');
+        if (checkbox && checkbox.checked !== this.promptRevealMode) {
+            checkbox.checked = this.promptRevealMode;
+        }
+    }
+
+    resetGalleryFilters() {
+        this.galleryFilterCategory = 'all';
+        this.gallerySelectedTags.clear();
+        this.galleryVisibleCount = this.galleryPageSize;
+        this.updateGalleryDisplay();
+    }
+
+    updateGalleryDisplay() {
+        const allItems = Array.isArray(this.data && this.data.gallery) ? this.data.gallery : (this.data && this.data.gallery && this.data.gallery.items ? this.data.gallery.items : []);
+        const filteredItems = this.getFilteredAndSortedGalleryItems();
+        const visibleItems = filteredItems.slice(0, this.galleryVisibleCount);
+
+        // Update gallery grid in place
+        const gridContainer = document.getElementById('gallery-grid');
+        if (gridContainer && typeof renderGallery === 'function') {
+            renderGallery(visibleItems, gridContainer, {
+                category: this.galleryFilterCategory,
+                tags: Array.from(this.gallerySelectedTags)
+            });
+        }
+
+        // Update pagination controls in place
+        const paginationWrap = document.getElementById('gallery-pagination-wrap');
+        if (paginationWrap && typeof renderGalleryPagination === 'function') {
+            paginationWrap.innerHTML = renderGalleryPagination(filteredItems.length, visibleItems.length);
+        }
+
+        // Update category filter buttons
+        document.querySelectorAll('.gallery-filter-btn').forEach(btn => {
+            const cat = btn.getAttribute('data-category');
+            const isActive = cat === this.galleryFilterCategory;
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+
+        // Update tag filter chips
+        document.querySelectorAll('.gallery-tag-chip').forEach(chip => {
+            const tag = chip.getAttribute('data-tag');
+            const isActive = this.gallerySelectedTags.has(tag);
+            chip.classList.toggle('active', isActive);
+            chip.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+
+        // Update sort selector if value differs
+        const sortSelect = document.getElementById('gallery-sort-select');
+        if (sortSelect && sortSelect.value !== this.gallerySortOption) {
+            sortSelect.value = this.gallerySortOption;
+        }
+
+        // Update status text
+        const countStatus = document.getElementById('gallery-count-status');
+        if (countStatus) {
+            const hasFilters = this.galleryFilterCategory !== 'all' || this.gallerySelectedTags.size > 0;
+            let filterDetails = '';
+            if (hasFilters) {
+                const parts = [];
+                if (this.galleryFilterCategory !== 'all') parts.push(`category: ${this.galleryFilterCategory}`);
+                if (this.gallerySelectedTags.size > 0) parts.push(`tags: ${Array.from(this.gallerySelectedTags).map(t => '#' + t).join(', ')}`);
+                filterDetails = ` [filtered by ${parts.join(' & ')}]`;
+            }
+            const catalogTotalNote = filteredItems.length !== allItems.length ? ` (total in catalog: ${allItems.length})` : '';
+            countStatus.innerHTML = `Showing <strong style="color: var(--accent-cyan);">${visibleItems.length}</strong> of <strong style="color: var(--accent-green);">${filteredItems.length}</strong> items${catalogTotalNote}${filterDetails}`;
+        }
+
+        // Update clear filters button
+        const clearBtn = document.getElementById('clear-filters-btn');
+        if (clearBtn) {
+            const hasActiveFilters = this.galleryFilterCategory !== 'all' || this.gallerySelectedTags.size > 0;
+            clearBtn.style.display = hasActiveFilters ? 'inline-flex' : 'none';
+        }
+
+        // If lightbox modal is currently open, close it automatically to prevent desync
+        const modal = document.getElementById('gallery-lightbox');
+        if (modal && !modal.hidden) {
+            this.closeGalleryLightbox();
+        }
+    }
+
+    async copyCurrentPrompt(btnEl) {
+        if (!this.lightboxItems || !this.lightboxItems[this.currentLightboxIndex]) return;
+        const item = this.lightboxItems[this.currentLightboxIndex];
+        const textToCopy = item.prompt || '';
+        if (!textToCopy || textToCopy.trim().startsWith('[TODO')) return;
+
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(textToCopy);
+            } else {
+                // Fallback for non-https / older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = textToCopy;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
+
+            if (btnEl) {
+                const originalHtml = btnEl.innerHTML;
+                btnEl.classList.add('copied');
+                btnEl.innerHTML = '<span class="copy-icon" aria-hidden="true">✓</span> <span class="copy-btn-text">Copied!</span> <span class="sr-only" aria-live="polite">Prompt copied to clipboard successfully</span>';
+                btnEl.setAttribute('aria-label', 'Prompt copied to clipboard!');
+                setTimeout(() => {
+                    btnEl.classList.remove('copied');
+                    btnEl.innerHTML = originalHtml;
+                    btnEl.setAttribute('aria-label', 'Copy prompt to clipboard');
+                }, 1500);
+            }
+        } catch (err) {
+            console.error('Failed to copy prompt:', err);
+        }
+    }
+
+    revealPromptInLightbox(btnEl) {
+        if (!this.lightboxItems || !this.lightboxItems[this.currentLightboxIndex]) return;
+        const item = this.lightboxItems[this.currentLightboxIndex];
+        const hasValidPrompt = Boolean(
+            item &&
+            item.prompt &&
+            typeof item.prompt === 'string' &&
+            item.prompt.trim() !== '' &&
+            !item.prompt.trim().startsWith('[TODO')
+        );
+        if (!hasValidPrompt) return;
+
+        this.isPromptRevealedInModal = true;
+        const guessBox = document.getElementById('prompt-guess-box');
+        const promptContainer = document.getElementById('lightbox-prompt-container');
+        
+        if (guessBox && promptContainer) {
+            guessBox.style.opacity = '0';
+            guessBox.style.transform = 'translateY(-4px)';
+            setTimeout(() => {
+                guessBox.style.display = 'none';
+                promptContainer.style.display = 'block';
+                promptContainer.classList.add('prompt-revealed-anim');
+            }, 150);
+        } else {
+            this.updateLightboxContent();
+        }
+    }
+
+    openGalleryLightbox(itemId) {
+        if (!this.data || !this.data.gallery) return;
+        const items = this.getFilteredAndSortedGalleryItems();
+        if (items.length === 0) return;
+
+        this.lightboxItems = items;
+        let index = items.findIndex(item => item.id === itemId);
+        if (index === -1) index = 0;
+
+        this.currentLightboxIndex = index;
+        this.currentCaseStudySubIndex = 0;
+        this.previousFocusedElement = document.activeElement;
+        this.isPromptExpanded = false;
+        this.isPromptRevealedInModal = false;
+
+        this.updateLightboxContent();
+
+        const modal = document.getElementById('gallery-lightbox');
+        if (modal) {
+            modal.hidden = false;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // Set initial focus inside lightbox
+            requestAnimationFrame(() => {
+                const closeBtn = document.getElementById('lightbox-close-btn');
+                if (closeBtn) {
+                    closeBtn.focus();
+                } else {
+                    const firstFocusable = modal.querySelector('button:not([disabled]), [tabindex="0"]:not([disabled])');
+                    if (firstFocusable) firstFocusable.focus();
+                }
+            });
+        }
+
+        if (this.lightboxKeydownHandler) {
+            document.removeEventListener('keydown', this.lightboxKeydownHandler);
+        }
+        this.lightboxKeydownHandler = (e) => this.handleLightboxKeydown(e);
+        document.addEventListener('keydown', this.lightboxKeydownHandler);
+    }
+
+    closeGalleryLightbox() {
+        const modal = document.getElementById('gallery-lightbox');
+        if (!modal || modal.hidden) return;
+
+        // Pause any playing videos when closing lightbox
+        const mediaWrapper = document.getElementById('lightbox-media-wrapper');
+        if (mediaWrapper) {
+            const video = mediaWrapper.querySelector('video');
+            if (video) {
+                video.pause();
+            }
+        }
+
+        modal.hidden = true;
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        this.currentRenderedLightboxItemId = null;
+
+        if (this.lightboxKeydownHandler) {
+            document.removeEventListener('keydown', this.lightboxKeydownHandler);
+            this.lightboxKeydownHandler = null;
+        }
+
+        // Return focus to originating or navigated grid thumbnail
+        if (this.previousFocusedElement && typeof this.previousFocusedElement.focus === 'function') {
+            this.previousFocusedElement.focus();
+        }
+    }
+
+    setCaseStudySubIndex(subIndex) {
+        if (!this.lightboxItems || !this.lightboxItems[this.currentLightboxIndex]) return;
+        const item = this.lightboxItems[this.currentLightboxIndex];
+        if (!item || !Array.isArray(item.media) || item.media.length === 0) return;
+
+        const targetIndex = Number(subIndex);
+        if (targetIndex >= 0 && targetIndex < item.media.length) {
+            this.currentCaseStudySubIndex = targetIndex;
+            this.updateLightboxContent();
+        }
+    }
+
+    navigateLightboxStep(direction) {
+        if (!this.lightboxItems || this.lightboxItems.length === 0) return;
+        const currentItem = this.lightboxItems[this.currentLightboxIndex];
+        const isCaseStudy = currentItem && Array.isArray(currentItem.media) && currentItem.media.length > 0;
+
+        if (isCaseStudy) {
+            const nextSub = this.currentCaseStudySubIndex + direction;
+            if (nextSub >= 0 && nextSub < currentItem.media.length) {
+                this.setCaseStudySubIndex(nextSub);
+                return;
+            }
+        }
+
+        // At sub-item boundaries or for regular single-media items, navigate between gallery entries
+        this.navigateLightbox(direction);
+    }
+
+    navigateLightbox(direction) {
+        if (!this.lightboxItems || this.lightboxItems.length === 0) return;
+
+        const total = this.lightboxItems.length;
+        this.currentLightboxIndex = (this.currentLightboxIndex + direction + total) % total;
+        this.currentCaseStudySubIndex = 0;
+        this.isPromptExpanded = false;
+        this.isPromptRevealedInModal = false;
+        this.updateLightboxContent();
+
+        // Update return focus target to match newly navigated item in gallery grid
+        const currentItem = this.lightboxItems[this.currentLightboxIndex];
+        if (currentItem) {
+            const cardEl = document.querySelector(`.gallery-card[data-id="${currentItem.id}"]`);
+            if (cardEl) {
+                this.previousFocusedElement = cardEl;
+            }
+        }
+    }
+
+    togglePromptDetails() {
+        this.isPromptExpanded = !this.isPromptExpanded;
+        const promptContainer = document.getElementById('lightbox-prompt-container');
+        const toggleBtnText = document.getElementById('prompt-toggle-text');
+        const toggleBtn = document.getElementById('prompt-toggle-btn');
+
+        if (promptContainer) {
+            if (this.isPromptExpanded) {
+                promptContainer.classList.add('expanded');
+            } else {
+                promptContainer.classList.remove('expanded');
+            }
+        }
+        if (toggleBtnText) {
+            toggleBtnText.textContent = this.isPromptExpanded ? '▼ Hide prompt details' : '► Behind the image / Full details';
+        }
+        if (toggleBtn) {
+            toggleBtn.setAttribute('aria-expanded', this.isPromptExpanded ? 'true' : 'false');
+        }
+    }
+
+    navigateToRelatedProject(projectId) {
+        this.closeGalleryLightbox();
+        this.switchWorkspace(2);
+        const navItem = document.querySelector('[data-command="portfolio"]');
+        if (navItem) {
+            this.updateActiveNav(navItem);
+        }
+        this.showProject(projectId);
+    }
+
+    handleLightboxKeydown(e) {
+        const modal = document.getElementById('gallery-lightbox');
+        if (!modal || modal.hidden) return;
+
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            this.closeGalleryLightbox();
+            return;
+        }
+
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            this.navigateLightboxStep(-1);
+            return;
+        }
+
+        if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            this.navigateLightboxStep(1);
+            return;
+        }
+
+        if (e.key === 'Tab') {
+            const focusables = modal.querySelectorAll(
+                'button:not([disabled]), [tabindex="0"]:not([disabled]), a[href]:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), video[controls]'
+            );
+            const focusableArray = Array.from(focusables).filter(el => {
+                return el.offsetWidth > 0 || el.offsetHeight > 0 || el === document.activeElement;
+            });
+            if (focusableArray.length === 0) return;
+
+            const firstEl = focusableArray[0];
+            const lastEl = focusableArray[focusableArray.length - 1];
+
+            if (e.shiftKey) {
+                if (document.activeElement === firstEl || !modal.contains(document.activeElement)) {
+                    e.preventDefault();
+                    lastEl.focus();
+                }
+            } else {
+                if (document.activeElement === lastEl || !modal.contains(document.activeElement)) {
+                    e.preventDefault();
+                    firstEl.focus();
+                }
+            }
+        }
+    }
+
+    updateLightboxContent() {
+        if (!this.lightboxItems || this.lightboxItems.length === 0) return;
+
+        const item = this.lightboxItems[this.currentLightboxIndex];
+        if (!item) return;
+
+        const isCaseStudy = Array.isArray(item.media) && item.media.length > 0;
+        let isVideo = false;
+        let fullSrc = '';
+        let thumbSrc = '';
+        let activeCaption = '';
+        let indexDisplay = '';
+        let windowTitleText = '';
+
+        if (isCaseStudy) {
+            if (this.currentCaseStudySubIndex >= item.media.length) {
+                this.currentCaseStudySubIndex = 0;
+            }
+            const subIndex = this.currentCaseStudySubIndex;
+            const subItem = item.media[subIndex] || {};
+            isVideo = subItem.type === 'video' || (typeof subItem.full === 'string' && subItem.full.endsWith('.mp4'));
+            fullSrc = subItem.full || subItem.thumb || item.coverThumb || '';
+            thumbSrc = subItem.thumb || item.coverThumb || fullSrc;
+            activeCaption = subItem.caption || `View ${subIndex + 1}`;
+            indexDisplay = `[${subIndex + 1}/${item.media.length}]`;
+            windowTitleText = `CASE STUDY // ${item.title} // [${subIndex + 1}/${item.media.length}]`;
+        } else {
+            isVideo = item.mediaType === 'video';
+            fullSrc = item.full || item.thumb || '';
+            thumbSrc = item.thumb || fullSrc;
+            activeCaption = '';
+            const total = this.lightboxItems.length;
+            const current = this.currentLightboxIndex + 1;
+            indexDisplay = `[${current}/${total}]`;
+            const fileName = (fullSrc || item.id).split('/').pop();
+            windowTitleText = `VIEWER // ${fileName}`;
+        }
+
+        const modal = document.getElementById('gallery-lightbox');
+        if (modal) {
+            modal.setAttribute('aria-label', `Gallery Lightbox Viewer: ${item.title}${isCaseStudy ? ` - ${activeCaption}` : ''}`);
+        }
+
+        const windowTitle = document.getElementById('lightbox-window-title');
+        if (windowTitle) {
+            windowTitle.textContent = windowTitleText;
+            windowTitle.title = windowTitleText;
+        }
+
+        const counterEl = document.getElementById('lightbox-counter');
+        if (counterEl) {
+            counterEl.textContent = indexDisplay;
+            counterEl.setAttribute('aria-label', isCaseStudy
+                ? `Sub-item ${this.currentCaseStudySubIndex + 1} of ${item.media.length} (${item.title})`
+                : `Item ${this.currentLightboxIndex + 1} of ${this.lightboxItems.length}`);
+        }
+
+        const isSameItemSubnav = isCaseStudy && (this.currentRenderedLightboxItemId === item.id);
+
+        const mediaWrapper = document.getElementById('lightbox-media-wrapper');
+        if (mediaWrapper) {
+            // Stop and clean up any existing video element
+            const prevVideo = mediaWrapper.querySelector('video');
+            if (prevVideo) {
+                prevVideo.pause();
+                prevVideo.removeAttribute('src');
+                prevVideo.load();
+            }
+
+            const captionMarkup = (isCaseStudy && activeCaption) ? `
+                <div class="lightbox-media-caption" role="status" aria-live="polite" aria-label="Media caption">
+                    <span class="caption-icon" aria-hidden="true">▸</span>
+                    <span class="caption-text">${activeCaption}</span>
+                </div>
+            ` : '';
+
+            if (isVideo) {
+                mediaWrapper.innerHTML = `
+                    <div class="lightbox-media-main-wrap">
+                        <video src="${fullSrc}" 
+                               controls 
+                               playsinline
+                               preload="metadata"
+                               class="lightbox-media-video" 
+                               aria-label="${item.title} - ${activeCaption || item.tool || 'Generative AI'} video presentation">
+                            Your browser does not support HTML5 video playback.
+                        </video>
+                        ${captionMarkup}
+                    </div>
+                `;
+            } else {
+                mediaWrapper.innerHTML = `
+                    <div class="lightbox-media-main-wrap">
+                        <img src="${fullSrc}" 
+                             alt="${item.title} - ${activeCaption || item.tool || 'Generative AI'} artwork (full resolution)" 
+                             class="lightbox-media-img"
+                             onerror="this.onerror=null; this.src='${thumbSrc}';">
+                        ${captionMarkup}
+                    </div>
+                `;
+            }
+        }
+
+        // Live announcement for screen readers
+        const liveAnnouncer = document.getElementById('lightbox-live-caption');
+        if (liveAnnouncer) {
+            if (isCaseStudy && activeCaption) {
+                liveAnnouncer.textContent = `View ${this.currentCaseStudySubIndex + 1} of ${item.media.length}: ${activeCaption}`;
+            } else if (item.title) {
+                liveAnnouncer.textContent = `${item.title}${item.tool ? ` (${item.tool})` : ''}`;
+            }
+        }
+
+        // Sub-navigation thumbnail strip
+        const subnavContainer = document.getElementById('lightbox-subnav-container');
+        if (subnavContainer) {
+            if (isCaseStudy) {
+                if (isSameItemSubnav) {
+                    // Update active state in-place without rebuilding DOM
+                    const subnavButtons = subnavContainer.querySelectorAll('.lightbox-subnav-item');
+                    subnavButtons.forEach((btn, idx) => {
+                        const isActive = idx === this.currentCaseStudySubIndex;
+                        btn.classList.toggle('active', isActive);
+                        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                        btn.setAttribute('aria-current', isActive ? 'true' : 'false');
+                        const subTitle = (item.media[idx] && item.media[idx].caption) || `View ${idx + 1}`;
+                        btn.setAttribute('aria-label', `View ${idx + 1} of ${item.media.length}: ${subTitle}${isActive ? ' (currently selected)' : ''}`);
+                        if (isActive && typeof btn.scrollIntoView === 'function') {
+                            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                        }
+                    });
+                } else {
+                    const activeElementWasSubnav = subnavContainer.contains(document.activeElement);
+                    subnavContainer.style.display = 'block';
+                    subnavContainer.innerHTML = `
+                        <div class="lightbox-subnav-bar" role="tablist" aria-label="Case study views">
+                            <span class="lightbox-subnav-label"><span class="terminal-prompt-char" aria-hidden="true">&gt;</span> VIEWS [${item.media.length}]:</span>
+                            <div class="lightbox-subnav-strip">
+                                ${item.media.map((sub, idx) => {
+                                    const isActive = idx === this.currentCaseStudySubIndex;
+                                    const isSubVid = sub.type === 'video' || (typeof sub.full === 'string' && sub.full.endsWith('.mp4'));
+                                    const subThumb = sub.thumb || item.coverThumb || sub.full;
+                                    const subTitle = sub.caption || `View ${idx + 1}`;
+                                    return `
+                                        <button type="button" 
+                                                role="tab"
+                                                class="lightbox-subnav-item ${isActive ? 'active' : ''}${isSubVid ? ' is-video' : ''}" 
+                                                aria-selected="${isActive ? 'true' : 'false'}"
+                                                aria-current="${isActive ? 'true' : 'false'}"
+                                                aria-label="View ${idx + 1} of ${item.media.length}: ${subTitle}${isActive ? ' (currently selected)' : ''}"
+                                                onclick="window.portfolio && window.portfolio.setCaseStudySubIndex(${idx})">
+                                            <img src="${subThumb}" alt="" class="subnav-thumb" loading="lazy">
+                                            <span class="subnav-badge" aria-hidden="true">${isSubVid ? '▶' : (idx + 1)}</span>
+                                            <span class="subnav-title">${subTitle}</span>
+                                        </button>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+
+                    const initialActiveBtn = subnavContainer.querySelectorAll('.lightbox-subnav-item')[this.currentCaseStudySubIndex];
+                    if (initialActiveBtn && typeof initialActiveBtn.scrollIntoView === 'function') {
+                        initialActiveBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                    }
+
+                    if (activeElementWasSubnav) {
+                        const newButtons = subnavContainer.querySelectorAll('.lightbox-subnav-item');
+                        if (newButtons[this.currentCaseStudySubIndex]) {
+                            newButtons[this.currentCaseStudySubIndex].focus();
+                        }
+                    }
+                }
+            } else {
+                subnavContainer.style.display = 'none';
+                subnavContainer.innerHTML = '';
+            }
+        }
+
+        // If this is the same case study item and only the sub-view changed, update the active caption and avoid full metadata panel re-render
+        const metaPanel = document.getElementById('lightbox-meta-panel');
+        if (isSameItemSubnav && metaPanel) {
+            const subitemInfo = metaPanel.querySelector('.lightbox-subitem-info');
+            if (subitemInfo && activeCaption) {
+                subitemInfo.innerHTML = `
+                    <span class="subitem-label"><span aria-hidden="true">📷</span> ACTIVE VIEW [${this.currentCaseStudySubIndex + 1}/${item.media.length}]:</span>
+                    <span class="subitem-caption">${activeCaption}</span>
+                `;
+            }
+            return;
+        }
+
+        this.currentRenderedLightboxItemId = item.id;
+
+        let relatedProjectInfo = null;
+        if (item.relatedProject && this.data && this.data.portfolio && Array.isArray(this.data.portfolio.projects)) {
+            relatedProjectInfo = this.data.portfolio.projects.find(p => p.id === item.relatedProject);
+        }
+
+        const hasValidPrompt = Boolean(
+            item.prompt &&
+            typeof item.prompt === 'string' &&
+            item.prompt.trim() !== '' &&
+            !item.prompt.trim().startsWith('[TODO')
+        );
+        const isLongPrompt = hasValidPrompt && item.prompt.length > 90;
+        const promptSummary = hasValidPrompt ? (isLongPrompt ? item.prompt.slice(0, 90) + '...' : item.prompt) : '';
+        const isConcealed = this.promptRevealMode && !this.isPromptRevealedInModal;
+        const itemTags = Array.isArray(item.tags)
+            ? item.tags
+            : (typeof item.tags === 'string' && item.tags.trim() ? [item.tags.trim()] : []);
+
+        if (metaPanel) {
+            metaPanel.innerHTML = `
+                <div class="lightbox-meta-header">
+                    <h3 class="lightbox-title" id="lightbox-item-title">${item.title}</h3>
+                    <span class="gallery-category-badge ${item.category || 'general'}">${(item.category || 'General').toUpperCase()}</span>
+                </div>
+
+                ${isCaseStudy && activeCaption ? `
+                    <div class="lightbox-subitem-info">
+                        <span class="subitem-label"><span aria-hidden="true">📷</span> ACTIVE VIEW [${this.currentCaseStudySubIndex + 1}/${item.media.length}]:</span>
+                        <span class="subitem-caption">${activeCaption}</span>
+                    </div>
+                ` : ''}
+
+                <div class="lightbox-meta-row">
+                    <span class="lightbox-meta-item">🛠️ <strong>Tool:</strong> ${item.tool || 'N/A'}</span>
+                    <span class="lightbox-meta-item">📅 <strong>Date:</strong> ${item.date || 'N/A'}</span>
+                </div>
+
+                ${itemTags.length ? `
+                    <div class="lightbox-tags-container">
+                        ${itemTags.map(tag => `<span class="gallery-tag">#${tag}</span>`).join('')}
+                    </div>
+                ` : ''}
+
+                ${hasValidPrompt ? `
+                    <div class="lightbox-prompt-section">
+                        <div class="prompt-header-row">
+                            <div class="prompt-label-group">
+                                <span class="prompt-label">🤖 PROMPT LOGIC:</span>
+                            </div>
+                            <div class="prompt-actions-group">
+                                <button id="copy-prompt-btn" 
+                                        class="copy-prompt-btn" 
+                                        type="button" 
+                                        aria-label="Copy prompt to clipboard"
+                                        onclick="window.portfolio && window.portfolio.copyCurrentPrompt(this)">
+                                    <span class="copy-icon" aria-hidden="true">📋</span> <span class="copy-btn-text">Copy prompt</span>
+                                </button>
+                                ${isLongPrompt || item.negativePrompt ? `
+                                    <button id="prompt-toggle-btn" 
+                                            class="prompt-toggle-btn" 
+                                            type="button" 
+                                            aria-expanded="${this.isPromptExpanded ? 'true' : 'false'}"
+                                            onclick="window.portfolio && window.portfolio.togglePromptDetails()">
+                                        <span id="prompt-toggle-text">${this.isPromptExpanded ? '▼ Hide prompt details' : '► Behind the image / Full details'}</span>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        ${isConcealed ? `
+                            <div class="prompt-guess-box" id="prompt-guess-box">
+                                <div class="guess-badge">🎮 GUESS THE PROMPT MODE</div>
+                                <div class="guess-instruction">Prompt hidden behind encrypted barrier. Can you deduce the generation prompt?</div>
+                                <button type="button" 
+                                        class="reveal-prompt-btn" 
+                                        id="reveal-prompt-btn"
+                                        onclick="window.portfolio && window.portfolio.revealPromptInLightbox(this)"
+                                        aria-label="Reveal the hidden AI generation prompt">
+                                    👁️ REVEAL PROMPT // [DECRYPT]
+                                </button>
+                            </div>
+                            <div id="lightbox-prompt-container" class="lightbox-prompt-container prompt-hidden-mode ${this.isPromptExpanded ? 'expanded' : ''}" style="display: none;">
+                                <div class="prompt-text prompt-summary">${promptSummary}</div>
+                                <div class="prompt-text prompt-full">${item.prompt}</div>
+                                
+                                ${item.negativePrompt ? `
+                                    <div class="negative-prompt-block">
+                                        <span class="negative-prompt-label">🚫 Negative Prompt:</span>
+                                        <div class="negative-prompt-text">${item.negativePrompt}</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        ` : `
+                            <div id="lightbox-prompt-container" class="lightbox-prompt-container ${this.isPromptExpanded ? 'expanded' : ''}">
+                                <div class="prompt-text prompt-summary">${promptSummary}</div>
+                                <div class="prompt-text prompt-full">${item.prompt}</div>
+                                
+                                ${item.negativePrompt ? `
+                                    <div class="negative-prompt-block">
+                                        <span class="negative-prompt-label">🚫 Negative Prompt:</span>
+                                        <div class="negative-prompt-text">${item.negativePrompt}</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `}
+                    </div>
+                ` : ''}
+
+                ${relatedProjectInfo ? `
+                    <div class="lightbox-project-section">
+                        <button type="button" 
+                                class="lightbox-project-link-btn" 
+                                onclick="window.portfolio && window.portfolio.navigateToRelatedProject('${item.relatedProject}')"
+                                aria-label="View case study for ${relatedProjectInfo.title}">
+                            <span class="project-link-icon">🔗</span> Related Project: <strong>${relatedProjectInfo.title}</strong> →
+                        </button>
+                    </div>
+                ` : (item.relatedProject ? `
+                    <div class="lightbox-project-section">
+                        <button type="button" 
+                                class="lightbox-project-link-btn" 
+                                onclick="window.portfolio && window.portfolio.navigateToRelatedProject('${item.relatedProject}')"
+                                aria-label="View case study for related project">
+                            <span class="project-link-icon">🔗</span> Related Project: <strong>${item.relatedProject}</strong> →
+                        </button>
+                    </div>
+                ` : '')}
+            `;
+        }
+    }
 }
 
 // Initialize the Arch portfolio when DOM is loaded
@@ -882,13 +1822,17 @@ document.addEventListener('keydown', (e) => {
                 break;
             case '6':
                 e.preventDefault();
+                document.querySelector('[data-command="gallery"]').click();
+                break;
+            case '7':
+                e.preventDefault();
                 document.querySelector('[data-command="contact"]').click();
                 break;
         }
     }
 });
 
-// Add window focus effects
+// Add window focus & window control handlers (close, minimize, maximize)
 document.querySelectorAll('.window-pane').forEach(pane => {
     pane.addEventListener('click', () => {
         document.querySelectorAll('.window-pane').forEach(p => {
@@ -896,6 +1840,33 @@ document.querySelectorAll('.window-pane').forEach(pane => {
         });
         pane.style.borderColor = 'var(--border-active)';
     });
+
+    const closeBtn = pane.querySelector('.control.close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            pane.style.display = 'none';
+        });
+    }
+
+    const minBtn = pane.querySelector('.control.minimize');
+    if (minBtn) {
+        minBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const content = pane.querySelector('.window-content');
+            if (content) {
+                content.style.display = content.style.display === 'none' ? '' : 'none';
+            }
+        });
+    }
+
+    const maxBtn = pane.querySelector('.control.maximize');
+    if (maxBtn) {
+        maxBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            pane.classList.toggle('maximized-pane');
+        });
+    }
 });
 
 // Simulate system activity
