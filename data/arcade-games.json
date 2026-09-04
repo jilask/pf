@@ -1,0 +1,38 @@
+{
+  "header": {
+    "directory": "~/arcade",
+    "command": "ls -la arcade/",
+    "total": 1,
+    "user": "alij",
+    "group": "staff",
+    "date": "Sep 04"
+  },
+  "games": [
+    {
+      "id": "snake",
+      "title": "Snake",
+      "executable": "snake.sh",
+      "size": "4.2K",
+      "permissions": "-rwxr-xr-x",
+      "badge": "COMING SOON",
+      "status": "coming_soon",
+      "description": "Classic terminal retro arcade snake game. Collect memory bits, grow your process, avoid kernel panic.",
+      "genre": "Terminal Arcade",
+      "version": "v0.1.0-alpha",
+      "controlsPreview": [
+        { "key": "WASD / ↑↓←→", "action": "Steer process snake" },
+        { "key": "P", "action": "Pause thread" },
+        { "key": "R", "action": "Restart kernel" },
+        { "key": "Q / ESC", "action": "Quit to terminal menu" }
+      ],
+      "asciiArt": [
+        "   _____             _         ",
+        "  / ____|           | |        ",
+        " | (___  _ __   __ _| | _____  ",
+        "  \\___ \\| '_ \\ / _` | |/ / _ \\ ",
+        "  ____) | | | | (_| |   <  __/ ",
+        " |_____/|_| |_|\\__,_|_|\\_\\___| "
+      ]
+    }
+  ]
+}
