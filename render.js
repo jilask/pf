@@ -814,10 +814,170 @@ function renderProjectDetails(project) {
         `;
 }
 
+/**
+ * Renders the interactive terminal arcade directory menu (styled like ls -la ~/arcade).
+ * @param {Object} arcadeData - Metadata and games list
+ * @returns {string} HTML markup string
+ */
+function renderArcadeMenu(arcadeData) {
+    const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
+    const header = (arcadeData && arcadeData.header) ? arcadeData.header : {
+        directory: '~/arcade',
+        command: 'ls -la arcade/',
+        total: games.length,
+        user: 'alij',
+        group: 'staff',
+        date: 'Sep 04'
+    };
+
+    const gamesRows = games.map((game) => {
+        const badgeText = game.badge || (game.status === 'coming_soon' ? 'COMING SOON' : 'PLAYABLE');
+        const badgeClass = game.status === 'coming_soon' ? 'arcade-badge-soon' : 'arcade-badge-active';
+        return `
+            <button class="arcade-game-row" type="button" data-game-id="${game.id}" aria-label="Launch ${game.title} executable: ${game.executable}. Status: ${badgeText}. ${game.description}">
+                <div class="arcade-col-perms" aria-hidden="true">${game.permissions || '-rwxr-xr-x'}</div>
+                <div class="arcade-col-owner" aria-hidden="true">${header.user || 'alij'} ${header.group || 'staff'}</div>
+                <div class="arcade-col-size" aria-hidden="true">${game.size || '4.0K'}</div>
+                <div class="arcade-col-date" aria-hidden="true">${header.date || 'Sep 04'}</div>
+                <div class="arcade-col-name">
+                    <span class="arcade-exec-icon" aria-hidden="true">⚙</span>
+                    <span class="arcade-exec-name">${game.executable || `${game.id}.sh`}*</span>
+                    <span class="arcade-game-title">(${game.title})</span>
+                </div>
+                <div class="arcade-col-badge">
+                    <span class="arcade-badge ${badgeClass}">${badgeText}</span>
+                </div>
+                <div class="arcade-col-action" aria-hidden="true">
+                    <span class="arcade-action-btn">[RUN]</span>
+                </div>
+            </button>
+        `;
+    }).join('');
+
+    return `
+        <div class="arcade-menu-container">
+            <div class="arcade-terminal-prompt">
+                <span class="user">${header.user || 'alij'}@portfolio</span><span class="separator">:</span><span class="path">${header.directory || '~/arcade'}</span><span class="prompt">$</span>
+                <span class="arcade-typed-cmd">${header.command || 'ls -la arcade/'}</span>
+            </div>
+            
+            <div class="arcade-listing-header">
+                <div class="arcade-total-info">total ${games.length} file(s) (workspace 5 kernel sandbox)</div>
+                <div class="arcade-table-headers" aria-hidden="true">
+                    <span class="arcade-th perms">PERMISSIONS</span>
+                    <span class="arcade-th owner">OWNER</span>
+                    <span class="arcade-th size">SIZE</span>
+                    <span class="arcade-th date">DATE</span>
+                    <span class="arcade-th name">EXECUTABLE // PROGRAM</span>
+                    <span class="arcade-th badge">STATUS</span>
+                    <span class="arcade-th action">ACTION</span>
+                </div>
+            </div>
+
+            <div class="arcade-games-list" role="list" aria-label="Arcade Executables Directory">
+                ${gamesRows}
+            </div>
+
+            <div class="arcade-directory-footer">
+                <div class="arcade-terminal-tip">
+                    <span class="arcade-tip-icon" aria-hidden="true">ℹ</span>
+                    <span>Select an executable using <strong>Tab / Click</strong> and press <strong>[Enter]</strong> to stage process.</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Renders the detailed view/placeholder for a selected arcade game.
+ * @param {Object} game - Game metadata object
+ * @returns {string} HTML markup string
+ */
+function renderArcadeGamePlaceholder(game) {
+    if (!game) {
+        return `<div class="arcade-placeholder-error">Error: Game executable not found.</div>`;
+    }
+
+    const asciiLines = Array.isArray(game.asciiArt) ? game.asciiArt.join('\n') : '';
+    const controls = Array.isArray(game.controlsPreview) ? game.controlsPreview : [];
+
+    const controlsHtml = controls.map(c => `
+        <div class="arcade-control-item">
+            <kbd class="arcade-key-badge">${c.key}</kbd>
+            <span class="arcade-control-action">${c.action}</span>
+        </div>
+    `).join('');
+
+    return `
+        <div class="arcade-game-detail-container" role="region" aria-label="${game.title} details and status">
+            <div class="arcade-detail-nav">
+                <button class="arcade-back-btn" id="arcade-back-to-menu-btn" type="button" aria-label="Back to arcade executables directory">
+                    <span aria-hidden="true">←</span> cd .. (Back to Arcade Menu) <span class="arcade-key-hint" aria-hidden="true">[ESC]</span>
+                </button>
+                <div class="arcade-process-status">
+                    <span class="arcade-pulse-dot" aria-hidden="true"></span>
+                    <span class="arcade-status-text">PID: 7701 // STATUS: STAGED_FOR_DEPLOYMENT</span>
+                </div>
+            </div>
+
+            <div class="arcade-placeholder-content">
+                <div class="arcade-header-block">
+                    <div class="arcade-executable-meta">
+                        <span class="arcade-meta-tag">EXE: ./${game.executable}</span>
+                        <span class="arcade-meta-tag">VER: ${game.version || 'v0.1.0-alpha'}</span>
+                        <span class="arcade-meta-tag">GENRE: ${game.genre || 'Terminal Arcade'}</span>
+                    </div>
+                    ${asciiLines ? `<pre class="arcade-ascii-art" aria-hidden="true">${asciiLines}</pre>` : ''}
+                    <h3 class="arcade-game-headline">${game.title} - Terminal Arcade</h3>
+                    <p class="arcade-game-summary">${game.description}</p>
+                </div>
+
+                <div class="arcade-stage-notice">
+                    <div class="arcade-notice-badge">
+                        <span class="arcade-notice-icon" aria-hidden="true">⏳</span>
+                        <span>DEPLOYMENT STAGE: COMING SOON</span>
+                    </div>
+                    <p class="arcade-notice-desc">
+                        Process binary <code>./${game.executable}</code> is currently being compiled in kernel sandbox. The full interactive terminal simulation will launch in the next sprint deployment.
+                    </p>
+                </div>
+
+                <div class="arcade-preview-section">
+                    <h4 class="arcade-section-title">// PLANNED INPUT MAPPINGS</h4>
+                    <div class="arcade-controls-grid">
+                        ${controlsHtml}
+                    </div>
+                </div>
+
+                <div class="arcade-preview-section">
+                    <h4 class="arcade-section-title">// SYSTEM ENVIRONMENT</h4>
+                    <div class="arcade-env-specs">
+                        <div class="arcade-spec-item">
+                            <span class="arcade-spec-label">Terminal Renderer:</span>
+                            <span class="arcade-spec-val">HTML5 Canvas / Fixed-grid CharBuffer</span>
+                        </div>
+                        <div class="arcade-spec-item">
+                            <span class="arcade-spec-label">Audio Engine:</span>
+                            <span class="arcade-spec-val">WebAudio Synthesized Retro Chiptune Bleeps</span>
+                        </div>
+                        <div class="arcade-spec-item">
+                            <span class="arcade-spec-label">Tick Rate:</span>
+                            <span class="arcade-spec-val">10 Hz (Classic 100ms cycle)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 if (typeof window !== 'undefined') {
     window.renderCard = renderCard;
     window.renderSection = renderSection;
     window.renderGallery = renderGallery;
     window.renderGalleryPagination = renderGalleryPagination;
     window.renderProjectDetails = renderProjectDetails;
+    window.renderArcadeMenu = renderArcadeMenu;
+    window.renderArcadeGamePlaceholder = renderArcadeGamePlaceholder;
 }
+
