@@ -881,7 +881,7 @@ function renderArcadeMenu(arcadeData) {
             <div class="arcade-directory-footer">
                 <div class="arcade-terminal-tip">
                     <span class="arcade-tip-icon" aria-hidden="true">ℹ</span>
-                    <span>Select an executable using <strong>Tab / Click</strong> and press <strong>[Enter]</strong> to stage process.</span>
+                    <span>Select an executable using <strong>Tab / Click</strong> and press <strong>[Enter]</strong> • Press <strong>[ESC]</strong> to exit arcade.</span>
                 </div>
             </div>
         </div>

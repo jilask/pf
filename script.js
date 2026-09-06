@@ -384,7 +384,8 @@ class ArchPortfolio {
         setInterval(() => this.updateClock(), 1000);
 
         // Workspace switching via top bar
-        document.querySelectorAll('.workspace-item').forEach((item, index) => {
+        const workspaceItems = Array.from(document.querySelectorAll('.workspace-item'));
+        workspaceItems.forEach((item, index) => {
             const handleWorkspaceClick = () => {
                 const targetWorkspace = index + 1;
                 this.switchWorkspace(targetWorkspace);
@@ -410,6 +411,20 @@ class ArchPortfolio {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     handleWorkspaceClick();
+                } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    const nextIndex = (index + 1) % workspaceItems.length;
+                    workspaceItems[nextIndex].focus();
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const prevIndex = (index - 1 + workspaceItems.length) % workspaceItems.length;
+                    workspaceItems[prevIndex].focus();
+                } else if (e.key === 'Home') {
+                    e.preventDefault();
+                    workspaceItems[0].focus();
+                } else if (e.key === 'End') {
+                    e.preventDefault();
+                    workspaceItems[workspaceItems.length - 1].focus();
                 }
             });
         });
@@ -532,9 +547,16 @@ class ArchPortfolio {
 
         // When switching away from workspace 5, ensure arcade window is hidden
         if (arcadeWindow) {
+            const focusWasInArcade = arcadeWindow.contains(document.activeElement);
             arcadeWindow.style.display = 'none';
             arcadeWindow.style.gridColumn = '';
             arcadeWindow.style.gridRow = '';
+            if (focusWasInArcade) {
+                const targetTab = document.querySelector(`.workspace-item[aria-label="Workspace ${index}"]`);
+                if (targetTab) {
+                    targetTab.focus();
+                }
+            }
         }
 
         if (topBarTitle) {
@@ -1810,20 +1832,42 @@ ACHIEVEMENTS
     }
 
     setupArcade() {
-        // Global keydown handler for Escape when viewing arcade game placeholder
+        // Global keydown handler for Escape when in workspace 5
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.currentWorkspace === 5 && this.currentArcadeView !== 'menu') {
+            if (e.key === 'Escape' && this.currentWorkspace === 5) {
                 e.preventDefault();
-                this.returnToArcadeMenu();
+                if (this.currentArcadeView !== 'menu') {
+                    // If viewing a game placeholder, return to arcade menu
+                    this.returnToArcadeMenu();
+                } else {
+                    // If at root arcade menu, exit back to Workspace 1
+                    this.switchWorkspace(1);
+                    const targetTab = document.querySelector('.workspace-item[aria-label="Workspace 1"]') ||
+                                      document.querySelector('.workspace-item[aria-label="Workspace 5"]');
+                    if (targetTab) {
+                        targetTab.focus();
+                    }
+                }
             }
         });
 
         // Window controls for arcade window (close -> return to workspace 1)
         const arcadeCloseBtn = document.querySelector('#arcade-window .control.close');
         if (arcadeCloseBtn) {
-            arcadeCloseBtn.addEventListener('click', (e) => {
+            const handleArcadeClose = (e) => {
                 e.stopPropagation();
                 this.switchWorkspace(1);
+                const targetTab = document.querySelector('.workspace-item[aria-label="Workspace 1"]');
+                if (targetTab) {
+                    targetTab.focus();
+                }
+            };
+            arcadeCloseBtn.addEventListener('click', handleArcadeClose);
+            arcadeCloseBtn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleArcadeClose(e);
+                }
             });
         }
     }

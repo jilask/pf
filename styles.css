@@ -328,6 +328,13 @@ body::after {
     opacity: 0.8;
 }
 
+.control:focus-visible {
+    outline: 2px solid var(--accent-yellow) !important;
+    outline-offset: 3px !important;
+    box-shadow: 0 0 8px var(--accent-yellow) !important;
+    transform: scale(1.2);
+}
+
 .window-title {
     color: var(--text-primary);
     font-weight: 600;
