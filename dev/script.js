@@ -30,12 +30,19 @@ class ArchPortfolio {
         this.galleryVisibleCount = 12;
         this.currentRenderedLightboxItemId = null;
 
+        // Workspace 5 Arcade Shell state
+        this.currentArcadeView = 'menu';
+        this.lastFocusedArcadeRowId = null;
+
         this.init();
     }
 
     async loadJson(url) {
         try {
-            const res = await fetch(url);
+            let res = await fetch(url);
+            if (!res.ok && url.startsWith('./data/')) {
+                res = await fetch('.' + url);
+            }
             if (!res.ok) {
                 throw new Error(`HTTP ${res.status}: ${res.statusText}`);
             }
@@ -48,14 +55,15 @@ class ArchPortfolio {
 
     async loadAllData() {
         try {
-            const [about, skills, experience, achievements, portfolio, gallery, contact] = await Promise.all([
+            const [about, skills, experience, achievements, portfolio, gallery, contact, arcade] = await Promise.all([
                 this.loadJson('./data/about.json'),
                 this.loadJson('./data/skills.json'),
                 this.loadJson('./data/experience.json'),
                 this.loadJson('./data/achievements.json'),
                 this.loadJson('./data/projects.json'),
                 this.loadJson('./data/gallery.json'),
-                this.loadJson('./data/contact.json')
+                this.loadJson('./data/contact.json'),
+                this.loadJson('./data/arcade-games.json')
             ]);
 
             this.data = {
@@ -65,7 +73,8 @@ class ArchPortfolio {
                 achievements,
                 portfolio,
                 gallery,
-                contact
+                contact,
+                arcade: arcade || this.getFallbackArcadeData()
             };
         } catch (err) {
             console.error('[Portfolio Error] Critical error during data initialization:', err);
@@ -79,6 +88,7 @@ class ArchPortfolio {
         this.setupSystemMetrics();
         this.setupNavigation();
         this.setupGalleryLightbox();
+        this.setupArcade();
         await this.loadAllData();
 
         // Check for direct link / auto-open pane flag or query parameter
@@ -98,28 +108,6 @@ class ArchPortfolio {
             this.updateSystemMetrics();
             setInterval(() => this.updateSystemMetrics(), 3000);
         }
-    }
-
-    setupWaybar() {
-        this.updateClock();
-        setInterval(() => this.updateClock(), 1000);
-
-        // Workspace switching via top bar
-        document.querySelectorAll('.workspace-item').forEach((item, index) => {
-            item.addEventListener('click', () => {
-                this.switchWorkspace(index + 1);
-            });
-            item.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    this.switchWorkspace(index + 1);
-                }
-            });
-        });
-
-        // Update system info
-        this.updateSystemInfo();
-        setInterval(() => this.updateSystemInfo(), 5000);
     }
 
     updateClock() {
@@ -396,7 +384,8 @@ class ArchPortfolio {
         setInterval(() => this.updateClock(), 1000);
 
         // Workspace switching via top bar
-        document.querySelectorAll('.workspace-item').forEach((item, index) => {
+        const workspaceItems = Array.from(document.querySelectorAll('.workspace-item'));
+        workspaceItems.forEach((item, index) => {
             const handleWorkspaceClick = () => {
                 const targetWorkspace = index + 1;
                 this.switchWorkspace(targetWorkspace);
@@ -422,6 +411,20 @@ class ArchPortfolio {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     handleWorkspaceClick();
+                } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    const nextIndex = (index + 1) % workspaceItems.length;
+                    workspaceItems[nextIndex].focus();
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const prevIndex = (index - 1 + workspaceItems.length) % workspaceItems.length;
+                    workspaceItems[prevIndex].focus();
+                } else if (e.key === 'Home') {
+                    e.preventDefault();
+                    workspaceItems[0].focus();
+                } else if (e.key === 'End') {
+                    e.preventDefault();
+                    workspaceItems[workspaceItems.length - 1].focus();
                 }
             });
         });
@@ -512,6 +515,53 @@ class ArchPortfolio {
         const mainWindow = document.getElementById('portfolio-window');
         const asciiViz = document.getElementById('ascii-viz');
         const navTerminal = document.getElementById('nav-terminal');
+        const arcadeWindow = document.getElementById('arcade-window');
+        const topBarTitle = document.getElementById('current-window');
+
+        // Workspace 5: Hidden Arcade Container
+        if (index === 5) {
+            // Hide standard dashboard panes
+            [systemMonitor, systemMetrics, asciiViz, navTerminal, mainWindow].forEach(el => {
+                if (el) el.style.display = 'none';
+            });
+
+            if (arcadeWindow) {
+                arcadeWindow.style.display = 'flex';
+                if (window.innerWidth >= 768) {
+                    arcadeWindow.style.gridColumn = '1 / -1';
+                    arcadeWindow.style.gridRow = '1 / -1';
+                } else {
+                    arcadeWindow.style.gridColumn = '';
+                    arcadeWindow.style.gridRow = '';
+                    arcadeWindow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+
+            if (topBarTitle) {
+                topBarTitle.textContent = 'AliJ A. Shaikh - Retro Terminal Arcade (Workspace 5)';
+            }
+
+            this.renderArcade();
+            return;
+        }
+
+        // When switching away from workspace 5, ensure arcade window is hidden
+        if (arcadeWindow) {
+            const focusWasInArcade = arcadeWindow.contains(document.activeElement);
+            arcadeWindow.style.display = 'none';
+            arcadeWindow.style.gridColumn = '';
+            arcadeWindow.style.gridRow = '';
+            if (focusWasInArcade) {
+                const targetTab = document.querySelector(`.workspace-item[aria-label="Workspace ${index}"]`);
+                if (targetTab) {
+                    targetTab.focus();
+                }
+            }
+        }
+
+        if (topBarTitle) {
+            topBarTitle.textContent = 'AliJ A. Shaikh - Portfolio';
+        }
 
         // Below 768px mobile breakpoint, allow CSS single-column stacked layout to manage display & grid properties
         if (window.innerWidth < 768) {
@@ -519,6 +569,7 @@ class ArchPortfolio {
                 if (el) el.style.display = '';
             });
             if (mainWindow) {
+                mainWindow.style.display = '';
                 mainWindow.style.gridColumn = '';
                 mainWindow.style.gridRow = '';
             }
@@ -533,6 +584,7 @@ class ArchPortfolio {
             if (navTerminal) navTerminal.style.display = '';
 
             if (mainWindow) {
+                mainWindow.style.display = '';
                 mainWindow.style.gridColumn = '2 / -1';
                 mainWindow.style.gridRow = '1 / -1';
             }
@@ -543,6 +595,7 @@ class ArchPortfolio {
             if (navTerminal) navTerminal.style.display = '';
 
             if (mainWindow) {
+                mainWindow.style.display = '';
                 mainWindow.style.gridColumn = '';
                 mainWindow.style.gridRow = '';
             }
@@ -1776,6 +1829,162 @@ ACHIEVEMENTS
                 ` : '')}
             `;
         }
+    }
+
+    setupArcade() {
+        // Global keydown handler for Escape when in workspace 5
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.currentWorkspace === 5) {
+                e.preventDefault();
+                if (this.currentArcadeView !== 'menu') {
+                    // If viewing a game placeholder, return to arcade menu
+                    this.returnToArcadeMenu();
+                } else {
+                    // If at root arcade menu, exit back to Workspace 1
+                    this.switchWorkspace(1);
+                    const targetTab = document.querySelector('.workspace-item[aria-label="Workspace 1"]') ||
+                                      document.querySelector('.workspace-item[aria-label="Workspace 5"]');
+                    if (targetTab) {
+                        targetTab.focus();
+                    }
+                }
+            }
+        });
+
+        // Window controls for arcade window (close -> return to workspace 1)
+        const arcadeCloseBtn = document.querySelector('#arcade-window .control.close');
+        if (arcadeCloseBtn) {
+            const handleArcadeClose = (e) => {
+                e.stopPropagation();
+                this.switchWorkspace(1);
+                const targetTab = document.querySelector('.workspace-item[aria-label="Workspace 1"]');
+                if (targetTab) {
+                    targetTab.focus();
+                }
+            };
+            arcadeCloseBtn.addEventListener('click', handleArcadeClose);
+            arcadeCloseBtn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleArcadeClose(e);
+                }
+            });
+        }
+    }
+
+    getFallbackArcadeData() {
+        return {
+            header: {
+                directory: '~/arcade',
+                command: 'ls -la arcade/',
+                total: 1,
+                user: 'alij',
+                group: 'staff',
+                date: 'Sep 04'
+            },
+            games: [
+                {
+                    id: 'snake',
+                    title: 'Snake',
+                    executable: 'snake.sh',
+                    size: '4.2K',
+                    permissions: '-rwxr-xr-x',
+                    badge: 'COMING SOON',
+                    status: 'coming_soon',
+                    description: 'Classic terminal retro arcade snake game. Collect memory bits, grow your process, avoid kernel panic.',
+                    genre: 'Terminal Arcade',
+                    version: 'v0.1.0-alpha',
+                    controlsPreview: [
+                        { key: 'WASD / ↑↓←→', action: 'Steer process snake' },
+                        { key: 'P', action: 'Pause thread' },
+                        { key: 'R', action: 'Restart kernel' },
+                        { key: 'Q / ESC', action: 'Quit to terminal menu' }
+                    ],
+                    asciiArt: [
+                        "   _____             _         ",
+                        "  / ____|           | |        ",
+                        " | (___  _ __   __ _| | _____  ",
+                        "  \\___ \\| '_ \\ / _` | |/ / _ \\ ",
+                        "  ____) | | | | (_| |   <  __/ ",
+                        " |_____/|_| |_|\\__,_|_|\\_\\___| "
+                    ]
+                }
+            ]
+        };
+    }
+
+    renderArcade() {
+        const arcadeContent = document.getElementById('arcade-content');
+        const arcadeTitle = document.getElementById('arcade-window-title');
+        if (!arcadeContent) return;
+
+        const arcadeData = (this.data && this.data.arcade) ? this.data.arcade : this.getFallbackArcadeData();
+
+        if (this.currentArcadeView === 'menu') {
+            if (arcadeTitle) {
+                arcadeTitle.textContent = 'USER@SYSTEM: ~/arcade';
+            }
+
+            if (typeof window.renderArcadeMenu === 'function') {
+                arcadeContent.innerHTML = window.renderArcadeMenu(arcadeData);
+            }
+
+            // Bind click & keyboard handlers to each game executable row
+            const gameRows = arcadeContent.querySelectorAll('.arcade-game-row');
+            gameRows.forEach(row => {
+                const gameId = row.dataset.gameId;
+                const handleSelect = () => {
+                    this.openArcadeGame(gameId, row);
+                };
+
+                row.addEventListener('click', handleSelect);
+                row.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleSelect();
+                    }
+                });
+            });
+
+            // Restore focus if returning from game placeholder
+            if (this.lastFocusedArcadeRowId) {
+                const targetRow = arcadeContent.querySelector(`.arcade-game-row[data-game-id="${this.lastFocusedArcadeRowId}"]`);
+                if (targetRow) {
+                    targetRow.focus();
+                }
+            }
+        } else {
+            // Detailed game placeholder view
+            const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
+            const game = games.find(g => g.id === this.currentArcadeView) || games[0];
+
+            if (arcadeTitle) {
+                arcadeTitle.textContent = `USER@SYSTEM: ~/arcade/${game ? game.executable : 'game'}`;
+            }
+
+            if (typeof window.renderArcadeGamePlaceholder === 'function') {
+                arcadeContent.innerHTML = window.renderArcadeGamePlaceholder(game);
+            }
+
+            const backBtn = document.getElementById('arcade-back-to-menu-btn');
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    this.returnToArcadeMenu();
+                });
+                backBtn.focus();
+            }
+        }
+    }
+
+    openArcadeGame(gameId, triggerEl) {
+        this.lastFocusedArcadeRowId = gameId;
+        this.currentArcadeView = gameId;
+        this.renderArcade();
+    }
+
+    returnToArcadeMenu() {
+        this.currentArcadeView = 'menu';
+        this.renderArcade();
     }
 }
 
