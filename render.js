@@ -971,6 +971,155 @@ function renderArcadeGamePlaceholder(game) {
     `;
 }
 
+/**
+ * Renders the interactive terminal Snake game interface.
+ * @param {Object} game - Game metadata object
+ * @param {number} highScore - Best saved score
+ * @returns {string} HTML markup string
+ */
+function renderSnakeGame(game, highScore = 0) {
+    const formattedBest = String(highScore).padStart(4, '0');
+    const asciiLines = (game && Array.isArray(game.asciiArt)) ? game.asciiArt.join('\n') : '';
+
+    return `
+        <div class="arcade-game-container arcade-snake-container" role="region" aria-label="Snake Game Terminal Workspace">
+            <div class="arcade-detail-nav">
+                <button class="arcade-back-btn" id="arcade-back-to-menu-btn" type="button" aria-label="Back to arcade executables directory">
+                    <span aria-hidden="true">←</span> cd .. (Back to Arcade Menu) <span class="arcade-key-hint" aria-hidden="true">[ESC]</span>
+                </button>
+                <div class="arcade-process-status">
+                    <span class="arcade-pulse-dot" aria-hidden="true"></span>
+                    <span class="arcade-status-text" id="snake-status-text">PID: 7701 // STATUS: READY</span>
+                </div>
+            </div>
+
+            <!-- Game HUD / Scoreboard -->
+            <div class="arcade-hud" role="status" aria-label="Live Game Telemetry">
+                <div class="arcade-hud-metrics">
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label">SCORE:</span>
+                        <span class="arcade-hud-val" id="snake-score-display">0000</span>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label">BEST:</span>
+                        <span class="arcade-hud-val arcade-hud-best" id="snake-highscore-display">${formattedBest}</span>
+                    </div>
+                    <div class="arcade-hud-item arcade-hud-extra">
+                        <span class="arcade-hud-label">LEN:</span>
+                        <span class="arcade-hud-val" id="snake-length-display">03</span>
+                    </div>
+                </div>
+                <div class="arcade-hud-actions">
+                    <button class="arcade-hud-btn" id="snake-pause-btn" type="button" aria-label="Pause or resume game execution">
+                        <span id="snake-pause-btn-text">PAUSE [SPACE]</span>
+                    </button>
+                    <button class="arcade-hud-btn" id="snake-restart-hud-btn" type="button" aria-label="Restart game process">
+                        RESTART [R]
+                    </button>
+                </div>
+            </div>
+
+            <!-- Screen Reader Live Status Announcer -->
+            <div id="snake-live-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+            <!-- Canvas Viewport with Layered Terminal Overlays -->
+            <div class="arcade-canvas-wrapper" id="snake-canvas-wrapper">
+                <canvas id="snake-canvas" width="400" height="400" role="img" aria-label="Interactive Snake game board. Use Arrow keys or WASD on desktop, or touch controls below on mobile."></canvas>
+
+                <!-- Start Overlay -->
+                <div class="arcade-game-overlay" id="snake-start-overlay">
+                    <div class="arcade-overlay-card">
+                        ${asciiLines ? `<pre class="arcade-ascii-art" aria-hidden="true">${asciiLines}</pre>` : ''}
+                        <h3 class="arcade-overlay-title">SNAKE.SH // PROCESS ALLOCATOR</h3>
+                        <p class="arcade-overlay-desc">
+                            Steer the memory process to collect memory packets (cyan bits). Avoid hitting boundary walls or colliding with process segments.
+                        </p>
+                        <div class="arcade-overlay-controls-hint">
+                            <div class="hint-item"><kbd class="arcade-key-badge">WASD / ↑↓←→</kbd> <span>Steer Process</span></div>
+                            <div class="hint-item"><kbd class="arcade-key-badge">Space / P</kbd> <span>Pause Thread</span></div>
+                            <div class="hint-item"><kbd class="arcade-key-badge">R</kbd> <span>Restart</span></div>
+                            <div class="hint-item"><kbd class="arcade-key-badge">ESC</kbd> <span>Arcade Menu</span></div>
+                        </div>
+                        <button class="arcade-btn arcade-btn-primary" id="snake-start-btn" type="button">
+                            ▶ LAUNCH PROCESS [PRESS ANY KEY / TAP]
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pause Overlay -->
+                <div class="arcade-game-overlay" id="snake-pause-overlay" style="display: none;">
+                    <div class="arcade-overlay-card">
+                        <div class="arcade-overlay-tag">[ THREAD SUSPENDED ]</div>
+                        <h3 class="arcade-overlay-title">GAME PAUSED</h3>
+                        <p class="arcade-overlay-desc">CPU tick halted. Press Space, P, or click Resume to continue execution.</p>
+                        <div class="arcade-overlay-actions">
+                            <button class="arcade-btn arcade-btn-primary" id="snake-resume-btn" type="button">
+                                ▶ RESUME THREAD [SPACE]
+                            </button>
+                            <button class="arcade-btn arcade-btn-secondary" id="snake-restart-from-pause-btn" type="button">
+                                ↺ RESTART [R]
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Over Overlay -->
+                <div class="arcade-game-overlay" id="snake-gameover-overlay" style="display: none;">
+                    <div class="arcade-overlay-card arcade-overlay-gameover">
+                        <div class="arcade-overlay-tag arcade-tag-danger">[ KERNEL PANIC: SEGMENTATION FAULT ]</div>
+                        <h3 class="arcade-overlay-title">PROCESS TERMINATED</h3>
+                        <div class="arcade-gameover-scores">
+                            <div class="arcade-gameover-stat">
+                                <span class="stat-label">FINAL SCORE</span>
+                                <span class="stat-val" id="snake-final-score">0000</span>
+                            </div>
+                            <div class="arcade-gameover-stat">
+                                <span class="stat-label">HIGH SCORE</span>
+                                <span class="stat-val" id="snake-gameover-best">${formattedBest}</span>
+                            </div>
+                        </div>
+                        <div id="snake-new-highscore-badge" class="arcade-new-record" style="display: none;">
+                            ★ NEW HIGH SCORE RECORDED TO DISK ★
+                        </div>
+                        <div class="arcade-overlay-actions">
+                            <button class="arcade-btn arcade-btn-primary" id="snake-restart-btn" type="button">
+                                ↺ PLAY AGAIN [R / ENTER]
+                            </button>
+                            <button class="arcade-btn arcade-btn-secondary" id="snake-exit-to-menu-btn" type="button">
+                                ← ARCADE MENU [ESC]
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Touch Controls / D-Pad for Mobile Viewports -->
+            <div class="arcade-touch-controls" id="snake-touch-controls" aria-label="On-screen directional controls">
+                <div class="arcade-dpad">
+                    <button class="arcade-dpad-btn dpad-up" id="dpad-up" type="button" aria-label="Steer Up">
+                        <span aria-hidden="true">▲</span>
+                    </button>
+                    <div class="arcade-dpad-middle">
+                        <button class="arcade-dpad-btn dpad-left" id="dpad-left" type="button" aria-label="Steer Left">
+                            <span aria-hidden="true">◀</span>
+                        </button>
+                        <div class="arcade-dpad-center" aria-hidden="true">●</div>
+                        <button class="arcade-dpad-btn dpad-right" id="dpad-right" type="button" aria-label="Steer Right">
+                            <span aria-hidden="true">▶</span>
+                        </button>
+                    </div>
+                    <button class="arcade-dpad-btn dpad-down" id="dpad-down" type="button" aria-label="Steer Down">
+                        <span aria-hidden="true">▼</span>
+                    </button>
+                </div>
+                <div class="arcade-touch-tip" aria-hidden="true">
+                    <span>Swipe on canvas or tap D-pad to steer</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 if (typeof window !== 'undefined') {
     window.renderCard = renderCard;
     window.renderSection = renderSection;
@@ -979,5 +1128,6 @@ if (typeof window !== 'undefined') {
     window.renderProjectDetails = renderProjectDetails;
     window.renderArcadeMenu = renderArcadeMenu;
     window.renderArcadeGamePlaceholder = renderArcadeGamePlaceholder;
+    window.renderSnakeGame = renderSnakeGame;
 }
 

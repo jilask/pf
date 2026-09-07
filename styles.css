@@ -4047,6 +4047,384 @@ button {
     font-weight: 600;
 }
 
+/* ==========================================================================
+   Workspace 5: Snake Game Terminal Interface & Controls
+   ========================================================================== */
+
+.arcade-snake-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.arcade-hud {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(57, 255, 20, 0.2);
+    border-radius: 4px;
+    padding: 10px 14px;
+}
+
+.arcade-hud-metrics {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.arcade-hud-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-family: var(--font-mono, monospace);
+}
+
+.arcade-hud-label {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.arcade-hud-val {
+    color: var(--accent-green);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 0 0 6px rgba(57, 255, 20, 0.35);
+}
+
+.arcade-hud-best {
+    color: var(--accent-cyan);
+    text-shadow: 0 0 6px rgba(0, 255, 255, 0.35);
+}
+
+.arcade-hud-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.arcade-hud-btn {
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-green);
+    background: rgba(57, 255, 20, 0.08);
+    border: 1px solid rgba(57, 255, 20, 0.25);
+    padding: 6px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.arcade-hud-btn:hover,
+.arcade-hud-btn:focus {
+    background: rgba(57, 255, 20, 0.2);
+    border-color: var(--accent-green);
+    color: #ffffff;
+}
+
+.arcade-hud-btn:focus-visible {
+    outline: 2px solid var(--accent-green);
+    outline-offset: 1px;
+}
+
+.arcade-canvas-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    aspect-ratio: 1 / 1;
+    background: #0a0e14;
+    border: 1px solid rgba(57, 255, 20, 0.35);
+    border-radius: 4px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 12px rgba(57, 255, 20, 0.12);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#snake-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.arcade-game-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 14, 20, 0.88);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 5;
+    text-align: center;
+}
+
+.arcade-overlay-card {
+    background: rgba(13, 17, 23, 0.96);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+    border-radius: 4px;
+    padding: 18px;
+    max-width: 360px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
+}
+
+.arcade-overlay-card pre.arcade-ascii-art {
+    font-size: 8px;
+    line-height: 1.05;
+    margin: 0 0 4px 0;
+    color: var(--accent-green);
+}
+
+.arcade-overlay-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-green);
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.arcade-overlay-desc {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+    margin: 0;
+}
+
+.arcade-overlay-controls-hint {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    width: 100%;
+    margin: 4px 0;
+    font-size: 10px;
+    text-align: left;
+}
+
+.arcade-overlay-controls-hint .hint-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 4px 6px;
+    border-radius: 3px;
+    border: 1px solid rgba(57, 255, 20, 0.1);
+    color: var(--text-secondary);
+}
+
+.arcade-overlay-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--accent-cyan);
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    padding: 3px 8px;
+    border-radius: 3px;
+}
+
+.arcade-tag-danger {
+    color: #ff5555;
+    background: rgba(255, 85, 85, 0.1);
+    border-color: rgba(255, 85, 85, 0.4);
+}
+
+.arcade-gameover-scores {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin: 6px 0;
+    width: 100%;
+}
+
+.arcade-gameover-stat .stat-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.arcade-gameover-stat .stat-val {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-green);
+    display: block;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
+}
+
+.arcade-new-record {
+    color: var(--accent-yellow);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    background: rgba(255, 180, 84, 0.12);
+    border: 1px dashed var(--accent-yellow);
+    border-radius: 3px;
+    animation: arcadePulse 1.5s infinite;
+}
+
+.arcade-btn {
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 10px 16px;
+    border-radius: 3px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+    width: 100%;
+    min-height: 44px;
+    text-decoration: none;
+}
+
+.arcade-btn-primary {
+    background: var(--accent-green);
+    color: #000000;
+    border: 1px solid var(--accent-green);
+    font-weight: 700;
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.25);
+}
+
+.arcade-btn-primary:hover,
+.arcade-btn-primary:focus {
+    background: #4bff2a;
+    box-shadow: 0 0 16px rgba(57, 255, 20, 0.5);
+}
+
+.arcade-btn-primary:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
+.arcade-btn-secondary {
+    background: rgba(0, 0, 0, 0.5);
+    color: var(--text-primary);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+}
+
+.arcade-btn-secondary:hover,
+.arcade-btn-secondary:focus {
+    background: rgba(57, 255, 20, 0.15);
+    border-color: var(--accent-green);
+}
+
+.arcade-btn-secondary:focus-visible {
+    outline: 2px solid var(--accent-green);
+    outline-offset: 1px;
+}
+
+.arcade-overlay-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    margin-top: 4px;
+}
+
+/* Touch Controls / D-Pad */
+.arcade-touch-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 4px;
+    width: 100%;
+}
+
+.arcade-dpad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.arcade-dpad-middle {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.arcade-dpad-btn {
+    min-width: 48px;
+    min-height: 48px;
+    width: 48px;
+    height: 48px;
+    background: rgba(13, 17, 23, 0.92);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+    color: var(--accent-green);
+    font-size: 16px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    transition: background 0.1s, transform 0.05s, border-color 0.1s;
+}
+
+.arcade-dpad-btn:hover {
+    background: rgba(57, 255, 20, 0.15);
+    border-color: var(--accent-green);
+}
+
+.arcade-dpad-btn:active {
+    background: rgba(57, 255, 20, 0.3);
+    border-color: var(--accent-green);
+    transform: scale(0.92);
+}
+
+.arcade-dpad-btn:focus-visible {
+    outline: 2px solid var(--accent-green);
+    outline-offset: 1px;
+}
+
+.arcade-dpad-center {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(57, 255, 20, 0.3);
+    font-size: 10px;
+    user-select: none;
+}
+
+.arcade-touch-tip {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-align: center;
+}
+
 /* Mobile Responsiveness (< 768px and down to 375px) */
 @media (max-width: 768px) {
     #arcade-content {
@@ -4109,6 +4487,27 @@ button {
         justify-content: center;
         font-size: 10px;
     }
+
+    .arcade-hud {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .arcade-hud-metrics {
+        justify-content: space-around;
+        width: 100%;
+    }
+
+    .arcade-hud-actions {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .arcade-hud-btn {
+        flex: 1;
+        text-align: center;
+    }
 }
 
 @media (max-width: 480px) {
@@ -4124,6 +4523,22 @@ button {
     .arcade-controls-grid {
         grid-template-columns: 1fr;
     }
+
+    .arcade-canvas-wrapper {
+        max-width: 326px;
+    }
+
+    .arcade-overlay-controls-hint {
+        grid-template-columns: 1fr;
+    }
+
+    .arcade-overlay-card {
+        padding: 12px;
+    }
+
+    .arcade-overlay-card pre.arcade-ascii-art {
+        font-size: 5.5px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4134,7 +4549,11 @@ button {
     .lightbox-project-link-btn,
     .arcade-pulse-dot,
     .arcade-game-row,
-    .arcade-back-btn {
+    .arcade-back-btn,
+    .arcade-new-record,
+    .arcade-dpad-btn,
+    .arcade-btn,
+    .arcade-hud-btn {
         transition: none !important;
         animation: none !important;
         transform: none !important;
