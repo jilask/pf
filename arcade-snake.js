@@ -559,6 +559,77 @@ class ArcadeSnakeGame {
     }
 
     /**
+     * Retrieve current theme accent colors from CSS variables
+     */
+    getThemeColors() {
+        if (typeof window === 'undefined') {
+            return {
+                cyan: '#00ffff',
+                purple: '#a855f7',
+                green: '#39ff14'
+            };
+        }
+        const style = getComputedStyle(document.documentElement);
+        const cyan = style.getPropertyValue('--accent-cyan').trim() || '#00ffff';
+        const purple = style.getPropertyValue('--accent-purple').trim() || '#a855f7';
+        const green = style.getPropertyValue('--accent-green').trim() || '#39ff14';
+        return { cyan, purple, green };
+    }
+
+    parseColor(colorStr) {
+        if (!colorStr) return { r: 0, g: 255, b: 255 };
+        if (colorStr.startsWith('#')) {
+            let hex = colorStr.slice(1);
+            if (hex.length === 3) {
+                hex = hex.split('').map(c => c + c).join('');
+            }
+            const num = parseInt(hex, 16);
+            return {
+                r: (num >> 16) & 255,
+                g: (num >> 8) & 255,
+                b: num & 255
+            };
+        }
+        const match = colorStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        if (match) {
+            return {
+                r: parseInt(match[1], 10),
+                g: parseInt(match[2], 10),
+                b: parseInt(match[3], 10)
+            };
+        }
+        return { r: 0, g: 255, b: 255 };
+    }
+
+    interpolateRgb(c1, c2, factor) {
+        const f = Math.max(0, Math.min(1, factor));
+        return {
+            r: Math.round(c1.r + (c2.r - c1.r) * f),
+            g: Math.round(c1.g + (c2.g - c1.g) * f),
+            b: Math.round(c1.b + (c2.b - c1.b) * f)
+        };
+    }
+
+    drawRoundedRect(ctx, x, y, width, height, radius) {
+        if (typeof ctx.roundRect === 'function') {
+            ctx.beginPath();
+            ctx.roundRect(x, y, width, height, radius);
+        } else {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+    }
+
+    /**
      * Canvas rendering frame
      */
     renderFrame() {
@@ -567,6 +638,10 @@ class ArcadeSnakeGame {
         const cs = this.cellSize;
         const size = this.canvasSize;
         const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const theme = this.getThemeColors();
+        const cyanRgb = this.parseColor(theme.cyan);
+        const purpleRgb = this.parseColor(theme.purple);
+        const greenRgb = this.parseColor(theme.green);
 
         // 1. Clear background (Deep terminal dark)
         ctx.fillStyle = '#0a0e14';
@@ -613,52 +688,95 @@ class ArcadeSnakeGame {
         ctx.fillRect(fx + cs / 2 - 2, fy + cs / 2 - 2, 4, 4);
         ctx.restore();
 
-        // 5. Render Snake body segments
+        // 5. Render Agent Trajectory Trail (Smooth gradient: Cyan -> Purple -> Green)
         for (let i = this.snake.length - 1; i > 0; i--) {
             const seg = this.snake[i];
             const sx = seg.x * cs;
             const sy = seg.y * cs;
-            const inset = 1.5;
+            const inset = 2;
+            const segSize = cs - inset * 2;
+            const segRadius = 5;
 
-            // Gradient body tint
-            const factor = i / this.snake.length;
-            ctx.fillStyle = factor > 0.6 ? '#1b8a0e' : '#27b314';
-            ctx.fillRect(sx + inset, sy + inset, cs - inset * 2, cs - inset * 2);
+            // Normalized distance along trail: 0.0 (near head) to 1.0 (tail)
+            const progress = this.snake.length > 2
+                ? (i - 1) / (this.snake.length - 2)
+                : 0;
 
-            // Subtle border
-            ctx.strokeStyle = 'rgba(57, 255, 20, 0.4)';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(sx + inset, sy + inset, cs - inset * 2, cs - inset * 2);
-        }
+            let rgb;
+            if (progress <= 0.5) {
+                // Head (cyan) to mid (purple)
+                rgb = this.interpolateRgb(cyanRgb, purpleRgb, progress / 0.5);
+            } else {
+                // Mid (purple) to tail (green)
+                rgb = this.interpolateRgb(purpleRgb, greenRgb, (progress - 0.5) / 0.5);
+            }
 
-        // 6. Render Snake Head (Neon Green primary)
-        if (this.snake.length > 0) {
-            const head = this.snake[0];
-            const hx = head.x * cs;
-            const hy = head.y * cs;
+            // Subtle alpha taper toward tail (0.95 down to 0.70)
+            const alpha = 0.95 - progress * 0.25;
 
             ctx.save();
             if (!isReducedMotion) {
-                ctx.shadowColor = '#39ff14';
-                ctx.shadowBlur = 10;
+                ctx.shadowColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.55)`;
+                ctx.shadowBlur = 6;
             }
-            ctx.fillStyle = '#39ff14';
-            ctx.fillRect(hx + 1, hy + 1, cs - 2, cs - 2);
 
-            // Terminal process indicator dot on head
-            ctx.fillStyle = '#000000';
-            const eyeOffset = 5;
-            let eyeX = hx + cs / 2;
-            let eyeY = hy + cs / 2;
-
-            if (this.dir.x === 1) eyeX += eyeOffset;
-            else if (this.dir.x === -1) eyeX -= eyeOffset;
-            else if (this.dir.y === 1) eyeY += eyeOffset;
-            else if (this.dir.y === -1) eyeY -= eyeOffset;
-
-            ctx.beginPath();
-            ctx.arc(eyeX, eyeY, 2.5, 0, Math.PI * 2);
+            this.drawRoundedRect(ctx, sx + inset, sy + inset, segSize, segSize, segRadius);
+            ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
             ctx.fill();
+
+            // Segment border glow
+            ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Inner core pip for futuristic telemetry look
+            ctx.fillStyle = `rgba(255, 255, 255, ${0.4 - progress * 0.25})`;
+            ctx.beginPath();
+            ctx.arc(sx + cs / 2, sy + cs / 2, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // 6. Render Agent Head (Circular bright agent node with soft cyan glow)
+        if (this.snake.length > 0) {
+            const head = this.snake[0];
+            const cx = head.x * cs + cs / 2;
+            const cy = head.y * cs + cs / 2;
+            const headRadius = cs / 2 - 1.5;
+
+            ctx.save();
+            if (!isReducedMotion) {
+                ctx.shadowColor = theme.cyan;
+                ctx.shadowBlur = 12;
+            }
+
+            // Outer agent circular node
+            ctx.beginPath();
+            ctx.arc(cx, cy, headRadius, 0, Math.PI * 2);
+            ctx.fillStyle = theme.cyan;
+            ctx.fill();
+
+            // Subtle border ring
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Bright white agent core
+            ctx.beginPath();
+            ctx.arc(cx, cy, headRadius * 0.45, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+
+            // Directional aperture / vector focal point
+            const pointerDist = headRadius * 0.45;
+            const px = cx + this.dir.x * pointerDist;
+            const py = cy + this.dir.y * pointerDist;
+            ctx.beginPath();
+            ctx.arc(px, py, 2, 0, Math.PI * 2);
+            ctx.fillStyle = '#0a0e14';
+            ctx.fill();
+
             ctx.restore();
         }
     }

@@ -13,8 +13,7 @@
     /* Adjusted for WCAG AA contrast (5.73:1) */
     --accent-blue: #8b5cf6;
     /* Adjusted for WCAG AA contrast (4.79:1) */
-    --accent-cyan: #39ff14;
-    /* Using Green as Cyan alternative */
+    --accent-cyan: #00ffff;
     --accent-green: #39ff14;
     --accent-yellow: #ff5f00;
     /* Eva Orange */
@@ -4146,9 +4145,9 @@ button {
     margin: 0 auto;
     aspect-ratio: 1 / 1;
     background: #0a0e14;
-    border: 1px solid rgba(57, 255, 20, 0.35);
+    border: 1px solid rgba(0, 255, 255, 0.35);
     border-radius: 4px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 12px rgba(57, 255, 20, 0.12);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 255, 255, 0.16);
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -4161,6 +4160,7 @@ button {
     display: block;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
+    filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.15));
 }
 
 .arcade-game-overlay {
