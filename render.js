@@ -989,7 +989,7 @@ function renderSnakeGame(game, highScore = 0) {
                 </button>
                 <div class="arcade-process-status">
                     <span class="arcade-pulse-dot" aria-hidden="true"></span>
-                    <span class="arcade-status-text" id="snake-status-text">PID: 7701 // STATUS: READY</span>
+                    <span class="arcade-status-text" id="snake-status-text">AGENT: 0x7701 // STATUS: READY</span>
                 </div>
             </div>
 
@@ -997,15 +997,15 @@ function renderSnakeGame(game, highScore = 0) {
             <div class="arcade-hud" role="status" aria-label="Live Game Telemetry">
                 <div class="arcade-hud-metrics">
                     <div class="arcade-hud-item">
-                        <span class="arcade-hud-label">SCORE:</span>
+                        <span class="arcade-hud-label">VECTORS:</span>
                         <span class="arcade-hud-val" id="snake-score-display">0000</span>
                     </div>
                     <div class="arcade-hud-item">
-                        <span class="arcade-hud-label">BEST:</span>
+                        <span class="arcade-hud-label">PEAK:</span>
                         <span class="arcade-hud-val arcade-hud-best" id="snake-highscore-display">${formattedBest}</span>
                     </div>
                     <div class="arcade-hud-item arcade-hud-extra">
-                        <span class="arcade-hud-label">LEN:</span>
+                        <span class="arcade-hud-label">DIM:</span>
                         <span class="arcade-hud-val" id="snake-length-display">03</span>
                     </div>
                 </div>
@@ -1066,24 +1066,24 @@ function renderSnakeGame(game, highScore = 0) {
                 <!-- Game Over Overlay -->
                 <div class="arcade-game-overlay" id="snake-gameover-overlay" style="display: none;">
                     <div class="arcade-overlay-card arcade-overlay-gameover">
-                        <div class="arcade-overlay-tag arcade-tag-danger">[ KERNEL PANIC: SEGMENTATION FAULT ]</div>
-                        <h3 class="arcade-overlay-title">PROCESS TERMINATED</h3>
+                        <div class="arcade-overlay-tag arcade-tag-danger">[ TRAJECTORY COLLAPSED: BOUNDARY DRIFT ]</div>
+                        <h3 class="arcade-overlay-title">TRAJECTORY COLLAPSED</h3>
                         <div class="arcade-gameover-scores">
                             <div class="arcade-gameover-stat">
-                                <span class="stat-label">FINAL SCORE</span>
+                                <span class="stat-label">FINAL VECTORS</span>
                                 <span class="stat-val" id="snake-final-score">0000</span>
                             </div>
                             <div class="arcade-gameover-stat">
-                                <span class="stat-label">HIGH SCORE</span>
+                                <span class="stat-label">PEAK EMBEDDINGS</span>
                                 <span class="stat-val" id="snake-gameover-best">${formattedBest}</span>
                             </div>
                         </div>
                         <div id="snake-new-highscore-badge" class="arcade-new-record" style="display: none;">
-                            ★ NEW HIGH SCORE RECORDED TO DISK ★
+                            ★ NEW PEAK RECORDED TO LATENT REGISTRY ★
                         </div>
                         <div class="arcade-overlay-actions">
                             <button class="arcade-btn arcade-btn-primary" id="snake-restart-btn" type="button">
-                                ↺ PLAY AGAIN [R / ENTER]
+                                ↺ EXPLORE AGAIN [R / ENTER]
                             </button>
                             <button class="arcade-btn arcade-btn-secondary" id="snake-exit-to-menu-btn" type="button">
                                 ← ARCADE MENU [ESC]

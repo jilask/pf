@@ -75,6 +75,7 @@ class ArcadeSnakeGame {
             startOverlay: document.getElementById('snake-start-overlay'),
             pauseOverlay: document.getElementById('snake-pause-overlay'),
             gameOverOverlay: document.getElementById('snake-gameover-overlay'),
+            gameOverTag: document.getElementById('snake-gameover-tag'),
             finalScore: document.getElementById('snake-final-score'),
             gameOverBest: document.getElementById('snake-gameover-best'),
             newHighScoreBadge: document.getElementById('snake-new-highscore-badge'),
@@ -360,7 +361,7 @@ class ArcadeSnakeGame {
         this.playBeep(440, 0.08, 'square');
 
         if (this.elements.statusText) {
-            this.elements.statusText.textContent = 'PID: 7701 // STATUS: RUNNING';
+            this.elements.statusText.textContent = 'AGENT: 0x7701 // STATUS: EXPLORING';
         }
 
         this.announce('Latent Explorer started. Steer vector using arrow keys or WASD. Score is 0.');
@@ -386,7 +387,7 @@ class ArcadeSnakeGame {
         if (this.elements.pauseOverlay) this.elements.pauseOverlay.style.display = 'flex';
         if (this.elements.pauseBtnText) this.elements.pauseBtnText.textContent = 'RESUME [SPACE]';
         if (this.elements.statusText) {
-            this.elements.statusText.textContent = 'PID: 7701 // STATUS: SUSPENDED';
+            this.elements.statusText.textContent = 'AGENT: 0x7701 // STATUS: SUSPENDED';
         }
         this.announce('Game paused. Press Space or click Resume to continue.');
         this.elements.resumeBtn?.focus();
@@ -397,7 +398,7 @@ class ArcadeSnakeGame {
         this.hideAllOverlays();
         if (this.elements.pauseBtnText) this.elements.pauseBtnText.textContent = 'PAUSE [SPACE]';
         if (this.elements.statusText) {
-            this.elements.statusText.textContent = 'PID: 7701 // STATUS: RUNNING';
+            this.elements.statusText.textContent = 'AGENT: 0x7701 // STATUS: EXPLORING';
         }
         this.announce('Game resumed.');
         clearInterval(this.gameInterval);
@@ -474,7 +475,7 @@ class ArcadeSnakeGame {
 
             // Announce milestone score changes to screen reader
             if (this.score % 50 === 0) {
-                this.announce(`Score: ${this.score} points. Process length: ${this.snake.length}.`);
+                this.announce(`Vectors: ${this.score}. Trajectory dimension: ${this.snake.length}.`);
             }
         } else {
             // Remove tail segment if not eating
@@ -493,7 +494,7 @@ class ArcadeSnakeGame {
         this.playCrashSound();
 
         if (this.elements.statusText) {
-            this.elements.statusText.textContent = 'PID: 7701 // STATUS: KERNEL_PANIC';
+            this.elements.statusText.textContent = 'AGENT: 0x7701 // STATUS: COLLAPSED';
         }
 
         const formattedFinal = String(this.score).padStart(4, '0');
@@ -501,6 +502,11 @@ class ArcadeSnakeGame {
 
         if (this.elements.finalScore) this.elements.finalScore.textContent = formattedFinal;
         if (this.elements.gameOverBest) this.elements.gameOverBest.textContent = formattedBest;
+        if (this.elements.gameOverTag) {
+            this.elements.gameOverTag.textContent = reason === 'WALL_COLLISION'
+                ? '[ TRAJECTORY COLLAPSED: BOUNDARY DRIFT ]'
+                : '[ TRAJECTORY COLLAPSED: SELF-INTERSECTION ]';
+        }
         if (this.elements.newHighScoreBadge) {
             this.elements.newHighScoreBadge.style.display = this.hasNewRecord ? 'block' : 'none';
         }
@@ -515,9 +521,9 @@ class ArcadeSnakeGame {
             this.elements.restartBtn?.focus();
         }, 50);
 
-        const reasonMsg = reason === 'WALL_COLLISION' ? 'Sandboxed boundary breach' : 'Self-collision segmentation fault';
-        const recordMsg = this.hasNewRecord ? ' New high score recorded!' : '';
-        this.announce(`Kernel panic: ${reasonMsg}. Final score: ${this.score}. High score: ${this.highScore}.${recordMsg} Press R or Enter to play again.`);
+        const reasonMsg = reason === 'WALL_COLLISION' ? 'Boundary drift limit reached' : 'Trajectory self-intersection';
+        const recordMsg = this.hasNewRecord ? ' New peak vectors recorded!' : '';
+        this.announce(`Trajectory collapsed: ${reasonMsg}. Final vectors: ${this.score}. Peak: ${this.highScore}.${recordMsg} Press R or Enter to explore again.`);
 
         this.renderFrame();
     }
