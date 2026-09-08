@@ -184,15 +184,50 @@ class ArcadeSnakeGame {
             }
         }
 
-        const category = this.categories[Math.floor(Math.random() * this.categories.length)];
-
-        if (availableCells.length > 0) {
-            const randomIndex = Math.floor(Math.random() * availableCells.length);
-            this.food = { ...availableCells[randomIndex], category };
-        } else {
+        if (availableCells.length === 0) {
             // Screen filled! (Win condition, keep current food)
-            this.food = { x: 0, y: 0, category };
+            this.food = { x: 0, y: 0, category: this.categories[0] };
+            return;
         }
+
+        // 1. Category selection: 65% chance to remain in same cluster/category
+        let category;
+        const prevCategory = this.food ? this.food.category : null;
+        if (prevCategory && Math.random() < 0.65) {
+            category = prevCategory;
+        } else {
+            const otherCategories = prevCategory
+                ? this.categories.filter(c => c.id !== prevCategory.id)
+                : this.categories;
+            category = otherCategories[Math.floor(Math.random() * otherCategories.length)];
+        }
+
+        // 2. Spatial cluster bias: if same category, bias position within cluster neighborhood
+        let chosenCell = null;
+        const isSameCategory = prevCategory && category.id === prevCategory.id;
+
+        if (isSameCategory && this.food) {
+            const prevX = this.food.x;
+            const prevY = this.food.y;
+
+            // Filter available cells within nearby cluster radius (Manhattan distance 2 to 6)
+            const nearbyCells = availableCells.filter(cell => {
+                const dist = Math.abs(cell.x - prevX) + Math.abs(cell.y - prevY);
+                return dist >= 2 && dist <= 6;
+            });
+
+            if (nearbyCells.length > 0) {
+                chosenCell = nearbyCells[Math.floor(Math.random() * nearbyCells.length)];
+            }
+        }
+
+        // Fallback to random available cell
+        if (!chosenCell) {
+            const randomIndex = Math.floor(Math.random() * availableCells.length);
+            chosenCell = availableCells[randomIndex];
+        }
+
+        this.food = { ...chosenCell, category };
 
         // Create brief floating/fading flavor text label
         const token = category.tokens[Math.floor(Math.random() * category.tokens.length)];
