@@ -8,21 +8,21 @@ const NODE_CATEGORIES = [
         name: 'CONCEPT',
         cssVar: '--accent-magenta',
         fallbackColor: '#ff2a85',
-        tokens: ['cat', 'ocean', 'guitar', 'forest', 'galaxy', 'prism', 'river', 'orbit']
+        tokens: ['CONCEPT', 'cat', 'ocean', 'guitar', 'forest', 'galaxy', 'prism']
     },
     {
         id: 'tensor',
         name: 'TENSOR',
         cssVar: '--accent-orange',
         fallbackColor: '#ff5f00',
-        tokens: ['gradient', 'neuron', 'tensor', 'attention', 'weights', 'backprop', 'latent', 'softmax']
+        tokens: ['[64, 128]', 'd=512', 'HEAD_4', 'TENSOR', 'gradient', 'latent']
     },
     {
         id: 'coords',
         name: 'COORDS',
         cssVar: '--accent-purple',
         fallbackColor: '#a855f7',
-        tokens: ['[0.42, -0.18]', '[-0.85, 0.31]', '[1.07, 0.63]', '[-0.24, -0.91]', '[0.73, 0.15]', '[-0.56, 0.82]']
+        tokens: ['[0.42, -0.18]', 'z_0', 'COORDS', '[-0.85, 0.31]', '[1.07, 0.63]']
     }
 ];
 
@@ -51,6 +51,7 @@ class ArcadeSnakeGame {
         this.dir = { x: 1, y: 0 };
         this.nextDir = { x: 1, y: 0 };
         this.food = { x: 15, y: 10, category: this.categories[0] };
+        this.activeLabel = null;
         this.lastEatenCategory = null;
         this.score = 0;
         this.highScore = this.loadHighScore();
@@ -164,6 +165,7 @@ class ArcadeSnakeGame {
         this.nextDir = { x: 1, y: 0 };
         this.score = 0;
         this.hasNewRecord = false;
+        this.activeLabel = null;
         this.spawnFood();
         this.updateHUD();
     }
@@ -191,6 +193,18 @@ class ArcadeSnakeGame {
             // Screen filled! (Win condition, keep current food)
             this.food = { x: 0, y: 0, category };
         }
+
+        // Create brief floating/fading flavor text label
+        const token = category.tokens[Math.floor(Math.random() * category.tokens.length)];
+        const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+        this.activeLabel = {
+            text: token,
+            cellX: this.food.x,
+            cellY: this.food.y,
+            category: category,
+            spawnTime: now,
+            duration: 1800
+        };
     }
 
     /**
@@ -888,6 +902,56 @@ class ArcadeSnakeGame {
             ctx.fill();
 
             ctx.restore();
+        }
+
+        // 7. Render Floating Flavor Text Label
+        if (this.activeLabel) {
+            const now = timestamp || (typeof performance !== 'undefined' ? performance.now() : Date.now());
+            const elapsed = now - this.activeLabel.spawnTime;
+            if (elapsed >= this.activeLabel.duration) {
+                this.activeLabel = null;
+            } else {
+                const progress = Math.min(1, elapsed / this.activeLabel.duration);
+                const alpha = Math.max(0, 1 - progress);
+                // Float upward slightly by ~6px, unless near the top boundary (y <= 1), then float downward
+                const isNearTop = this.activeLabel.cellY <= 1;
+                const floatDistance = isReducedMotion ? 0 : (progress * 6);
+
+                const labelX = (this.activeLabel.cellX * cs) + (cs / 2);
+                let labelY;
+                if (isNearTop) {
+                    labelY = (this.activeLabel.cellY * cs) + cs + 11 + floatDistance;
+                } else {
+                    labelY = (this.activeLabel.cellY * cs) - 5 - floatDistance;
+                }
+
+                const labelColor = this.getCategoryColor(this.activeLabel.category, theme);
+                const rgb = this.parseColor(labelColor);
+
+                ctx.save();
+                ctx.font = '600 9px "Fira Code", monospace, "Courier New"';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                // Subtle dark background pill for crisp legibility over grid lines
+                const textMetrics = ctx.measureText(this.activeLabel.text);
+                const textWidth = textMetrics.width;
+                const pillPaddingX = 4;
+                const pillHeight = 12;
+
+                ctx.fillStyle = `rgba(10, 10, 15, ${alpha * 0.75})`;
+                ctx.fillRect(labelX - (textWidth / 2) - pillPaddingX, labelY - (pillHeight / 2), textWidth + (pillPaddingX * 2), pillHeight);
+
+                // Label text with soft category glow
+                if (!isReducedMotion) {
+                    ctx.shadowColor = labelColor;
+                    ctx.shadowBlur = 4;
+                }
+                ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha * 0.95})`;
+                ctx.fillText(this.activeLabel.text, labelX, labelY);
+
+                ctx.restore();
+            }
         }
     }
 
