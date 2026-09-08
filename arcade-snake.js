@@ -40,12 +40,14 @@ class ArcadeSnakeGame {
         this.boundTouchStart = this.handleCanvasTouchStart.bind(this);
         this.boundTouchMove = this.handleCanvasTouchMove.bind(this);
         this.boundTouchEnd = this.handleCanvasTouchEnd.bind(this);
+        this.boundRenderLoop = this.renderLoop.bind(this);
+        this.animFrameId = null;
 
         this.initDOM();
         this.bindEvents();
         this.resetGameData();
         this.setupDPI();
-        this.renderFrame();
+        this.startRenderLoop();
     }
 
     /**
@@ -566,14 +568,33 @@ class ArcadeSnakeGame {
             return {
                 cyan: '#00ffff',
                 purple: '#a855f7',
-                green: '#39ff14'
+                green: '#39ff14',
+                magenta: '#ff2a85'
             };
         }
         const style = getComputedStyle(document.documentElement);
         const cyan = style.getPropertyValue('--accent-cyan').trim() || '#00ffff';
         const purple = style.getPropertyValue('--accent-purple').trim() || '#a855f7';
         const green = style.getPropertyValue('--accent-green').trim() || '#39ff14';
-        return { cyan, purple, green };
+        const magenta = style.getPropertyValue('--accent-magenta').trim() || '#ff2a85';
+        return { cyan, purple, green, magenta };
+    }
+
+    startRenderLoop() {
+        if (this.animFrameId) return;
+        this.animFrameId = requestAnimationFrame(this.boundRenderLoop);
+    }
+
+    stopRenderLoop() {
+        if (this.animFrameId) {
+            cancelAnimationFrame(this.animFrameId);
+            this.animFrameId = null;
+        }
+    }
+
+    renderLoop(timestamp) {
+        this.renderFrame(timestamp);
+        this.animFrameId = requestAnimationFrame(this.boundRenderLoop);
     }
 
     parseColor(colorStr) {
@@ -632,7 +653,7 @@ class ArcadeSnakeGame {
     /**
      * Canvas rendering frame
      */
-    renderFrame() {
+    renderFrame(timestamp) {
         if (!this.ctx) return;
         const ctx = this.ctx;
         const cs = this.cellSize;
@@ -665,27 +686,58 @@ class ArcadeSnakeGame {
 
         // 3. Optional eat flash effect (disabled under prefers-reduced-motion)
         if (this.eatEffectTimer > 0 && !isReducedMotion) {
-            ctx.fillStyle = `rgba(0, 255, 255, ${this.eatEffectTimer * 0.04})`;
+            ctx.fillStyle = `rgba(255, 42, 133, ${this.eatEffectTimer * 0.04})`;
             ctx.fillRect(0, 0, size, size);
             this.eatEffectTimer--;
         }
 
-        // 4. Render Food (Cyan memory block with glow)
+        // 4. Render Data Node (Circular, pulsing glowing node using contrasting magenta)
         const fx = this.food.x * cs;
         const fy = this.food.y * cs;
+        const fcx = fx + cs / 2;
+        const fcy = fy + cs / 2;
+
+        const time = timestamp || (typeof performance !== 'undefined' ? performance.now() : Date.now());
+        // Gentle pulse oscillation: 0.0 to 1.0 (disabled under prefers-reduced-motion)
+        const pulse = isReducedMotion ? 0 : (Math.sin(time * 0.005) + 1) / 2;
+
+        const baseRadius = cs * 0.32; // ~6.4px
+        const currentRadius = baseRadius + (isReducedMotion ? 0 : pulse * 1.5);
+        const nodeColor = theme.magenta || '#ff2a85';
+
         ctx.save();
         if (!isReducedMotion) {
-            ctx.shadowColor = '#00ffff';
-            ctx.shadowBlur = 8;
+            ctx.shadowColor = nodeColor;
+            ctx.shadowBlur = 8 + pulse * 6;
         }
-        ctx.fillStyle = '#00ffff';
-        // Rounded food packet
-        const foodInset = 2;
-        ctx.fillRect(fx + foodInset, fy + foodInset, cs - foodInset * 2, cs - foodInset * 2);
 
-        // Internal memory bit core
+        // Faint outer pulsing telemetry aura (gentle ambient radiation)
+        if (!isReducedMotion) {
+            ctx.beginPath();
+            ctx.arc(fcx, fcy, baseRadius + 3.5 + pulse * 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 42, 133, ${0.14 - pulse * 0.07})`;
+            ctx.fill();
+        }
+
+        // Outer data node boundary ring
+        ctx.beginPath();
+        ctx.arc(fcx, fcy, currentRadius + 1.5, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(255, 42, 133, ${isReducedMotion ? 0.6 : 0.45 + pulse * 0.4})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Main data node spherical body
+        ctx.beginPath();
+        ctx.arc(fcx, fcy, currentRadius, 0, Math.PI * 2);
+        ctx.fillStyle = nodeColor;
+        ctx.fill();
+
+        // High-density core embedding pip (bright white data center)
+        ctx.beginPath();
+        ctx.arc(fcx, fcy, Math.max(1.5, currentRadius * 0.42), 0, Math.PI * 2);
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(fx + cs / 2 - 2, fy + cs / 2 - 2, 4, 4);
+        ctx.fill();
+
         ctx.restore();
 
         // 5. Render Agent Trajectory Trail (Smooth gradient: Cyan -> Purple -> Green)
@@ -871,6 +923,7 @@ class ArcadeSnakeGame {
      * Cleanly teardown timers, listeners, and references
      */
     destroy() {
+        this.stopRenderLoop();
         clearInterval(this.gameInterval);
         this.gameInterval = null;
 
