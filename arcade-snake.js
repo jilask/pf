@@ -570,19 +570,13 @@ class ArcadeSnakeGame {
      * Retrieve current theme accent colors from CSS variables
      */
     getThemeColors() {
-        if (typeof window === 'undefined') {
-            return {
-                cyan: '#00ffff',
-                purple: '#a855f7',
-                green: '#39ff14',
-                magenta: '#ff2a85'
-            };
-        }
-        const style = getComputedStyle(document.documentElement);
-        const cyan = style.getPropertyValue('--accent-cyan').trim() || '#00ffff';
-        const purple = style.getPropertyValue('--accent-purple').trim() || '#a855f7';
-        const green = style.getPropertyValue('--accent-green').trim() || '#39ff14';
-        const magenta = style.getPropertyValue('--accent-magenta').trim() || '#ff2a85';
+        const style = (typeof window !== 'undefined' && typeof window.getComputedStyle === 'function' && document?.documentElement)
+            ? window.getComputedStyle(document.documentElement)
+            : null;
+        const cyan = style?.getPropertyValue('--accent-cyan')?.trim() || '#00ffff';
+        const purple = style?.getPropertyValue('--accent-purple')?.trim() || '#a855f7';
+        const green = style?.getPropertyValue('--accent-green')?.trim() || '#39ff14';
+        const magenta = style?.getPropertyValue('--accent-magenta')?.trim() || '#ff2a85';
         return { cyan, purple, green, magenta };
     }
 
