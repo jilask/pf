@@ -417,16 +417,16 @@ body::after {
 }
 
 .nav-item:hover {
-    background: rgba(97, 175, 239, 0.1);
+    background: rgba(57, 255, 20, 0.08);
 }
 
 .nav-item.active {
-    background: rgba(97, 175, 239, 0.2);
-    border-left: 3px solid var(--accent-blue);
+    background: rgba(57, 255, 20, 0.15);
+    border-left: 3px solid var(--accent-green);
 }
 
 .nav-prompt {
-    color: var(--accent-blue);
+    color: var(--accent-green);
     font-weight: 600;
 }
 
@@ -889,20 +889,20 @@ body::after {
 }
 
 .section-title {
-    color: var(--accent-cyan);
+    color: var(--accent-green);
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 20px;
-    border-bottom: 2px solid var(--accent-blue);
+    border-bottom: 2px solid var(--accent-green);
     padding-bottom: 6px;
-    text-shadow: 0 0 5px var(--accent-cyan);
+    text-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
     letter-spacing: 0.5px;
 }
 
 .typewriter {
     display: inline-block;
     overflow: hidden;
-    border-right: 3px solid var(--accent-purple);
+    border-right: 3px solid var(--accent-green);
     white-space: nowrap;
     max-width: 100%;
     contain: layout style;
@@ -925,7 +925,7 @@ body::after {
     }
 
     50% {
-        border-color: var(--accent-purple);
+        border-color: var(--accent-green);
     }
 }
 
@@ -971,7 +971,7 @@ body::after {
 }
 
 .job-title {
-    color: var(--accent-cyan);
+    color: var(--accent-green);
     font-size: 18px;
     font-weight: 500;
     margin-bottom: 8px;
@@ -1006,14 +1006,14 @@ body::after {
 
 .portfolio-item:hover {
     transform: translateY(-4px);
-    border-color: var(--accent-cyan);
-    box-shadow: 0 8px 32px rgba(0, 212, 255, 0.2);
+    border-color: var(--accent-green);
+    box-shadow: 0 8px 32px rgba(57, 255, 20, 0.2);
 }
 
 .portfolio-image {
     width: 100%;
     height: 200px;
-    background: linear-gradient(45deg, var(--accent-cyan), var(--accent-magenta));
+    background: linear-gradient(45deg, var(--accent-green), var(--accent-magenta));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1026,7 +1026,7 @@ body::after {
 }
 
 .portfolio-title {
-    color: var(--accent-cyan);
+    color: var(--accent-green);
     font-weight: 500;
     margin-bottom: 8px;
 }
@@ -2000,7 +2000,7 @@ ntent Styling */
 }
 
 .portfolio-title {
-    color: var(--accent-cyan);
+    color: var(--accent-green);
     font-weight: 600;
     margin-bottom: 6px;
     font-size: 13px;

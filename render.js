@@ -54,7 +54,7 @@ function renderCard(item, type) {
         case 'skill_bar':
             return `
                 <div style="margin-bottom: 8px;">
-                    <span style="color: var(--accent-cyan);">${item.name}:</span>
+                    <span style="color: var(--accent-green);">${item.name}:</span>
                     <div class="progress-bar" style="margin-top: 4px;" role="progressbar" aria-valuenow="${item.percentage}" aria-valuemin="0" aria-valuemax="100" aria-label="${item.name} proficiency">
                         <div class="progress-fill" style="width: ${item.percentage}%;"></div>
                     </div>
@@ -217,30 +217,30 @@ function renderSection(sectionType, data) {
                 <h2 class="section-title typewriter"># About Me</h2>
                 <div class="terminal-text" style="margin-top: 16px;">
                     <div class="command-output">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> whoami
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> whoami
                     </div>
                     <p style="margin: 12px 0; font-size: 14px;">
-                        <span style="color: var(--accent-cyan);">${data.name}</span> - ${data.title}
+                        <span style="color: var(--accent-green);">${data.name}</span> - ${data.title}
                     </p>
                     <div class="command-output">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> cat location.txt
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> cat location.txt
                     </div>
                     <p style="margin: 8px 0; color: var(--text-secondary);">${data.location}</p>
                     
                     <div class="command-output">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> cat bio.md
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> cat bio.md
                     </div>
-                    <div style="margin: 12px 0; padding: 12px; background: rgba(255, 255, 255, 0.05); border-radius: 6px; border-left: 3px solid var(--accent-blue);">
+                    <div style="margin: 12px 0; padding: 12px; background: rgba(255, 255, 255, 0.05); border-radius: 6px; border-left: 3px solid var(--accent-green);">
                         ${data.bio.map(paragraph => `<p style="margin-bottom: 12px; line-height: 1.6;">${paragraph}</p>`).join('')}
                     </div>
                     
                     <div class="command-output">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> cat current_focus.json
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> cat current_focus.json
                     </div>
                     <div style="margin: 12px 0; padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 6px; font-family: 'Fira Code', monospace; font-size: 11px;">
                         <div style="color: var(--text-secondary);">{</div>
                         <div style="margin-left: 16px;">
-                            <span style="color: var(--accent-cyan);">"focus_areas"</span><span style="color: var(--text-secondary);">: [</span>
+                            <span style="color: var(--accent-green);">"focus_areas"</span><span style="color: var(--text-secondary);">: [</span>
                             <div style="margin-left: 16px;">
                                 ${data.focus_areas.map((area, index) => {
                                     const isLast = index === data.focus_areas.length - 1;
@@ -259,13 +259,13 @@ function renderSection(sectionType, data) {
                 <h2 class="section-title"># Technical Skills</h2>
                 <div class="terminal-text" style="margin-top: 16px;">
                     <div class="command-output">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> cat skills.json | jq .
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> cat skills.json | jq .
                     </div>
                     <div style="margin: 12px 0; padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 6px; font-family: 'Fira Code', monospace; font-size: 11px;">
                         <div style="color: var(--text-secondary);">{</div>
                         <div style="margin-left: 16px;">
                             <div style="margin-bottom: 8px;">
-                                <span style="color: var(--accent-cyan);">"generative_ai"</span><span style="color: var(--text-secondary);">: {</span>
+                                <span style="color: var(--accent-green);">"generative_ai"</span><span style="color: var(--text-secondary);">: {</span>
                                 <div style="margin-left: 16px; color: var(--accent-green);">
                                     "tools": [${data.jq_data.generative_ai.tools.map(t => `"${t}"`).join(', ')}],<br>
                                     "models": [${data.jq_data.generative_ai.models.map(m => `"${m}"`).join(', ')}],<br>
@@ -274,7 +274,7 @@ function renderSection(sectionType, data) {
                                 <span style="color: var(--text-secondary);">},</span>
                             </div>
                             <div style="margin-bottom: 8px;">
-                                <span style="color: var(--accent-cyan);">"programming"</span><span style="color: var(--text-secondary);">: {</span>
+                                <span style="color: var(--accent-green);">"programming"</span><span style="color: var(--text-secondary);">: {</span>
                                 <div style="margin-left: 16px; color: var(--accent-green);">
                                     "languages": [${data.jq_data.programming.languages.map(l => `"${l}"`).join(', ')}],<br>
                                     "frameworks": [${data.jq_data.programming.frameworks.map(f => `"${f}"`).join(', ')}],<br>
@@ -283,7 +283,7 @@ function renderSection(sectionType, data) {
                                 <span style="color: var(--text-secondary);">},</span>
                             </div>
                             <div style="margin-bottom: 8px;">
-                                <span style="color: var(--accent-cyan);">"ai_workflows"</span><span style="color: var(--text-secondary);">: {</span>
+                                <span style="color: var(--accent-green);">"ai_workflows"</span><span style="color: var(--text-secondary);">: {</span>
                                 <div style="margin-left: 16px; color: var(--accent-green);">
                                     "specialties": [${data.jq_data.ai_workflows.specialties.map(s => `"${s}"`).join(', ')}],<br>
                                     "deployment": [${data.jq_data.ai_workflows.deployment.map(d => `"${d}"`).join(', ')}],<br>
@@ -296,7 +296,7 @@ function renderSection(sectionType, data) {
                     </div>
                     
                     <div class="command-output">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> ./skill_proficiency.sh
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> ./skill_proficiency.sh
                     </div>
                     <div style="margin: 12px 0;">
                         ${data.proficiency_bars.map(bar => renderCard(bar, 'skill_bar')).join('')}
@@ -309,15 +309,15 @@ function renderSection(sectionType, data) {
                 <h2 class="section-title"># Professional Experience</h2>
                 <div class="terminal-text" style="margin-top: 16px;">
                     <div class="command-output">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> cat experience.log
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> cat experience.log
                     </div>
                     
                     ${data.entries.map(entry => renderCard(entry, 'experience')).join('')}
                     
                     <div class="command-output" style="margin-top: 16px;">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> echo "${data.total_experience}"
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> echo "${data.total_experience}"
                     </div>
-                    <div style="color: var(--accent-cyan); margin: 8px 0;">${data.total_experience}</div>
+                    <div style="color: var(--accent-green); margin: 8px 0;">${data.total_experience}</div>
                 </div>
             `;
 
@@ -326,7 +326,7 @@ function renderSection(sectionType, data) {
                 <h2 class="section-title"># Key Achievements</h2>
                 <div class="terminal-text" style="margin-top: 16px;">
                     <div class="command-output">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> cat achievements.txt
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> cat achievements.txt
                     </div>
                     
                     <div style="margin: 12px 0;">
@@ -334,7 +334,7 @@ function renderSection(sectionType, data) {
                     </div>
                     
                     <div class="command-output">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> ./impact_metrics.sh
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> ./impact_metrics.sh
                     </div>
                     
                     <div style="margin: 12px 0; padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 6px;">
@@ -350,7 +350,7 @@ function renderSection(sectionType, data) {
                 <h2 class="section-title"># Projects & Portfolio</h2>
                 <div class="terminal-text" style="margin-top: 16px;">
                     <div class="command-output">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> ls -la projects/
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> ls -la projects/
                     </div>
                     
                     <div style="margin: 12px 0; font-family: 'Fira Code', monospace; font-size: 11px;">
@@ -358,10 +358,10 @@ function renderSection(sectionType, data) {
                         <div style="display: grid; gap: 4px;">
                             ${data.ls_projects.map(item => `
                                 <div style="display: grid; grid-template-columns: auto auto auto 1fr; gap: 8px; align-items: center;">
-                                    <span style="color: var(--accent-blue);">drwxr-xr-x</span>
+                                    <span style="color: var(--accent-green);">drwxr-xr-x</span>
                                     <span style="color: var(--text-secondary);">2</span>
                                     <span style="color: var(--accent-green);">alij</span>
-                                    <span style="color: var(--accent-cyan);">${item}</span>
+                                    <span style="color: var(--accent-green);">${item}</span>
                                 </div>
                             `).join('')}
                         </div>
@@ -372,7 +372,7 @@ function renderSection(sectionType, data) {
                     </div>
                     
                     <div class="command-output" style="margin-top: 16px;">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> cat tech_stack.txt
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> cat tech_stack.txt
                     </div>
                     <div style="margin: 12px 0; display: flex; flex-wrap: wrap; gap: 6px;">
                         ${data.tech_stack.map(tech => renderCard(tech, 'tech_tag')).join('')}
@@ -385,27 +385,27 @@ function renderSection(sectionType, data) {
                 <h2 class="section-title"># Contact Information</h2>
                 <div class="terminal-text" style="margin-top: 16px;">
                     <div class="command-output">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> contact --info
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> contact --info
                     </div>
                     
                     <div style="margin: 12px 0; padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 6px; font-family: 'Fira Code', monospace; font-size: 11px;">
                         <div style="color: var(--text-secondary);"># Contact Details</div>
                         <div style="margin: 8px 0;">
-                            <span style="color: var(--accent-cyan);">EMAIL:</span> <span style="color: var(--accent-green);">${data.email}</span>
+                            <span style="color: var(--accent-green);">EMAIL:</span> <span style="color: var(--accent-green);">${data.email}</span>
                         </div>
                         <div style="margin: 8px 0;">
-                            <span style="color: var(--accent-cyan);">PHONE:</span> <span style="color: var(--accent-green);">${data.phone}</span>
+                            <span style="color: var(--accent-green);">PHONE:</span> <span style="color: var(--accent-green);">${data.phone}</span>
                         </div>
                         <div style="margin: 8px 0;">
-                            <span style="color: var(--accent-cyan);">LOCATION:</span> <span style="color: var(--accent-green);">${data.location}</span>
+                            <span style="color: var(--accent-green);">LOCATION:</span> <span style="color: var(--accent-green);">${data.location}</span>
                         </div>
                         <div style="margin: 8px 0;">
-                            <span style="color: var(--accent-cyan);">TIMEZONE:</span> <span style="color: var(--accent-green);">${data.timezone}</span>
+                            <span style="color: var(--accent-green);">TIMEZONE:</span> <span style="color: var(--accent-green);">${data.timezone}</span>
                         </div>
                     </div>
                     
                     <div class="command-output">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> cat social_links.txt
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> cat social_links.txt
                     </div>
                     
                     <div class="contact-grid" style="margin-top: 12px;">
@@ -413,10 +413,10 @@ function renderSection(sectionType, data) {
                     </div>
                     
                     <div class="command-output" style="margin-top: 16px;">
-                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> echo "Status: Available for collaboration"
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-green);">~</span><span style="color: var(--accent-yellow);">$</span> echo "Status: Available for collaboration"
                     </div>
-                    <div style="margin: 12px 0; text-align: center; padding: 16px; background: rgba(97, 175, 239, 0.1); border-radius: 6px; border: 1px solid var(--accent-blue);">
-                        <div style="color: var(--accent-cyan); font-weight: 600; margin-bottom: 8px;">Let's Connect!</div>
+                    <div style="margin: 12px 0; text-align: center; padding: 16px; background: rgba(57, 255, 20, 0.05); border-radius: 6px; border: 1px solid var(--border-color);">
+                        <div style="color: var(--accent-green); font-weight: 600; margin-bottom: 8px;">Let's Connect!</div>
                         <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 12px;">
                             I'm always interested in discussing AI projects, prompt engineering challenges, and innovative technology solutions.
                         </div>
@@ -788,7 +788,7 @@ function renderProjectDetails(project) {
                 <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~/projects</span><span style="color: var(--accent-yellow);">$</span> ${project.readmeCommand}
             </div>
             <div style="margin: 16px 0; padding: 16px; background: rgba(255, 255, 255, 0.05); border-radius: 6px; border-left: 3px solid ${project.borderLeftColor};">
-                <h3 style="color: var(--accent-cyan); margin-bottom: 12px;">${project.icon} ${project.detailTitle || project.title}</h3>
+                <h3 style="color: var(--accent-green); margin-bottom: 12px;">${project.icon} ${project.detailTitle || project.title}</h3>
                 <p style="margin-bottom: 12px; line-height: 1.6;">
                     ${project.intro}
                 </p>
