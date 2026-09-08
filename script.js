@@ -1891,28 +1891,27 @@ ACHIEVEMENTS
             games: [
                 {
                     id: 'snake',
-                    title: 'Snake',
-                    executable: 'snake.sh',
+                    title: 'Latent Explorer',
+                    executable: 'latent_explorer.sh',
                     size: '4.2K',
                     permissions: '-rwxr-xr-x',
                     badge: 'PLAYABLE',
                     status: 'playable',
-                    description: 'Classic terminal retro arcade snake game. Collect memory bits, grow your process, avoid kernel panic.',
-                    genre: 'Terminal Arcade',
+                    description: 'Navigate a vector through latent space, collecting embeddings without colliding with your own trajectory.',
+                    genre: 'Neural Sandbox / Arcade',
                     version: 'v1.0.0',
                     controlsPreview: [
-                        { key: 'WASD / ↑↓←→', action: 'Steer process snake' },
+                        { key: 'WASD / ↑↓←→', action: 'Steer vector trajectory' },
                         { key: 'Space / P', action: 'Pause thread' },
-                        { key: 'R', action: 'Restart game' },
+                        { key: 'R', action: 'Restart trajectory' },
                         { key: 'ESC', action: 'Quit to terminal menu' }
                     ],
                     asciiArt: [
-                        "   _____             _         ",
-                        "  / ____|           | |        ",
-                        " | (___  _ __   __ _| | _____  ",
-                        "  \\___ \\| '_ \\ / _` | |/ / _ \\ ",
-                        "  ____) | | | | (_| |   <  __/ ",
-                        " |_____/|_| |_|\\__,_|_|\\_\\___| "
+                        "  _        _  _____ _____ _   _ _____ ",
+                        " | |      / \\|_   _| ____| \\ | |_   _|",
+                        " | |     / _ \\ | | |  _| |  \\| | | |  ",
+                        " | |___ / ___ \\| | | |___| |\\  | | |  ",
+                        " |_____/_/   \\_\\_| |_____|_| \\_| |_|  "
                     ]
                 }
             ]

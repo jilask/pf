@@ -361,7 +361,7 @@ class ArcadeSnakeGame {
             this.elements.statusText.textContent = 'PID: 7701 // STATUS: RUNNING';
         }
 
-        this.announce('Snake game started. Steer using arrow keys or WASD. Score is 0.');
+        this.announce('Latent Explorer started. Steer vector using arrow keys or WASD. Score is 0.');
 
         clearInterval(this.gameInterval);
         this.gameInterval = setInterval(() => this.tick(), this.tickSpeed);

@@ -982,7 +982,7 @@ function renderSnakeGame(game, highScore = 0) {
     const asciiLines = (game && Array.isArray(game.asciiArt)) ? game.asciiArt.join('\n') : '';
 
     return `
-        <div class="arcade-game-container arcade-snake-container" role="region" aria-label="Snake Game Terminal Workspace">
+        <div class="arcade-game-container arcade-snake-container" role="region" aria-label="Latent Explorer Game Terminal Workspace">
             <div class="arcade-detail-nav">
                 <button class="arcade-back-btn" id="arcade-back-to-menu-btn" type="button" aria-label="Back to arcade executables directory">
                     <span aria-hidden="true">←</span> cd .. (Back to Arcade Menu) <span class="arcade-key-hint" aria-hidden="true">[ESC]</span>
@@ -1024,24 +1024,24 @@ function renderSnakeGame(game, highScore = 0) {
 
             <!-- Canvas Viewport with Layered Terminal Overlays -->
             <div class="arcade-canvas-wrapper" id="snake-canvas-wrapper">
-                <canvas id="snake-canvas" width="400" height="400" role="img" aria-label="Interactive Snake game board. Use Arrow keys or WASD on desktop, or touch controls below on mobile."></canvas>
+                <canvas id="snake-canvas" width="400" height="400" role="img" aria-label="Interactive Latent Explorer game board. Use Arrow keys or WASD on desktop, or touch controls below on mobile."></canvas>
 
                 <!-- Start Overlay -->
                 <div class="arcade-game-overlay" id="snake-start-overlay">
                     <div class="arcade-overlay-card">
                         ${asciiLines ? `<pre class="arcade-ascii-art" aria-hidden="true">${asciiLines}</pre>` : ''}
-                        <h3 class="arcade-overlay-title">SNAKE.SH // PROCESS ALLOCATOR</h3>
+                        <h3 class="arcade-overlay-title">LATENT_EXPLORER // VECTOR NAVIGATOR</h3>
                         <p class="arcade-overlay-desc">
-                            Steer the memory process to collect memory packets (cyan bits). Avoid hitting boundary walls or colliding with process segments.
+                            Navigate a vector through latent space to collect data nodes (embeddings). Avoid boundary collapse or self-intersecting your trajectory.
                         </p>
                         <div class="arcade-overlay-controls-hint">
-                            <div class="hint-item"><kbd class="arcade-key-badge">WASD / ↑↓←→</kbd> <span>Steer Process</span></div>
+                            <div class="hint-item"><kbd class="arcade-key-badge">WASD / ↑↓←→</kbd> <span>Steer Vector</span></div>
                             <div class="hint-item"><kbd class="arcade-key-badge">Space / P</kbd> <span>Pause Thread</span></div>
                             <div class="hint-item"><kbd class="arcade-key-badge">R</kbd> <span>Restart</span></div>
                             <div class="hint-item"><kbd class="arcade-key-badge">ESC</kbd> <span>Arcade Menu</span></div>
                         </div>
                         <button class="arcade-btn arcade-btn-primary" id="snake-start-btn" type="button">
-                            ▶ LAUNCH PROCESS [PRESS ANY KEY / TAP]
+                            ▶ LAUNCH VECTOR [PRESS ANY KEY / TAP]
                         </button>
                     </div>
                 </div>
