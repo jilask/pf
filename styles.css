@@ -4104,6 +4104,46 @@ button {
     text-shadow: 0 0 6px rgba(0, 255, 255, 0.35);
 }
 
+#snake-coherence-display {
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+#snake-coherence-display.coherence-active {
+    font-weight: 800;
+}
+
+.coherence-destabilized {
+    animation: coherence-destabilize 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.coherence-destabilized #snake-coherence-display {
+    color: #ff3366 !important;
+    text-shadow: 0 0 8px rgba(255, 51, 102, 0.6) !important;
+}
+
+@keyframes coherence-destabilize {
+    0% {
+        transform: scale(1);
+    }
+    20% {
+        transform: scale(1.08) translateX(-2px);
+    }
+    40% {
+        transform: scale(1.08) translateX(2px);
+    }
+    60% {
+        transform: scale(1.04) translateX(-1px);
+    }
+    80% {
+        transform: scale(1.02) translateX(1px);
+    }
+    100% {
+        transform: scale(1) translateX(0);
+    }
+}
+
 .arcade-hud-actions {
     display: flex;
     align-items: center;
@@ -4554,10 +4594,15 @@ button {
     .arcade-new-record,
     .arcade-dpad-btn,
     .arcade-btn,
-    .arcade-hud-btn {
+    .arcade-hud-btn,
+    .coherence-destabilized {
         transition: none !important;
         animation: none !important;
         transform: none !important;
+    }
+
+    .coherence-destabilized #snake-coherence-display {
+        text-shadow: none !important;
     }
 }
 

@@ -1008,6 +1008,10 @@ function renderSnakeGame(game, highScore = 0) {
                         <span class="arcade-hud-label">DIM:</span>
                         <span class="arcade-hud-val" id="snake-length-display">03</span>
                     </div>
+                    <div class="arcade-hud-item" id="snake-coherence-item">
+                        <span class="arcade-hud-label">COHERENCE:</span>
+                        <span class="arcade-hud-val" id="snake-coherence-display">1.0x</span>
+                    </div>
                 </div>
                 <div class="arcade-hud-actions">
                     <button class="arcade-hud-btn" id="snake-pause-btn" type="button" aria-label="Pause or resume game execution">

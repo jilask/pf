@@ -53,6 +53,10 @@ class ArcadeSnakeGame {
         this.food = { x: 15, y: 10, category: this.categories[0] };
         this.activeLabel = null;
         this.lastEatenCategory = null;
+        this.categoryStreak = 0;
+        this.currentStreakCategory = null;
+        this.multiplier = 1;
+        this.destabilizeTimer = null;
         this.score = 0;
         this.highScore = this.loadHighScore();
         this.gameInterval = null;
@@ -99,6 +103,8 @@ class ArcadeSnakeGame {
             scoreDisplay: document.getElementById('snake-score-display'),
             highScoreDisplay: document.getElementById('snake-highscore-display'),
             lengthDisplay: document.getElementById('snake-length-display'),
+            coherenceDisplay: document.getElementById('snake-coherence-display'),
+            coherenceItem: document.getElementById('snake-coherence-item'),
             statusText: document.getElementById('snake-status-text'),
             announcer: document.getElementById('snake-live-announcer'),
             startOverlay: document.getElementById('snake-start-overlay'),
@@ -166,6 +172,16 @@ class ArcadeSnakeGame {
         this.score = 0;
         this.hasNewRecord = false;
         this.activeLabel = null;
+        this.categoryStreak = 0;
+        this.currentStreakCategory = null;
+        this.multiplier = 1;
+        if (this.destabilizeTimer) {
+            clearTimeout(this.destabilizeTimer);
+            this.destabilizeTimer = null;
+        }
+        if (this.elements?.coherenceItem) {
+            this.elements.coherenceItem.classList.remove('coherence-destabilized');
+        }
         this.spawnFood();
         this.updateHUD();
     }
@@ -539,10 +555,31 @@ class ArcadeSnakeGame {
 
         // Food consumption check
         if (newHead.x === this.food.x && newHead.y === this.food.y) {
-            this.lastEatenCategory = this.food.category;
-            this.score += 10;
+            const eatenCategory = this.food.category;
+            const hadHighMultiplier = this.multiplier > 1;
+
+            if (this.currentStreakCategory && this.currentStreakCategory.id === eatenCategory.id) {
+                this.categoryStreak++;
+            } else {
+                this.currentStreakCategory = eatenCategory;
+                this.categoryStreak = 1;
+                if (hadHighMultiplier) {
+                    this.triggerDestabilize();
+                }
+            }
+
+            const prevMultiplier = this.multiplier;
+            this.multiplier = this.getMultiplierForStreak(this.categoryStreak);
+
+            if (this.multiplier > prevMultiplier) {
+                this.announce(`Coherence ${this.multiplier}.0x! ${eatenCategory.name} streak: ${this.categoryStreak}.`);
+            }
+
+            this.lastEatenCategory = eatenCategory;
+            const pointsEarned = 10 * this.multiplier;
+            this.score += pointsEarned;
             this.eatEffectTimer = 4; // visual flash duration
-            this.playEatSound();
+            this.playEatSound(this.multiplier);
 
             if (this.score > this.highScore) {
                 this.highScore = this.score;
@@ -632,6 +669,50 @@ class ArcadeSnakeGame {
     }
 
     /**
+     * Compute score multiplier based on category streak count
+     */
+    getMultiplierForStreak(streak) {
+        if (streak >= 5) return 4;
+        if (streak === 4) return 3;
+        if (streak === 3) return 2;
+        return 1;
+    }
+
+    /**
+     * Trigger coherence destabilization visual and auditory cues
+     */
+    triggerDestabilize() {
+        if (!this.elements?.coherenceItem) return;
+        this.elements.coherenceItem.classList.remove('coherence-destabilized');
+        // Force DOM reflow to restart animation reliably
+        void this.elements.coherenceItem.offsetWidth;
+        this.elements.coherenceItem.classList.add('coherence-destabilized');
+
+        if (this.destabilizeTimer) clearTimeout(this.destabilizeTimer);
+        this.destabilizeTimer = setTimeout(() => {
+            if (this.elements?.coherenceItem) {
+                this.elements.coherenceItem.classList.remove('coherence-destabilized');
+            }
+            this.destabilizeTimer = null;
+        }, 550);
+
+        this.announce('Coherence lost. Multiplier reset to 1.0x.');
+
+        // Briefly flash status telemetry line
+        if (this.elements.statusText && this.state === 'PLAYING') {
+            const originalStatus = 'AGENT: 0x7701 // STATUS: RUNNING';
+            this.elements.statusText.textContent = 'AGENT: 0x7701 // COHERENCE DESTABILIZED';
+            this.elements.statusText.style.color = '#ff3366';
+            setTimeout(() => {
+                if (this.elements?.statusText && this.state === 'PLAYING') {
+                    this.elements.statusText.textContent = originalStatus;
+                    this.elements.statusText.style.color = '';
+                }
+            }, 800);
+        }
+    }
+
+    /**
      * Update HUD telemetry numbers
      */
     updateHUD() {
@@ -643,6 +724,19 @@ class ArcadeSnakeGame {
         }
         if (this.elements.lengthDisplay) {
             this.elements.lengthDisplay.textContent = String(this.snake.length).padStart(2, '0');
+        }
+        if (this.elements.coherenceDisplay) {
+            this.elements.coherenceDisplay.textContent = `${this.multiplier.toFixed(1)}x`;
+            if (this.multiplier > 1 && this.currentStreakCategory) {
+                const color = this.getCategoryColor(this.currentStreakCategory);
+                this.elements.coherenceDisplay.style.color = color;
+                this.elements.coherenceDisplay.style.textShadow = `0 0 8px ${color}`;
+                this.elements.coherenceDisplay.classList.add('coherence-active');
+            } else {
+                this.elements.coherenceDisplay.style.color = '';
+                this.elements.coherenceDisplay.style.textShadow = '';
+                this.elements.coherenceDisplay.classList.remove('coherence-active');
+            }
         }
     }
 
@@ -1030,15 +1124,16 @@ class ArcadeSnakeGame {
         }
     }
 
-    playEatSound() {
+    playEatSound(multiplier = 1) {
         try {
             if (!this.audioCtx) return;
             const osc = this.audioCtx.createOscillator();
             const gain = this.audioCtx.createGain();
             osc.type = 'sine';
 
-            osc.frequency.setValueAtTime(520, this.audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(880, this.audioCtx.currentTime + 0.08);
+            const pitchShift = (multiplier - 1) * 80;
+            osc.frequency.setValueAtTime(520 + pitchShift, this.audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880 + pitchShift, this.audioCtx.currentTime + 0.08);
 
             gain.gain.setValueAtTime(0.08, this.audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.08);
@@ -1083,6 +1178,10 @@ class ArcadeSnakeGame {
         this.stopRenderLoop();
         clearInterval(this.gameInterval);
         this.gameInterval = null;
+        if (this.destabilizeTimer) {
+            clearTimeout(this.destabilizeTimer);
+            this.destabilizeTimer = null;
+        }
 
         window.removeEventListener('keydown', this.boundKeyHandler);
         if (this.boundResizeHandler) {
