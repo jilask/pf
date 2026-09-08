@@ -2,6 +2,30 @@
  * ArcadeSnakeGame - Retro Terminal HTML5 Canvas Snake Game Engine
  * Workspace 5 Arcade - AliJ Portfolio
  */
+const NODE_CATEGORIES = [
+    {
+        id: 'concept',
+        name: 'CONCEPT',
+        cssVar: '--accent-magenta',
+        fallbackColor: '#ff2a85',
+        tokens: ['cat', 'ocean', 'guitar', 'forest', 'galaxy', 'prism', 'river', 'orbit']
+    },
+    {
+        id: 'tensor',
+        name: 'TENSOR',
+        cssVar: '--accent-orange',
+        fallbackColor: '#ff5f00',
+        tokens: ['gradient', 'neuron', 'tensor', 'attention', 'weights', 'backprop', 'latent', 'softmax']
+    },
+    {
+        id: 'coords',
+        name: 'COORDS',
+        cssVar: '--accent-purple',
+        fallbackColor: '#a855f7',
+        tokens: ['[0.42, -0.18]', '[-0.85, 0.31]', '[1.07, 0.63]', '[-0.24, -0.91]', '[0.73, 0.15]', '[-0.56, 0.82]']
+    }
+];
+
 class ArcadeSnakeGame {
     constructor(options = {}) {
         this.canvas = document.getElementById('snake-canvas');
@@ -18,12 +42,16 @@ class ArcadeSnakeGame {
         this.storageKey = 'arcade-snake-highscore';
         this.tickSpeed = 105; // ms per game tick (~9.5 Hz)
 
+        // Categories
+        this.categories = NODE_CATEGORIES;
+
         // Game state variables
         this.state = 'START'; // 'START' | 'PLAYING' | 'PAUSED' | 'GAMEOVER'
         this.snake = [];
         this.dir = { x: 1, y: 0 };
         this.nextDir = { x: 1, y: 0 };
-        this.food = { x: 15, y: 10 };
+        this.food = { x: 15, y: 10, category: this.categories[0] };
+        this.lastEatenCategory = null;
         this.score = 0;
         this.highScore = this.loadHighScore();
         this.gameInterval = null;
@@ -154,12 +182,14 @@ class ArcadeSnakeGame {
             }
         }
 
+        const category = this.categories[Math.floor(Math.random() * this.categories.length)];
+
         if (availableCells.length > 0) {
             const randomIndex = Math.floor(Math.random() * availableCells.length);
-            this.food = availableCells[randomIndex];
+            this.food = { ...availableCells[randomIndex], category };
         } else {
             // Screen filled! (Win condition, keep current food)
-            this.food = { x: 0, y: 0 };
+            this.food = { x: 0, y: 0, category };
         }
     }
 
@@ -460,6 +490,7 @@ class ArcadeSnakeGame {
 
         // Food consumption check
         if (newHead.x === this.food.x && newHead.y === this.food.y) {
+            this.lastEatenCategory = this.food.category;
             this.score += 10;
             this.eatEffectTimer = 4; // visual flash duration
             this.playEatSound();
@@ -577,7 +608,20 @@ class ArcadeSnakeGame {
         const purple = style?.getPropertyValue('--accent-purple')?.trim() || '#a855f7';
         const green = style?.getPropertyValue('--accent-green')?.trim() || '#39ff14';
         const magenta = style?.getPropertyValue('--accent-magenta')?.trim() || '#ff2a85';
-        return { cyan, purple, green, magenta };
+        const orange = style?.getPropertyValue('--accent-orange')?.trim() || '#ff5f00';
+        return { cyan, purple, green, magenta, orange };
+    }
+
+    /**
+     * Resolve hex/rgb color string for a category using active CSS variables or fallbacks
+     */
+    getCategoryColor(category, theme = null) {
+        if (!category) return '#ff2a85';
+        const t = theme || this.getThemeColors();
+        if (category.id === 'concept') return t.magenta || category.fallbackColor;
+        if (category.id === 'tensor') return t.orange || category.fallbackColor;
+        if (category.id === 'coords') return t.purple || category.fallbackColor;
+        return category.fallbackColor;
     }
 
     startRenderLoop() {
@@ -694,12 +738,16 @@ class ArcadeSnakeGame {
 
         // 3. Optional eat flash effect (disabled under prefers-reduced-motion)
         if (this.eatEffectTimer > 0 && !isReducedMotion) {
-            ctx.fillStyle = `rgba(255, 42, 133, ${this.eatEffectTimer * 0.04})`;
+            const eatColor = this.lastEatenCategory
+                ? this.getCategoryColor(this.lastEatenCategory, theme)
+                : (theme.magenta || '#ff2a85');
+            const eatRgb = this.parseColor(eatColor);
+            ctx.fillStyle = `rgba(${eatRgb.r}, ${eatRgb.g}, ${eatRgb.b}, ${this.eatEffectTimer * 0.04})`;
             ctx.fillRect(0, 0, size, size);
             this.eatEffectTimer--;
         }
 
-        // 4. Render Data Node (Circular, pulsing glowing node using contrasting magenta)
+        // 4. Render Data Node (Circular, pulsing glowing node using category color)
         const fx = this.food.x * cs;
         const fy = this.food.y * cs;
         const fcx = fx + cs / 2;
@@ -711,7 +759,9 @@ class ArcadeSnakeGame {
 
         const baseRadius = cs * 0.32; // ~6.4px
         const currentRadius = baseRadius + (isReducedMotion ? 0 : pulse * 1.5);
-        const nodeColor = theme.magenta || '#ff2a85';
+        const foodCategory = this.food.category || this.categories[0];
+        const nodeColor = this.getCategoryColor(foodCategory, theme);
+        const nodeRgb = this.parseColor(nodeColor);
 
         ctx.save();
         if (!isReducedMotion) {
@@ -723,14 +773,14 @@ class ArcadeSnakeGame {
         if (!isReducedMotion) {
             ctx.beginPath();
             ctx.arc(fcx, fcy, baseRadius + 3.5 + pulse * 2.5, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 42, 133, ${0.14 - pulse * 0.07})`;
+            ctx.fillStyle = `rgba(${nodeRgb.r}, ${nodeRgb.g}, ${nodeRgb.b}, ${0.14 - pulse * 0.07})`;
             ctx.fill();
         }
 
         // Outer data node boundary ring
         ctx.beginPath();
         ctx.arc(fcx, fcy, currentRadius + 1.5, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(255, 42, 133, ${isReducedMotion ? 0.6 : 0.45 + pulse * 0.4})`;
+        ctx.strokeStyle = `rgba(${nodeRgb.r}, ${nodeRgb.g}, ${nodeRgb.b}, ${isReducedMotion ? 0.6 : 0.45 + pulse * 0.4})`;
         ctx.lineWidth = 1;
         ctx.stroke();
 
