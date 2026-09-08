@@ -674,8 +674,8 @@ class ArcadeSnakeGame {
         ctx.fillStyle = '#0a0e14';
         ctx.fillRect(0, 0, size, size);
 
-        // 2. Subtle terminal grid matrix
-        ctx.strokeStyle = 'rgba(57, 255, 20, 0.05)';
+        // 2. Latent coordinate space matrix (Faint grid + coordinate intersection nodes)
+        ctx.strokeStyle = 'rgba(0, 255, 255, 0.035)';
         ctx.lineWidth = 1;
         for (let x = 0; x <= size; x += cs) {
             ctx.beginPath();
@@ -688,6 +688,14 @@ class ArcadeSnakeGame {
             ctx.moveTo(0, y);
             ctx.lineTo(size, y);
             ctx.stroke();
+        }
+
+        // Faint coordinate intersection dots to reinforce latent space matrix
+        ctx.fillStyle = 'rgba(0, 255, 255, 0.12)';
+        for (let x = 0; x <= size; x += cs) {
+            for (let y = 0; y <= size; y += cs) {
+                ctx.fillRect(x - 0.75, y - 0.75, 1.5, 1.5);
+            }
         }
 
         // 3. Optional eat flash effect (disabled under prefers-reduced-motion)
