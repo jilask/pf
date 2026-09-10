@@ -33,6 +33,7 @@ class ArchPortfolio {
         // Workspace 5 Arcade Shell state
         this.currentArcadeView = 'menu';
         this.lastFocusedArcadeRowId = null;
+        this.activeSnakeGame = null;
 
         this.init();
     }
@@ -545,7 +546,12 @@ class ArchPortfolio {
             return;
         }
 
-        // When switching away from workspace 5, ensure arcade window is hidden
+        // When switching away from workspace 5, ensure arcade window is hidden and game stopped
+        if (this.activeSnakeGame) {
+            this.activeSnakeGame.destroy();
+            this.activeSnakeGame = null;
+        }
+
         if (arcadeWindow) {
             const focusWasInArcade = arcadeWindow.contains(document.activeElement);
             arcadeWindow.style.display = 'none';
@@ -1885,38 +1891,53 @@ ACHIEVEMENTS
             games: [
                 {
                     id: 'snake',
-                    title: 'Snake',
-                    executable: 'snake.sh',
+                    title: 'Latent Explorer',
+                    executable: 'latent_explorer.sh',
                     size: '4.2K',
                     permissions: '-rwxr-xr-x',
-                    badge: 'COMING SOON',
-                    status: 'coming_soon',
-                    description: 'Classic terminal retro arcade snake game. Collect memory bits, grow your process, avoid kernel panic.',
-                    genre: 'Terminal Arcade',
-                    version: 'v0.1.0-alpha',
+                    badge: 'PLAYABLE',
+                    status: 'playable',
+                    description: 'Navigate a vector through latent space, collecting embeddings without colliding with your own trajectory.',
+                    genre: 'Neural Sandbox / Arcade',
+                    version: 'v1.0.0',
                     controlsPreview: [
-                        { key: 'WASD / ↑↓←→', action: 'Steer process snake' },
-                        { key: 'P', action: 'Pause thread' },
-                        { key: 'R', action: 'Restart kernel' },
-                        { key: 'Q / ESC', action: 'Quit to terminal menu' }
+                        { key: 'WASD / ↑↓←→', action: 'Steer vector trajectory' },
+                        { key: 'Space / P', action: 'Pause thread' },
+                        { key: 'R', action: 'Restart trajectory' },
+                        { key: 'ESC', action: 'Quit to terminal menu' }
                     ],
                     asciiArt: [
-                        "   _____             _         ",
-                        "  / ____|           | |        ",
-                        " | (___  _ __   __ _| | _____  ",
-                        "  \\___ \\| '_ \\ / _` | |/ / _ \\ ",
-                        "  ____) | | | | (_| |   <  __/ ",
-                        " |_____/|_| |_|\\__,_|_|\\_\\___| "
+                        "  _        _  _____ _____ _   _ _____ ",
+                        " | |      / \\|_   _| ____| \\ | |_   _|",
+                        " | |     / _ \\ | | |  _| |  \\| | | |  ",
+                        " | |___ / ___ \\| | | |___| |\\  | | |  ",
+                        " |_____/_/   \\_\\_| |_____|_| \\_| |_|  "
                     ]
                 }
             ]
         };
     }
 
+    getSnakeHighScore() {
+        try {
+            const saved = localStorage.getItem('arcade-snake-highscore');
+            const val = parseInt(saved, 10);
+            return isNaN(val) || val < 0 ? 0 : val;
+        } catch (e) {
+            return 0;
+        }
+    }
+
     renderArcade() {
         const arcadeContent = document.getElementById('arcade-content');
         const arcadeTitle = document.getElementById('arcade-window-title');
         if (!arcadeContent) return;
+
+        // Clean up any running game instance before switching views
+        if (this.activeSnakeGame) {
+            this.activeSnakeGame.destroy();
+            this.activeSnakeGame = null;
+        }
 
         const arcadeData = (this.data && this.data.arcade) ? this.data.arcade : this.getFallbackArcadeData();
 
@@ -1946,12 +1967,35 @@ ACHIEVEMENTS
                 });
             });
 
-            // Restore focus if returning from game placeholder
+            // Restore focus if returning from game view
             if (this.lastFocusedArcadeRowId) {
                 const targetRow = arcadeContent.querySelector(`.arcade-game-row[data-game-id="${this.lastFocusedArcadeRowId}"]`);
                 if (targetRow) {
                     targetRow.focus();
                 }
+            }
+        } else if (this.currentArcadeView === 'snake') {
+            const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
+            const game = games.find(g => g.id === 'snake') || games[0];
+
+            if (arcadeTitle) {
+                arcadeTitle.textContent = `USER@SYSTEM: ~/arcade/${game ? game.executable : 'snake.sh'}`;
+            }
+
+            const highScore = this.getSnakeHighScore();
+            if (typeof window.renderSnakeGame === 'function') {
+                arcadeContent.innerHTML = window.renderSnakeGame(game, highScore);
+            }
+
+            if (typeof window.ArcadeSnakeGame === 'function') {
+                this.activeSnakeGame = new window.ArcadeSnakeGame({
+                    onReturnToMenu: () => this.returnToArcadeMenu()
+                });
+            }
+
+            const startBtn = document.getElementById('snake-start-btn');
+            if (startBtn) {
+                startBtn.focus();
             }
         } else {
             // Detailed game placeholder view
@@ -1983,6 +2027,10 @@ ACHIEVEMENTS
     }
 
     returnToArcadeMenu() {
+        if (this.activeSnakeGame) {
+            this.activeSnakeGame.destroy();
+            this.activeSnakeGame = null;
+        }
         this.currentArcadeView = 'menu';
         this.renderArcade();
     }
