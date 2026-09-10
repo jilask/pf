@@ -744,8 +744,11 @@ class ArcadeSnakeGame {
      * Retrieve current theme accent colors from CSS variables
      */
     getThemeColors() {
-        const style = (typeof window !== 'undefined' && typeof window.getComputedStyle === 'function' && document?.documentElement)
-            ? window.getComputedStyle(document.documentElement)
+        const targetEl = (typeof document !== 'undefined')
+            ? (document.getElementById('arcade-window') || document.querySelector('.arcade-window') || document.documentElement)
+            : null;
+        const style = (typeof window !== 'undefined' && typeof window.getComputedStyle === 'function' && targetEl)
+            ? window.getComputedStyle(targetEl)
             : null;
         const cyan = style?.getPropertyValue('--accent-cyan')?.trim() || '#00ffff';
         const purple = style?.getPropertyValue('--accent-purple')?.trim() || '#a855f7';
