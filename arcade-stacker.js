@@ -131,6 +131,7 @@ class ArcadeStackerGame {
         // Bound event references
         this.boundKeyHandler = this.handleKeyDown.bind(this);
         this.boundRenderLoop = this.renderLoop.bind(this);
+        this.touchCleanups = [];
 
         this.initDOM();
         this.bindEvents();
@@ -187,7 +188,12 @@ class ArcadeStackerGame {
             nextTokenName: document.getElementById('stacker-next-name'),
             bufferFill: document.getElementById('stacker-buffer-fill'),
             bufferText: document.getElementById('stacker-buffer-text'),
-            statusText: document.getElementById('stacker-status-text')
+            statusText: document.getElementById('stacker-status-text'),
+            touchLeft: document.getElementById('touch-left'),
+            touchRight: document.getElementById('touch-right'),
+            touchRotate: document.getElementById('touch-rotate'),
+            touchDown: document.getElementById('touch-down'),
+            touchHardDrop: document.getElementById('touch-harddrop')
         };
     }
 
@@ -201,10 +207,128 @@ class ArcadeStackerGame {
         this.dom.restartHudBtn?.addEventListener('click', () => this.restartGame());
         this.dom.pauseBtn?.addEventListener('click', () => this.togglePause());
         this.dom.exitToMenuBtn?.addEventListener('click', () => this.exitToMenu());
+
+        // Setup touch & click controls for on-screen buttons
+        const setupRepeatButton = (btn, action) => {
+            if (!btn) return;
+            let timer = null;
+            let interval = null;
+
+            const start = (e) => {
+                if (e.cancelable) e.preventDefault();
+                action();
+                timer = setTimeout(() => {
+                    interval = setInterval(action, 75);
+                }, 200);
+            };
+
+            const stop = (e) => {
+                if (timer) { clearTimeout(timer); timer = null; }
+                if (interval) { clearInterval(interval); interval = null; }
+            };
+
+            btn.addEventListener('touchstart', start, { passive: false });
+            btn.addEventListener('touchend', stop);
+            btn.addEventListener('touchcancel', stop);
+            btn.addEventListener('mousedown', start);
+            btn.addEventListener('mouseup', stop);
+            btn.addEventListener('mouseleave', stop);
+
+            this.touchCleanups.push(() => {
+                btn.removeEventListener('touchstart', start);
+                btn.removeEventListener('touchend', stop);
+                btn.removeEventListener('touchcancel', stop);
+                btn.removeEventListener('mousedown', start);
+                btn.removeEventListener('mouseup', stop);
+                btn.removeEventListener('mouseleave', stop);
+            });
+        };
+
+        const setupTapButton = (btn, action) => {
+            if (!btn) return;
+            const handle = (e) => {
+                if (e.cancelable) e.preventDefault();
+                action();
+            };
+            btn.addEventListener('touchstart', handle, { passive: false });
+            btn.addEventListener('click', handle);
+            this.touchCleanups.push(() => {
+                btn.removeEventListener('touchstart', handle);
+                btn.removeEventListener('click', handle);
+            });
+        };
+
+        setupRepeatButton(this.dom.touchLeft, () => this.moveLeft());
+        setupRepeatButton(this.dom.touchRight, () => this.moveRight());
+        setupRepeatButton(this.dom.touchDown, () => this.softDrop());
+        setupTapButton(this.dom.touchRotate, () => this.rotatePiece());
+        setupTapButton(this.dom.touchHardDrop, () => this.hardDrop());
+
+        // Touch gestures on Canvas
+        if (this.canvas) {
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let touchStartTime = 0;
+            let hasMoved = false;
+
+            const onTouchStart = (e) => {
+                if (this.state !== 'PLAYING') return;
+                const touch = e.touches[0];
+                if (!touch) return;
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+                touchStartTime = performance.now();
+                hasMoved = false;
+            };
+
+            const onTouchMove = (e) => {
+                if (this.state !== 'PLAYING') return;
+                const touch = e.touches[0];
+                if (!touch) return;
+                const dx = touch.clientX - touchStartX;
+                const dy = touch.clientY - touchStartY;
+
+                if (Math.abs(dx) > 24) {
+                    if (e.cancelable) e.preventDefault();
+                    hasMoved = true;
+                    if (dx > 0) this.moveRight();
+                    else this.moveLeft();
+                    touchStartX = touch.clientX;
+                } else if (dy > 30) {
+                    if (e.cancelable) e.preventDefault();
+                    hasMoved = true;
+                    this.softDrop();
+                    touchStartY = touch.clientY;
+                }
+            };
+
+            const onTouchEnd = (e) => {
+                if (this.state !== 'PLAYING') return;
+                const duration = performance.now() - touchStartTime;
+                if (!hasMoved && duration < 250) {
+                    if (e.cancelable) e.preventDefault();
+                    this.rotatePiece();
+                }
+            };
+
+            this.canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+            this.canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+            this.canvas.addEventListener('touchend', onTouchEnd);
+
+            this.touchCleanups.push(() => {
+                this.canvas.removeEventListener('touchstart', onTouchStart);
+                this.canvas.removeEventListener('touchmove', onTouchMove);
+                this.canvas.removeEventListener('touchend', onTouchEnd);
+            });
+        }
     }
 
     unbindEvents() {
         window.removeEventListener('keydown', this.boundKeyHandler);
+        if (this.touchCleanups) {
+            this.touchCleanups.forEach(fn => fn());
+            this.touchCleanups = [];
+        }
     }
 
     loadHighScore() {
