@@ -241,10 +241,20 @@ class ArcadeStackerGame {
         }
         const type = this.bag.shift();
         const def = TETROMINO_DEFINITIONS[type];
+        const theme = this.getThemeColors();
+        const colorMap = {
+            I: theme.cyan,
+            O: theme.yellow,
+            T: theme.purple,
+            S: theme.green,
+            Z: theme.red,
+            J: theme.blue,
+            L: theme.orange
+        };
         return {
             id: def.id,
             tokenName: def.tokenName,
-            color: def.color,
+            color: colorMap[def.id] || def.color,
             cssVar: def.cssVar,
             matrix: def.matrix.map(row => [...row]),
             x: Math.floor((this.cols - def.matrix[0].length) / 2),
@@ -786,33 +796,65 @@ class ArcadeStackerGame {
         }
     }
 
+    getThemeColors() {
+        const style = (typeof window !== 'undefined' && window.getComputedStyle)
+            ? window.getComputedStyle(document.documentElement)
+            : null;
+
+        const getVal = (v, fallback) => {
+            if (!style) return fallback;
+            const val = style.getPropertyValue(v).trim();
+            return val || fallback;
+        };
+
+        return {
+            cyan: getVal('--accent-cyan', '#00f5ff'),
+            yellow: getVal('--accent-yellow', '#ffb454'),
+            purple: getVal('--accent-purple', '#a855f7'),
+            green: getVal('--accent-green', '#39ff14'),
+            red: getVal('--accent-red', '#ff3366'),
+            blue: getVal('--accent-blue', '#8b5cf6'),
+            orange: getVal('--accent-orange', '#ff5f00')
+        };
+    }
+
     drawTokenCell(px, py, color, pieceId) {
         const size = this.cellSize;
-        const inset = 1.5;
+        const inset = 1;
         const x = px + inset;
         const y = py + inset;
         const w = size - inset * 2;
         const h = size - inset * 2;
 
-        // Base cell body with subtle gradient
+        // Base cell body with subtle token gradient (darker at bottom)
         const grad = this.ctx.createLinearGradient(x, y, x + w, y + h);
         grad.addColorStop(0, color);
+        grad.addColorStop(0.65, '#0d131a');
         grad.addColorStop(1, '#05070a');
 
         this.ctx.fillStyle = grad;
         this.ctx.fillRect(x, y, w, h);
 
-        // Neon border/glow
+        // Subtle top/left light reflection highlight (token bevel)
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+        this.ctx.lineWidth = 0.75;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + 0.5, y + h - 1);
+        this.ctx.lineTo(x + 0.5, y + 0.5);
+        this.ctx.lineTo(x + w - 1, y + 0.5);
+        this.ctx.stroke();
+
+        // Neon border/glow matching site aesthetic
         this.ctx.strokeStyle = color;
         this.ctx.lineWidth = 1;
         this.ctx.strokeRect(x, y, w, h);
 
-        // Token chip accent: inner subtle dot or bracket
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-        this.ctx.font = '8px monospace';
+        // Token chip accent: inner subtle dot or token indicator
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        this.ctx.font = '700 7px monospace';
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(pieceId || '•', x + w / 2, y + h / 2);
+        this.ctx.fillText(pieceId ? `[${pieceId}]` : '•', x + w / 2, y + h / 2);
     }
 
     drawGhostPiece(matrix, offsetX, offsetY, color) {
@@ -838,7 +880,7 @@ class ArcadeStackerGame {
         const size = this.cellSize;
         this.ctx.fillStyle = '#ffffff';
         this.ctx.shadowColor = '#00ffff';
-        this.ctx.shadowBlur = 12;
+        this.ctx.shadowBlur = 14;
         this.ctx.fillRect(px + 1, py + 1, size - 2, size - 2);
         this.ctx.shadowBlur = 0;
     }
@@ -851,7 +893,7 @@ class ArcadeStackerGame {
         this.nextCtx.fillStyle = '#0a0e14';
         this.nextCtx.fillRect(0, 0, w, h);
 
-        // Subtle border
+        // Subtle terminal border
         this.nextCtx.strokeStyle = 'rgba(57, 255, 20, 0.15)';
         this.nextCtx.lineWidth = 1;
         this.nextCtx.strokeRect(0.5, 0.5, w - 1, h - 1);
@@ -861,7 +903,7 @@ class ArcadeStackerGame {
         const matrix = this.nextPiece.matrix;
         const rows = matrix.length;
         const cols = matrix[0].length;
-        const cellSize = 16;
+        const cellSize = 15;
         const pieceW = cols * cellSize;
         const pieceH = rows * cellSize;
         const startX = Math.floor((w - pieceW) / 2);
@@ -874,11 +916,22 @@ class ArcadeStackerGame {
                     const y = startY + r * cellSize + 1;
                     const s = cellSize - 2;
 
-                    this.nextCtx.fillStyle = this.nextPiece.color;
+                    const grad = this.nextCtx.createLinearGradient(x, y, x + s, y + s);
+                    grad.addColorStop(0, this.nextPiece.color);
+                    grad.addColorStop(1, '#05070a');
+
+                    this.nextCtx.fillStyle = grad;
                     this.nextCtx.fillRect(x, y, s, s);
-                    this.nextCtx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-                    this.nextCtx.lineWidth = 0.5;
+
+                    this.nextCtx.strokeStyle = this.nextPiece.color;
+                    this.nextCtx.lineWidth = 1;
                     this.nextCtx.strokeRect(x, y, s, s);
+
+                    this.nextCtx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                    this.nextCtx.font = '700 6px monospace';
+                    this.nextCtx.textAlign = 'center';
+                    this.nextCtx.textBaseline = 'middle';
+                    this.nextCtx.fillText(this.nextPiece.id || '•', x + s / 2, y + s / 2);
                 }
             }
         }
