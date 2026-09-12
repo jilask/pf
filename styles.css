@@ -4588,6 +4588,23 @@ button {
    Workspace 5: Token Stacker Game Terminal Interface & Controls
    ========================================================================== */
 
+.hud-short-label {
+    display: none;
+}
+
+.hud-full-label {
+    display: inline;
+}
+
+@media (max-width: 600px) {
+    .hud-short-label {
+        display: inline;
+    }
+    .hud-full-label {
+        display: none;
+    }
+}
+
 .arcade-stacker-container {
     display: flex;
     flex-direction: column;

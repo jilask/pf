@@ -1150,7 +1150,7 @@ function renderStackerGame(game, highScore = 0) {
             <div class="arcade-hud" role="status" aria-label="Live Game Telemetry">
                 <div class="arcade-hud-metrics">
                     <div class="arcade-hud-item">
-                        <span class="arcade-hud-label">TOKENS:</span>
+                        <span class="arcade-hud-label"><span class="hud-full-label">TOKENS PROCESSED:</span><span class="hud-short-label">TOKENS:</span></span>
                         <span class="arcade-hud-val" id="stacker-score-display">000000</span>
                     </div>
                     <div class="arcade-hud-item">
@@ -1158,7 +1158,7 @@ function renderStackerGame(game, highScore = 0) {
                         <span class="arcade-hud-val arcade-hud-best" id="stacker-highscore-display">${formattedBest}</span>
                     </div>
                     <div class="arcade-hud-item">
-                        <span class="arcade-hud-label">FLUSHED:</span>
+                        <span class="arcade-hud-label"><span class="hud-full-label">CONTEXT FLUSHED:</span><span class="hud-short-label">FLUSHED:</span></span>
                         <span class="arcade-hud-val" id="stacker-lines-display">00</span>
                     </div>
                     <div class="arcade-hud-item">
@@ -1244,7 +1244,7 @@ function renderStackerGame(game, highScore = 0) {
                                 </div>
                             </div>
                             <div class="arcade-gameover-extra-stats">
-                                <span class="arcade-mini-stat">FLUSHED: <strong id="stacker-gameover-lines">00</strong></span>
+                                <span class="arcade-mini-stat">CONTEXT FLUSHED: <strong id="stacker-gameover-lines">00</strong></span>
                                 <span class="arcade-mini-stat">DEPTH: <strong id="stacker-gameover-depth">00</strong></span>
                             </div>
                             <div id="stacker-new-highscore-badge" class="arcade-new-record" style="display: none;">
