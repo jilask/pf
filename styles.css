@@ -4584,6 +4584,261 @@ button {
     }
 }
 
+/* ==========================================================================
+   Workspace 5: Token Stacker Game Terminal Interface & Controls
+   ========================================================================== */
+
+.arcade-stacker-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.arcade-stacker-stage {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 14px;
+    width: 100%;
+}
+
+.arcade-stacker-board-wrapper {
+    position: relative;
+    width: 200px;
+    height: 400px;
+    background: #0a0e14;
+    border: 1px solid rgba(0, 255, 255, 0.35);
+    border-radius: 4px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 255, 255, 0.16);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+#stacker-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.arcade-stacker-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.arcade-stacker-panel {
+    background: rgba(13, 17, 23, 0.95);
+    border: 1px solid rgba(57, 255, 20, 0.25);
+    border-radius: 4px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.arcade-panel-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-family: var(--font-mono, monospace);
+}
+
+.arcade-next-canvas-wrapper {
+    width: 80px;
+    height: 80px;
+    background: #0a0e14;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#stacker-next-canvas {
+    width: 80px;
+    height: 80px;
+    display: block;
+    image-rendering: pixelated;
+}
+
+.arcade-next-token-name {
+    font-size: 9px;
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+    color: var(--accent-cyan);
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.arcade-buffer-panel {
+    padding: 8px 6px;
+}
+
+.arcade-buffer-meter {
+    width: 100%;
+    height: 120px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(57, 255, 20, 0.2);
+    border-radius: 3px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    position: relative;
+}
+
+.arcade-buffer-fill {
+    width: 100%;
+    background: var(--accent-green, #39ff14);
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    transition: height 0.2s ease, background 0.2s ease;
+}
+
+.arcade-buffer-text {
+    font-size: 8px;
+    font-family: var(--font-mono, monospace);
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* Flush Cue Feedback Overlay */
+.arcade-stacker-flush-cue {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 255, 255, 0.18);
+    border: 1px solid #00ffff;
+    border-radius: 3px;
+    padding: 6px 12px;
+    pointer-events: none;
+    z-index: 4;
+    animation: flushPulse 0.6s ease-out;
+    box-shadow: 0 0 16px rgba(0, 255, 255, 0.5);
+}
+
+.flush-cue-text {
+    font-size: 11px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 1px;
+    font-family: var(--font-mono, monospace);
+    text-shadow: 0 0 8px #00ffff;
+    white-space: nowrap;
+}
+
+@keyframes flushPulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.85);
+        opacity: 0;
+    }
+    30% {
+        transform: translate(-50%, -50%) scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+    }
+}
+
+.arcade-gameover-extra-stats {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    font-size: 10px;
+    color: var(--text-secondary);
+    font-family: var(--font-mono, monospace);
+    margin-bottom: 6px;
+}
+
+.arcade-gameover-extra-stats strong {
+    color: var(--accent-green);
+}
+
+/* Touch Controls */
+.arcade-stacker-touch-controls {
+    margin-top: 6px;
+}
+
+.arcade-stacker-touch-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.arcade-touch-btn {
+    min-width: 48px;
+    min-height: 48px;
+    padding: 8px 12px;
+    background: rgba(13, 17, 23, 0.92);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+    color: var(--accent-green);
+    font-family: var(--font-mono, monospace);
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    transition: background 0.1s, transform 0.05s, border-color 0.1s;
+}
+
+.arcade-touch-btn:hover {
+    background: rgba(57, 255, 20, 0.15);
+    border-color: var(--accent-green);
+}
+
+.arcade-touch-btn:active {
+    background: rgba(57, 255, 20, 0.3);
+    border-color: var(--accent-green);
+    transform: scale(0.92);
+}
+
+.arcade-touch-btn:focus-visible {
+    outline: 2px solid var(--accent-green);
+    outline-offset: 1px;
+}
+
+.touch-btn-harddrop {
+    font-size: 11px;
+    color: var(--accent-cyan);
+    border-color: rgba(0, 255, 255, 0.4);
+    background: rgba(0, 255, 255, 0.08);
+}
+
+.touch-btn-harddrop:hover {
+    background: rgba(0, 255, 255, 0.2);
+    border-color: var(--accent-cyan);
+    color: #ffffff;
+}
+
+.touch-btn-harddrop:active {
+    background: rgba(0, 255, 255, 0.35);
+    border-color: var(--accent-cyan);
+    color: #ffffff;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .lightbox-modal-backdrop,
     .lightbox-window-pane,
@@ -4595,9 +4850,12 @@ button {
     .arcade-back-btn,
     .arcade-new-record,
     .arcade-dpad-btn,
+    .arcade-touch-btn,
     .arcade-btn,
     .arcade-hud-btn,
-    .coherence-destabilized {
+    .coherence-destabilized,
+    .arcade-stacker-flush-cue,
+    .arcade-buffer-fill {
         transition: none !important;
         animation: none !important;
         transform: none !important;

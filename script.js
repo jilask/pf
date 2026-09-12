@@ -551,6 +551,10 @@ class ArchPortfolio {
             this.activeSnakeGame.destroy();
             this.activeSnakeGame = null;
         }
+        if (this.activeStackerGame) {
+            this.activeStackerGame.destroy();
+            this.activeStackerGame = null;
+        }
 
         if (arcadeWindow) {
             const focusWasInArcade = arcadeWindow.contains(document.activeElement);
@@ -1954,6 +1958,16 @@ ACHIEVEMENTS
         }
     }
 
+    getStackerHighScore() {
+        try {
+            const saved = localStorage.getItem('arcade-token-stacker-highscore');
+            const val = parseInt(saved, 10);
+            return isNaN(val) || val < 0 ? 0 : val;
+        } catch (e) {
+            return 0;
+        }
+    }
+
     renderArcade() {
         const arcadeContent = document.getElementById('arcade-content');
         const arcadeTitle = document.getElementById('arcade-window-title');
@@ -1963,6 +1977,10 @@ ACHIEVEMENTS
         if (this.activeSnakeGame) {
             this.activeSnakeGame.destroy();
             this.activeSnakeGame = null;
+        }
+        if (this.activeStackerGame) {
+            this.activeStackerGame.destroy();
+            this.activeStackerGame = null;
         }
 
         const arcadeData = (this.data && this.data.arcade) ? this.data.arcade : this.getFallbackArcadeData();
@@ -2023,6 +2041,29 @@ ACHIEVEMENTS
             if (startBtn) {
                 startBtn.focus();
             }
+        } else if (this.currentArcadeView === 'token-stacker') {
+            const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
+            const game = games.find(g => g.id === 'token-stacker') || games[0];
+
+            if (arcadeTitle) {
+                arcadeTitle.textContent = `USER@SYSTEM: ~/arcade/${game ? game.executable : 'token_stacker.sh'}`;
+            }
+
+            const highScore = this.getStackerHighScore();
+            if (typeof window.renderStackerGame === 'function') {
+                arcadeContent.innerHTML = window.renderStackerGame(game, highScore);
+            }
+
+            if (typeof window.ArcadeStackerGame === 'function') {
+                this.activeStackerGame = new window.ArcadeStackerGame({
+                    onReturnToMenu: () => this.returnToArcadeMenu()
+                });
+            }
+
+            const startBtn = document.getElementById('stacker-start-btn');
+            if (startBtn) {
+                startBtn.focus();
+            }
         } else {
             // Detailed game placeholder view
             const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
@@ -2056,6 +2097,10 @@ ACHIEVEMENTS
         if (this.activeSnakeGame) {
             this.activeSnakeGame.destroy();
             this.activeSnakeGame = null;
+        }
+        if (this.activeStackerGame) {
+            this.activeStackerGame.destroy();
+            this.activeStackerGame = null;
         }
         this.currentArcadeView = 'menu';
         this.renderArcade();
