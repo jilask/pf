@@ -213,10 +213,18 @@ class ArcadeStackerGame {
             if (!btn) return;
             let timer = null;
             let interval = null;
+            let lastActionTime = 0;
+
+            const triggerAction = (e) => {
+                if (e && e.cancelable) e.preventDefault();
+                const now = performance.now();
+                if (now - lastActionTime < 50) return;
+                lastActionTime = now;
+                action();
+            };
 
             const start = (e) => {
-                if (e.cancelable) e.preventDefault();
-                action();
+                triggerAction(e);
                 timer = setTimeout(() => {
                     interval = setInterval(action, 75);
                 }, 200);
@@ -233,6 +241,7 @@ class ArcadeStackerGame {
             btn.addEventListener('mousedown', start);
             btn.addEventListener('mouseup', stop);
             btn.addEventListener('mouseleave', stop);
+            btn.addEventListener('click', triggerAction);
 
             this.touchCleanups.push(() => {
                 btn.removeEventListener('touchstart', start);
@@ -241,6 +250,7 @@ class ArcadeStackerGame {
                 btn.removeEventListener('mousedown', start);
                 btn.removeEventListener('mouseup', stop);
                 btn.removeEventListener('mouseleave', stop);
+                btn.removeEventListener('click', triggerAction);
             });
         };
 

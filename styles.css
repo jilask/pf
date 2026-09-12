@@ -4163,7 +4163,7 @@ button {
     border-radius: 3px;
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s, color 0.15s;
-    min-height: 36px;
+    min-height: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
