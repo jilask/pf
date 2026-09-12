@@ -782,6 +782,12 @@ class ArcadeStackerGame {
             }
         }
 
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            this.exitToMenu();
+            return;
+        }
+
         if (this.state === 'START') {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
