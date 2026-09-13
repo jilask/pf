@@ -450,12 +450,17 @@ class ArcadeStackerGame {
         this.updateBufferMeter();
     }
 
-    setTemperatureIndex(index) {
+    setTemperatureIndex(index, announceChange = true) {
         const clamped = Math.max(0, Math.min(this.tempLevels.length - 1, index));
+        const changed = clamped !== this.tempIndex || this.temperature !== this.tempLevels[clamped];
         this.tempIndex = clamped;
         this.temperature = this.tempLevels[clamped];
         this.dropInterval = this.calculateDropInterval(this.level);
         this.updateHUD();
+
+        if (changed && announceChange && this.state !== 'START') {
+            this.announce(`Temperature set to ${this.temperature}x. Score multiplier ${this.temperature}x.`);
+        }
     }
 
     increaseTemperature() {
@@ -915,7 +920,13 @@ class ArcadeStackerGame {
     }
 
     announce(text) {
-        if (this.dom.liveAnnouncer) {
+        if (!this.dom.liveAnnouncer) return;
+        if (this.dom.liveAnnouncer.textContent === text) {
+            this.dom.liveAnnouncer.textContent = '';
+            setTimeout(() => {
+                if (this.dom.liveAnnouncer) this.dom.liveAnnouncer.textContent = text;
+            }, 30);
+        } else {
             this.dom.liveAnnouncer.textContent = text;
         }
     }
