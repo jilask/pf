@@ -6,6 +6,9 @@
 const STACKER_COLS = 10;
 const STACKER_ROWS = 20;
 
+const TEMPERATURE_LEVELS = [0.5, 0.75, 1.0, 1.5, 2.0];
+const DEFAULT_TEMP_INDEX = 2; // 1.0x (normal risk)
+
 const TETROMINO_DEFINITIONS = {
     I: {
         id: 'I',
@@ -118,6 +121,11 @@ class ArcadeStackerGame {
         this.highScore = this.loadHighScore();
         this.hasNewRecord = false;
 
+        // Temperature risk/reward dial (0.5x to 2.0x)
+        this.tempLevels = TEMPERATURE_LEVELS;
+        this.tempIndex = DEFAULT_TEMP_INDEX;
+        this.temperature = this.tempLevels[this.tempIndex];
+
         // Timing
         this.lastDropTime = 0;
         this.dropInterval = 800; // ms per gravity step
@@ -193,7 +201,13 @@ class ArcadeStackerGame {
             touchRight: document.getElementById('touch-right'),
             touchRotate: document.getElementById('touch-rotate'),
             touchDown: document.getElementById('touch-down'),
-            touchHardDrop: document.getElementById('touch-harddrop')
+            touchHardDrop: document.getElementById('touch-harddrop'),
+            tempDisplay: document.getElementById('stacker-temp-display'),
+            tempDecBtn: document.getElementById('stacker-temp-dec-btn'),
+            tempIncBtn: document.getElementById('stacker-temp-inc-btn'),
+            touchTempDec: document.getElementById('touch-temp-dec'),
+            touchTempInc: document.getElementById('touch-temp-inc'),
+            touchTempDisplay: document.getElementById('touch-temp-display')
         };
     }
 
@@ -273,6 +287,10 @@ class ArcadeStackerGame {
         setupRepeatButton(this.dom.touchDown, () => this.softDrop());
         setupTapButton(this.dom.touchRotate, () => this.rotatePiece());
         setupTapButton(this.dom.touchHardDrop, () => this.hardDrop());
+        setupTapButton(this.dom.tempDecBtn, () => this.decreaseTemperature());
+        setupTapButton(this.dom.tempIncBtn, () => this.increaseTemperature());
+        setupTapButton(this.dom.touchTempDec, () => this.decreaseTemperature());
+        setupTapButton(this.dom.touchTempInc, () => this.increaseTemperature());
 
         // Touch gestures on Canvas
         if (this.canvas) {
@@ -404,6 +422,8 @@ class ArcadeStackerGame {
         this.level = 0;
         this.hasNewRecord = false;
         this.clearingRows = [];
+        this.tempIndex = DEFAULT_TEMP_INDEX;
+        this.temperature = this.tempLevels[this.tempIndex];
         this.dropInterval = this.calculateDropInterval(this.level);
 
         this.currentPiece = this.getPieceFromBag();
@@ -411,6 +431,26 @@ class ArcadeStackerGame {
 
         this.updateHUD();
         this.updateBufferMeter();
+    }
+
+    setTemperatureIndex(index) {
+        const clamped = Math.max(0, Math.min(this.tempLevels.length - 1, index));
+        this.tempIndex = clamped;
+        this.temperature = this.tempLevels[clamped];
+        this.dropInterval = this.calculateDropInterval(this.level);
+        this.updateHUD();
+    }
+
+    increaseTemperature() {
+        if (this.tempIndex < this.tempLevels.length - 1) {
+            this.setTemperatureIndex(this.tempIndex + 1);
+        }
+    }
+
+    decreaseTemperature() {
+        if (this.tempIndex > 0) {
+            this.setTemperatureIndex(this.tempIndex - 1);
+        }
     }
 
     calculateDropInterval(level) {
@@ -734,6 +774,14 @@ class ArcadeStackerGame {
         if (this.dom.nextTokenName && this.nextPiece) {
             this.dom.nextTokenName.textContent = this.nextPiece.tokenName;
         }
+        const tempLabels = { 0.5: '0.5x', 0.75: '0.75x', 1.0: '1.0x', 1.5: '1.5x', 2.0: '2.0x' };
+        const tempLabel = tempLabels[this.temperature] || `${this.temperature}x`;
+        if (this.dom.tempDisplay) {
+            this.dom.tempDisplay.textContent = tempLabel;
+        }
+        if (this.dom.touchTempDisplay) {
+            this.dom.touchTempDisplay.textContent = tempLabel;
+        }
     }
 
     updateBufferMeter() {
@@ -815,6 +863,18 @@ class ArcadeStackerGame {
         if (e.key === 'r' || e.key === 'R') {
             e.preventDefault();
             this.restartGame();
+            return;
+        }
+
+        // Temperature dial hotkeys: [ / - to decrease, ] / + to increase
+        if (e.key === '[' || e.key === '-' || e.key === '_') {
+            e.preventDefault();
+            this.decreaseTemperature();
+            return;
+        }
+        if (e.key === ']' || e.key === '=' || e.key === '+') {
+            e.preventDefault();
+            this.increaseTemperature();
             return;
         }
 

@@ -1165,6 +1165,14 @@ function renderStackerGame(game, highScore = 0) {
                         <span class="arcade-hud-label">DEPTH:</span>
                         <span class="arcade-hud-val" id="stacker-level-display">00</span>
                     </div>
+                    <div class="arcade-hud-item arcade-hud-temp-group">
+                        <span class="arcade-hud-label">TEMP:</span>
+                        <div class="arcade-temp-stepper">
+                            <button class="arcade-temp-btn" id="stacker-temp-dec-btn" type="button" aria-label="Decrease Temperature (Key: Left Bracket)">-</button>
+                            <span class="arcade-hud-val arcade-hud-temp" id="stacker-temp-display">1.0x</span>
+                            <button class="arcade-temp-btn" id="stacker-temp-inc-btn" type="button" aria-label="Increase Temperature (Key: Right Bracket)">+</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="arcade-hud-actions">
                     <button class="arcade-hud-btn" id="stacker-pause-btn" type="button" aria-label="Pause or resume token stream">
@@ -1195,13 +1203,14 @@ function renderStackerGame(game, highScore = 0) {
                             ${asciiLines ? `<pre class="arcade-ascii-art" aria-hidden="true">${asciiLines}</pre>` : ''}
                             <h3 class="arcade-overlay-title">TOKEN_STACKER // CONTEXT_BUFFER</h3>
                             <p class="arcade-overlay-desc">
-                                Stack incoming token blocks to keep your context window from overflowing. Flush full context lines to purge memory.
+                                Stack incoming token blocks to keep your context window from overflowing. Adjust temperature to balance processing speed against context decay risk. Flush full context lines to purge memory.
                             </p>
                             <div class="arcade-overlay-controls-hint">
                                 <div class="hint-item"><kbd class="arcade-key-badge">A/D / ←→</kbd> <span>Shift Position</span></div>
                                 <div class="hint-item"><kbd class="arcade-key-badge">W / ↑</kbd> <span>Rotate</span></div>
                                 <div class="hint-item"><kbd class="arcade-key-badge">S / ↓</kbd> <span>Soft Drop</span></div>
                                 <div class="hint-item"><kbd class="arcade-key-badge">Space</kbd> <span>Hard Flush</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">[ / ]</kbd> <span>Temperature Dial</span></div>
                                 <div class="hint-item"><kbd class="arcade-key-badge">P</kbd> <span>Suspend Thread</span></div>
                                 <div class="hint-item"><kbd class="arcade-key-badge">R</kbd> <span>Restart</span></div>
                             </div>
@@ -1301,8 +1310,20 @@ function renderStackerGame(game, highScore = 0) {
                         <span aria-hidden="true">⚡ FLUSH</span>
                     </button>
                 </div>
+                <div class="arcade-stacker-touch-row arcade-stacker-temp-row">
+                    <button class="arcade-touch-btn touch-btn-temp" id="touch-temp-dec" type="button" aria-label="Decrease Temperature">
+                        <span>TEMP -</span>
+                    </button>
+                    <div class="arcade-touch-temp-readout" aria-hidden="true">
+                        <span class="touch-temp-label">TEMP:</span>
+                        <span class="touch-temp-val" id="touch-temp-display">1.0x</span>
+                    </div>
+                    <button class="arcade-touch-btn touch-btn-temp" id="touch-temp-inc" type="button" aria-label="Increase Temperature">
+                        <span>TEMP +</span>
+                    </button>
+                </div>
                 <div class="arcade-touch-tip" aria-hidden="true">
-                    <span>Tap controls to shift, rotate, or flush tokens</span>
+                    <span>Tap controls to shift, rotate, or flush tokens. Adjust TEMP to balance speed vs reward.</span>
                 </div>
             </div>
         </div>

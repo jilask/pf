@@ -4856,6 +4856,125 @@ button {
     color: #ffffff;
 }
 
+/* Temperature Stepper in HUD */
+.arcade-hud-temp-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.arcade-temp-stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 1px 4px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 180, 84, 0.25);
+}
+
+.arcade-temp-btn {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 180, 84, 0.12);
+    border: 1px solid rgba(255, 180, 84, 0.4);
+    color: var(--accent-yellow, #ffb454);
+    font-family: var(--font-mono, monospace);
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.15s, border-color 0.15s, transform 0.05s;
+    user-select: none;
+    -webkit-user-select: none;
+    line-height: 1;
+}
+
+.arcade-temp-btn:hover {
+    background: rgba(255, 180, 84, 0.28);
+    border-color: var(--accent-yellow, #ffb454);
+    box-shadow: 0 0 6px rgba(255, 180, 84, 0.4);
+}
+
+.arcade-temp-btn:active {
+    background: rgba(255, 180, 84, 0.45);
+    transform: scale(0.92);
+}
+
+.arcade-temp-btn:focus-visible {
+    outline: 2px solid var(--accent-yellow, #ffb454);
+    outline-offset: 1px;
+}
+
+.arcade-hud-temp {
+    color: var(--accent-yellow, #ffb454);
+    font-weight: 700;
+    min-width: 36px;
+    text-align: center;
+    text-shadow: 0 0 6px rgba(255, 180, 84, 0.4);
+}
+
+/* Temperature Controls in Mobile Touch Panel */
+.arcade-stacker-temp-row {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.touch-btn-temp {
+    min-width: 84px;
+    min-height: 44px;
+    font-size: 12px;
+    color: var(--accent-yellow, #ffb454);
+    border-color: rgba(255, 180, 84, 0.4);
+    background: rgba(255, 180, 84, 0.08);
+}
+
+.touch-btn-temp:hover {
+    background: rgba(255, 180, 84, 0.22);
+    border-color: var(--accent-yellow, #ffb454);
+    color: #ffffff;
+}
+
+.touch-btn-temp:active {
+    background: rgba(255, 180, 84, 0.38);
+    border-color: var(--accent-yellow, #ffb454);
+    transform: scale(0.94);
+}
+
+.arcade-touch-temp-readout {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono, monospace);
+    font-size: 13px;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 180, 84, 0.2);
+    border-radius: 4px;
+}
+
+.touch-temp-label {
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 11px;
+}
+
+.touch-temp-val {
+    color: var(--accent-yellow, #ffb454);
+    font-weight: 700;
+    min-width: 38px;
+    text-align: center;
+    text-shadow: 0 0 6px rgba(255, 180, 84, 0.35);
+}
+
 @media (prefers-reduced-motion: reduce) {
     .lightbox-modal-backdrop,
     .lightbox-window-pane,
