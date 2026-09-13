@@ -454,8 +454,11 @@ class ArcadeStackerGame {
     }
 
     calculateDropInterval(level) {
-        // Difficulty ramp: decreases step interval from 800ms down to 100ms
-        return Math.max(100, 800 - level * 70);
+        // Difficulty ramp: base step interval from 800ms down to 100ms
+        const baseInterval = Math.max(100, 800 - level * 70);
+        const temp = this.temperature || 1.0;
+        // Temperature scales fall speed: higher temperature = smaller drop interval (faster fall)
+        return Math.max(50, Math.round(baseInterval / temp));
     }
 
     startGame() {
@@ -572,7 +575,8 @@ class ArcadeStackerGame {
         if (this.state !== 'PLAYING' || !this.currentPiece) return false;
         if (this.isValidPosition(this.currentPiece.matrix, this.currentPiece.x, this.currentPiece.y + 1)) {
             this.currentPiece.y++;
-            this.score += 1;
+            const stepPoints = Math.max(1, Math.round(1 * (this.temperature || 1.0)));
+            this.score += stepPoints;
             this.checkHighScore();
             this.updateHUD();
             this.lastDropTime = performance.now();
@@ -590,7 +594,8 @@ class ArcadeStackerGame {
             this.currentPiece.y++;
             droppedCells++;
         }
-        this.score += droppedCells * 2;
+        const hardDropPoints = Math.max(1, Math.round(droppedCells * 2 * (this.temperature || 1.0)));
+        this.score += hardDropPoints;
         this.checkHighScore();
         this.updateHUD();
         this.lockPiece();
@@ -659,9 +664,10 @@ class ArcadeStackerGame {
         this.level = Math.floor(this.linesCleared / 10);
         this.dropInterval = this.calculateDropInterval(this.level);
 
-        // Standard Tetris scoring multiplier
+        // Standard Tetris scoring multiplier scaled by temperature dial
         const lineScores = [0, 100, 300, 500, 800];
-        const addedScore = (lineScores[count] || count * 200) * (this.level + 1);
+        const baseScore = (lineScores[count] || count * 200) * (this.level + 1);
+        const addedScore = Math.round(baseScore * (this.temperature || 1.0));
         this.score += addedScore;
 
         this.checkHighScore();
