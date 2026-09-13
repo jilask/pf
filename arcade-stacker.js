@@ -126,6 +126,13 @@ class ArcadeStackerGame {
         this.tempIndex = DEFAULT_TEMP_INDEX;
         this.temperature = this.tempLevels[this.tempIndex];
 
+        // Context Decay mechanic
+        this.decayBaseWindow = 15000; // ms base retention window at 1.0x
+        this.decayElapsed = 0; // accumulated ms towards decay
+        this.hasLockedPiece = false; // only start decay after first piece locks
+        this.decayedRows = 0; // count of decayed rows
+        this.lastFrameTime = 0;
+
         // Timing
         this.lastDropTime = 0;
         this.dropInterval = 800; // ms per gravity step
@@ -426,6 +433,12 @@ class ArcadeStackerGame {
         this.temperature = this.tempLevels[this.tempIndex];
         this.dropInterval = this.calculateDropInterval(this.level);
 
+        // Reset Context Decay state
+        this.decayElapsed = 0;
+        this.hasLockedPiece = false;
+        this.decayedRows = 0;
+        this.lastFrameTime = 0;
+
         this.currentPiece = this.getPieceFromBag();
         this.nextPiece = this.getPieceFromBag();
 
@@ -461,11 +474,67 @@ class ArcadeStackerGame {
         return Math.max(50, Math.round(baseInterval / temp));
     }
 
+    getOldestIncompleteRow() {
+        // Find the lowest row index (bottom of stack) that has locked cells and is not full
+        for (let r = this.rows - 1; r >= 0; r--) {
+            const hasCells = this.grid[r].some(cell => cell !== null);
+            const isComplete = this.grid[r].every(cell => cell !== null);
+            if (hasCells && !isComplete) {
+                return r;
+            }
+        }
+        return -1;
+    }
+
+    resetDecayTimer() {
+        this.decayElapsed = 0;
+    }
+
+    triggerDecay(targetRow) {
+        if (targetRow < 0 || targetRow >= this.rows) return;
+
+        // Step 3.3: Remove the oldest incomplete row WITHOUT awarding points or line count
+        this.grid.splice(targetRow, 1);
+        this.grid.unshift(Array(this.cols).fill(null));
+
+        this.decayedRows++;
+        this.decayElapsed = 0;
+
+        // Verify if any locked pieces remain on the grid
+        const hasAnyCells = this.grid.some(row => row.some(cell => cell !== null));
+        if (!hasAnyCells) {
+            this.hasLockedPiece = false;
+        }
+
+        this.updateBufferMeter();
+        this.updateHUD();
+        this.triggerDecayCue();
+        this.announce('Row decayed, no points awarded. Context lost.');
+    }
+
+    triggerDecayCue() {
+        if (!this.dom.decayCue) return;
+        if (this.dom.decayCueText) {
+            this.dom.decayCueText.textContent = 'CONTEXT DECAYED [-1 ROW]';
+        }
+        this.dom.decayCue.style.display = 'block';
+
+        const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const duration = isReducedMotion ? 400 : 700;
+
+        setTimeout(() => {
+            if (this.dom.decayCue) {
+                this.dom.decayCue.style.display = 'none';
+            }
+        }, duration);
+    }
+
     startGame() {
         if (this.state === 'PLAYING') return;
         this.resetGameData();
         this.state = 'PLAYING';
         this.lastDropTime = performance.now();
+        this.lastFrameTime = performance.now();
 
         if (this.dom.startOverlay) this.dom.startOverlay.style.display = 'none';
         if (this.dom.pauseOverlay) this.dom.pauseOverlay.style.display = 'none';
@@ -486,6 +555,7 @@ class ArcadeStackerGame {
         } else if (this.state === 'PAUSED') {
             this.state = 'PLAYING';
             this.lastDropTime = performance.now();
+            this.lastFrameTime = performance.now();
             if (this.dom.pauseOverlay) this.dom.pauseOverlay.style.display = 'none';
             if (this.dom.pauseBtnText) this.dom.pauseBtnText.textContent = 'PAUSE [P]';
             if (this.dom.statusText) this.dom.statusText.textContent = 'AGENT: 0x4B3A // STATUS: BUFFER_ACTIVE';
@@ -614,6 +684,7 @@ class ArcadeStackerGame {
     lockPiece() {
         if (!this.currentPiece) return;
 
+        let placedAny = false;
         const { matrix, x, y, color, cssVar, id, tokenName } = this.currentPiece;
         for (let r = 0; r < matrix.length; r++) {
             for (let c = 0; c < matrix[r].length; c++) {
@@ -622,9 +693,14 @@ class ArcadeStackerGame {
                     const boardX = x + c;
                     if (boardY >= 0 && boardY < this.rows && boardX >= 0 && boardX < this.cols) {
                         this.grid[boardY][boardX] = { color, cssVar, id, tokenName };
+                        placedAny = true;
                     }
                 }
             }
+        }
+
+        if (placedAny) {
+            this.hasLockedPiece = true;
         }
 
         this.checkLineClears();
@@ -669,6 +745,13 @@ class ArcadeStackerGame {
         const baseScore = (lineScores[count] || count * 200) * (this.level + 1);
         const addedScore = Math.round(baseScore * (this.temperature || 1.0));
         this.score += addedScore;
+
+        // Reset context decay timer when rows are cleared normally
+        this.resetDecayTimer();
+        const hasAnyCells = this.grid.some(row => row.some(cell => cell !== null));
+        if (!hasAnyCells) {
+            this.hasLockedPiece = false;
+        }
 
         this.checkHighScore();
         this.updateHUD();
@@ -919,7 +1002,24 @@ class ArcadeStackerGame {
     }
 
     renderLoop(timestamp) {
+        if (!this.lastFrameTime) this.lastFrameTime = timestamp;
+        const dt = Math.min(100, timestamp - this.lastFrameTime);
+        this.lastFrameTime = timestamp;
+
         if (this.state === 'PLAYING') {
+            // Context Decay countdown on the oldest incomplete row at the bottom of the stack
+            if (this.hasLockedPiece && this.clearingRows.length === 0) {
+                const oldestRow = this.getOldestIncompleteRow();
+                if (oldestRow !== -1) {
+                    this.decayElapsed += dt * (this.temperature || 1.0);
+                    if (this.decayElapsed >= this.decayBaseWindow) {
+                        this.triggerDecay(oldestRow);
+                    }
+                } else {
+                    this.decayElapsed = 0;
+                }
+            }
+
             // Check clearing animation completion
             if (this.clearingRows.length > 0) {
                 if (timestamp - this.clearAnimationTimer >= this.clearFlashDuration) {
