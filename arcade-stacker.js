@@ -946,6 +946,18 @@ class ArcadeStackerGame {
             return;
         }
 
+        // Temperature dial hotkeys: [ / - to decrease, ] / + to increase (accessible in START, PAUSED, PLAYING)
+        if (e.key === '[' || e.key === '-' || e.key === '_') {
+            e.preventDefault();
+            this.decreaseTemperature();
+            return;
+        }
+        if (e.key === ']' || e.key === '=' || e.key === '+') {
+            e.preventDefault();
+            this.increaseTemperature();
+            return;
+        }
+
         if (this.state === 'START') {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -973,18 +985,6 @@ class ArcadeStackerGame {
         if (e.key === 'r' || e.key === 'R') {
             e.preventDefault();
             this.restartGame();
-            return;
-        }
-
-        // Temperature dial hotkeys: [ / - to decrease, ] / + to increase
-        if (e.key === '[' || e.key === '-' || e.key === '_') {
-            e.preventDefault();
-            this.decreaseTemperature();
-            return;
-        }
-        if (e.key === ']' || e.key === '=' || e.key === '+') {
-            e.preventDefault();
-            this.increaseTemperature();
             return;
         }
 
