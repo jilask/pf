@@ -216,7 +216,9 @@ class ArcadeStackerGame {
             tempIncBtn: document.getElementById('stacker-temp-inc-btn'),
             touchTempDec: document.getElementById('touch-temp-dec'),
             touchTempInc: document.getElementById('touch-temp-inc'),
-            touchTempDisplay: document.getElementById('touch-temp-display')
+            touchTempDisplay: document.getElementById('touch-temp-display'),
+            decayedDisplay: document.getElementById('stacker-decayed-display'),
+            gameoverDecayedDisplay: document.getElementById('stacker-gameover-decayed')
         };
     }
 
@@ -822,6 +824,9 @@ class ArcadeStackerGame {
         if (this.dom.gameoverLinesDisplay) {
             this.dom.gameoverLinesDisplay.textContent = String(this.linesCleared).padStart(2, '0');
         }
+        if (this.dom.gameoverDecayedDisplay) {
+            this.dom.gameoverDecayedDisplay.textContent = String(this.decayedRows).padStart(2, '0');
+        }
         if (this.dom.gameoverDepthDisplay) {
             this.dom.gameoverDepthDisplay.textContent = String(this.level).padStart(2, '0');
         }
@@ -835,7 +840,7 @@ class ArcadeStackerGame {
         }
 
         this.dom.restartBtn?.focus();
-        this.announce(`Context Window Overflow! Final tokens processed: ${this.score}. Context flushed: ${this.linesCleared}.`);
+        this.announce(`Context Window Overflow! Final tokens processed: ${this.score}. Context flushed: ${this.linesCleared}. Decayed: ${this.decayedRows}.`);
     }
 
     checkHighScore() {
@@ -861,6 +866,9 @@ class ArcadeStackerGame {
         }
         if (this.dom.levelDisplay) {
             this.dom.levelDisplay.textContent = String(this.level).padStart(2, '0');
+        }
+        if (this.dom.decayedDisplay) {
+            this.dom.decayedDisplay.textContent = String(this.decayedRows).padStart(2, '0');
         }
         if (this.dom.nextTokenName && this.nextPiece) {
             this.dom.nextTokenName.textContent = this.nextPiece.tokenName;

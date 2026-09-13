@@ -1173,6 +1173,10 @@ function renderStackerGame(game, highScore = 0) {
                             <button class="arcade-temp-btn" id="stacker-temp-inc-btn" type="button" aria-label="Increase Temperature (Key: Right Bracket)">+</button>
                         </div>
                     </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label"><span class="hud-full-label">DECAYED:</span><span class="hud-short-label" aria-hidden="true">LOST:</span></span>
+                        <span class="arcade-hud-val arcade-hud-decayed" id="stacker-decayed-display">00</span>
+                    </div>
                 </div>
                 <div class="arcade-hud-actions">
                     <button class="arcade-hud-btn" id="stacker-pause-btn" type="button" aria-label="Pause or resume token stream">
@@ -1259,6 +1263,7 @@ function renderStackerGame(game, highScore = 0) {
                             </div>
                             <div class="arcade-gameover-extra-stats">
                                 <span class="arcade-mini-stat">CONTEXT FLUSHED: <strong id="stacker-gameover-lines">00</strong></span>
+                                <span class="arcade-mini-stat">DECAYED: <strong id="stacker-gameover-decayed">00</strong></span>
                                 <span class="arcade-mini-stat">DEPTH: <strong id="stacker-gameover-depth">00</strong></span>
                             </div>
                             <div id="stacker-new-highscore-badge" class="arcade-new-record" style="display: none;">
