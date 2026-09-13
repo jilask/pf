@@ -4826,6 +4826,118 @@ button {
     color: var(--accent-green);
 }
 
+/* Token Stacker Overlay Layout & Text Overflow Prevention */
+.arcade-stacker-board-wrapper .arcade-game-overlay {
+    padding: 6px 4px;
+    align-items: safe center;
+    justify-content: center;
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-card {
+    padding: 8px 6px;
+    gap: 5px;
+    max-width: 100%;
+    width: 100%;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-tag {
+    font-size: 8px;
+    letter-spacing: 0.5px;
+    padding: 2px 4px;
+    line-height: 1.25;
+    text-align: center;
+    word-break: normal;
+    white-space: normal;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-title {
+    font-size: 10.5px;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-desc {
+    font-size: 8px;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.arcade-stacker-board-wrapper pre.arcade-ascii-art {
+    display: none;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-controls-hint {
+    grid-template-columns: 1fr;
+    gap: 2px;
+    margin: 2px 0;
+    font-size: 8px;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-controls-hint .hint-item {
+    padding: 2px 4px;
+    gap: 4px;
+    font-size: 7.5px;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-controls-hint .hint-item kbd {
+    font-size: 7.5px;
+    padding: 1px 3px;
+}
+
+.arcade-stacker-board-wrapper .arcade-gameover-scores {
+    margin: 2px 0;
+    gap: 6px;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.arcade-stacker-board-wrapper .arcade-gameover-stat .stat-label {
+    font-size: 8px;
+    margin-bottom: 1px;
+    white-space: nowrap;
+}
+
+.arcade-stacker-board-wrapper .arcade-gameover-stat .stat-val {
+    font-size: 15px;
+    letter-spacing: 0.5px;
+}
+
+.arcade-stacker-board-wrapper .arcade-gameover-extra-stats {
+    font-size: 8px;
+    gap: 5px;
+    margin-bottom: 2px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.arcade-stacker-board-wrapper .arcade-new-record {
+    font-size: 8px;
+    padding: 2px 6px;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-actions {
+    gap: 4px;
+    margin-top: 2px;
+    width: 100%;
+}
+
+.arcade-stacker-board-wrapper .arcade-btn {
+    font-size: 9px;
+    padding: 5px 8px;
+    min-height: 30px;
+    letter-spacing: 0.3px;
+}
+
 /* Touch Controls */
 .arcade-stacker-touch-controls {
     margin-top: 6px;
