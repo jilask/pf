@@ -1197,6 +1197,11 @@ function renderStackerGame(game, highScore = 0) {
                         <span class="flush-cue-text" id="stacker-flush-cue-text">CONTEXT FLUSHED</span>
                     </div>
 
+                    <!-- Decay Feedback Overlay Banner -->
+                    <div class="arcade-stacker-decay-cue" id="stacker-decay-cue" style="display: none;" aria-hidden="true">
+                        <span class="decay-cue-text" id="stacker-decay-cue-text">CONTEXT DECAYED [-1 ROW]</span>
+                    </div>
+
                     <!-- Start Overlay -->
                     <div class="arcade-game-overlay" id="stacker-start-overlay">
                         <div class="arcade-overlay-card">

@@ -199,6 +199,8 @@ class ArcadeStackerGame {
             newRecordBadge: document.getElementById('stacker-new-highscore-badge'),
             flushCue: document.getElementById('stacker-flush-cue'),
             flushCueText: document.getElementById('stacker-flush-cue-text'),
+            decayCue: document.getElementById('stacker-decay-cue'),
+            decayCueText: document.getElementById('stacker-decay-cue-text'),
             liveAnnouncer: document.getElementById('stacker-live-announcer'),
             nextTokenName: document.getElementById('stacker-next-name'),
             bufferFill: document.getElementById('stacker-buffer-fill'),
@@ -1081,6 +1083,15 @@ class ArcadeStackerGame {
             }
         }
 
+        // Draw Decay Warning on the oldest incomplete row if nearing expiration (>= 60% progress)
+        if (this.state === 'PLAYING' && this.hasLockedPiece && this.clearingRows.length === 0) {
+            const decayRow = this.getOldestIncompleteRow();
+            const decayProgress = this.decayElapsed / this.decayBaseWindow;
+            if (decayRow !== -1 && decayProgress >= 0.60) {
+                this.drawDecayWarning(decayRow, decayProgress);
+            }
+        }
+
         // Draw Ghost piece
         if (this.state === 'PLAYING' && this.currentPiece && this.clearingRows.length === 0) {
             const ghostY = this.getGhostY();
@@ -1100,6 +1111,63 @@ class ArcadeStackerGame {
                 }
             }
         }
+    }
+
+    drawDecayWarning(decayRow, decayProgress) {
+        if (!this.ctx) return;
+        const width = 200;
+        const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        this.ctx.save();
+        if (isReducedMotion) {
+            // Step 4.3: Simpler static indicator for prefers-reduced-motion
+            this.ctx.strokeStyle = '#ff3366';
+            this.ctx.lineWidth = 1.5;
+            this.ctx.fillStyle = 'rgba(255, 51, 102, 0.22)';
+
+            for (let c = 0; c < this.cols; c++) {
+                if (this.grid[decayRow][c]) {
+                    const x = c * this.cellSize + 1;
+                    const y = decayRow * this.cellSize + 1;
+                    const s = this.cellSize - 2;
+                    this.ctx.fillRect(x, y, s, s);
+                    this.ctx.strokeRect(x, y, s, s);
+                }
+            }
+            // Solid warning bar along bottom of row
+            this.ctx.fillStyle = '#ff3366';
+            this.ctx.fillRect(0, (decayRow + 1) * this.cellSize - 2, width, 2);
+        } else {
+            // Pulsing/fading warning animation
+            const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 120);
+            const alpha = 0.35 + 0.55 * pulse;
+
+            this.ctx.shadowColor = '#ff3366';
+            this.ctx.shadowBlur = 8 * pulse;
+
+            for (let c = 0; c < this.cols; c++) {
+                if (this.grid[decayRow][c]) {
+                    const x = c * this.cellSize + 1;
+                    const y = decayRow * this.cellSize + 1;
+                    const s = this.cellSize - 2;
+
+                    // Warning tint overlay
+                    this.ctx.fillStyle = `rgba(255, 51, 102, ${0.15 + 0.25 * pulse})`;
+                    this.ctx.fillRect(x, y, s, s);
+
+                    // Pulsing warning border
+                    this.ctx.strokeStyle = `rgba(255, 51, 102, ${alpha})`;
+                    this.ctx.lineWidth = 1.5;
+                    this.ctx.strokeRect(x, y, s, s);
+                }
+            }
+
+            // Warning decay timeline depletion bar along base of row
+            const remaining = Math.max(0, 1 - decayProgress);
+            this.ctx.fillStyle = `rgba(255, 51, 102, ${alpha})`;
+            this.ctx.fillRect(0, (decayRow + 1) * this.cellSize - 2, width * (remaining / 0.4), 2);
+        }
+        this.ctx.restore();
     }
 
     getThemeColors() {
