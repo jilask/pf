@@ -551,6 +551,10 @@ class ArchPortfolio {
             this.activeSnakeGame.destroy();
             this.activeSnakeGame = null;
         }
+        if (this.activeStackerGame) {
+            this.activeStackerGame.destroy();
+            this.activeStackerGame = null;
+        }
 
         if (arcadeWindow) {
             const focusWasInArcade = arcadeWindow.contains(document.activeElement);
@@ -1883,7 +1887,7 @@ ACHIEVEMENTS
             header: {
                 directory: '~/arcade',
                 command: 'ls -la arcade/',
-                total: 1,
+                total: 2,
                 user: 'alij',
                 group: 'staff',
                 date: 'Sep 04'
@@ -1913,6 +1917,32 @@ ACHIEVEMENTS
                         " | |___ / ___ \\| | | |___| |\\  | | |  ",
                         " |_____/_/   \\_\\_| |_____|_| \\_| |_|  "
                     ]
+                },
+                {
+                    id: 'token-stacker',
+                    title: 'Token Stacker',
+                    executable: 'token_stacker.sh',
+                    size: '5.2K',
+                    permissions: '-rwxr-xr-x',
+                    badge: 'PLAYABLE',
+                    status: 'playable',
+                    description: 'Stack incoming tokens to keep your context window from overflowing. Flush full context lines before buffer memory fills.',
+                    genre: 'Context Buffer / Arcade',
+                    version: 'v1.0.0',
+                    controlsPreview: [
+                        { key: 'WASD / ↑↓←→', action: 'Translate & rotate token block' },
+                        { key: 'Space', action: 'Hard drop / flush to buffer' },
+                        { key: 'P', action: 'Suspend context thread' },
+                        { key: 'R', action: 'Reinitialize context buffer' },
+                        { key: 'ESC', action: 'Quit to terminal menu' }
+                    ],
+                    asciiArt: [
+                        " _____ ___  _  _______ _   _ ",
+                        "|_   _/ _ \\| |/ / ____| \\ | |",
+                        "  | || | | | ' /|  _| |  \\| |",
+                        "  | || |_| | . \\| |___| |\\  |",
+                        "  |_| \\___/|_|\\_\\_____|_| \\_|"
+                    ]
                 }
             ]
         };
@@ -1921,6 +1951,16 @@ ACHIEVEMENTS
     getSnakeHighScore() {
         try {
             const saved = localStorage.getItem('arcade-snake-highscore');
+            const val = parseInt(saved, 10);
+            return isNaN(val) || val < 0 ? 0 : val;
+        } catch (e) {
+            return 0;
+        }
+    }
+
+    getStackerHighScore() {
+        try {
+            const saved = localStorage.getItem('arcade-token-stacker-highscore');
             const val = parseInt(saved, 10);
             return isNaN(val) || val < 0 ? 0 : val;
         } catch (e) {
@@ -1937,6 +1977,10 @@ ACHIEVEMENTS
         if (this.activeSnakeGame) {
             this.activeSnakeGame.destroy();
             this.activeSnakeGame = null;
+        }
+        if (this.activeStackerGame) {
+            this.activeStackerGame.destroy();
+            this.activeStackerGame = null;
         }
 
         const arcadeData = (this.data && this.data.arcade) ? this.data.arcade : this.getFallbackArcadeData();
@@ -1997,6 +2041,29 @@ ACHIEVEMENTS
             if (startBtn) {
                 startBtn.focus();
             }
+        } else if (this.currentArcadeView === 'token-stacker') {
+            const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
+            const game = games.find(g => g.id === 'token-stacker') || games[0];
+
+            if (arcadeTitle) {
+                arcadeTitle.textContent = `USER@SYSTEM: ~/arcade/${game ? game.executable : 'token_stacker.sh'}`;
+            }
+
+            const highScore = this.getStackerHighScore();
+            if (typeof window.renderStackerGame === 'function') {
+                arcadeContent.innerHTML = window.renderStackerGame(game, highScore);
+            }
+
+            if (typeof window.ArcadeStackerGame === 'function') {
+                this.activeStackerGame = new window.ArcadeStackerGame({
+                    onReturnToMenu: () => this.returnToArcadeMenu()
+                });
+            }
+
+            const startBtn = document.getElementById('stacker-start-btn');
+            if (startBtn) {
+                startBtn.focus();
+            }
         } else {
             // Detailed game placeholder view
             const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
@@ -2030,6 +2097,10 @@ ACHIEVEMENTS
         if (this.activeSnakeGame) {
             this.activeSnakeGame.destroy();
             this.activeSnakeGame = null;
+        }
+        if (this.activeStackerGame) {
+            this.activeStackerGame.destroy();
+            this.activeStackerGame = null;
         }
         this.currentArcadeView = 'menu';
         this.renderArcade();

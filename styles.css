@@ -4163,7 +4163,7 @@ button {
     border-radius: 3px;
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s, color 0.15s;
-    min-height: 36px;
+    min-height: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -4584,6 +4584,556 @@ button {
     }
 }
 
+/* ==========================================================================
+   Workspace 5: Token Stacker Game Terminal Interface & Controls
+   ========================================================================== */
+
+.hud-short-label {
+    display: none;
+}
+
+.hud-full-label {
+    display: inline;
+}
+
+@media (max-width: 600px) {
+    .hud-short-label {
+        display: inline;
+    }
+    .hud-full-label {
+        display: none;
+    }
+}
+
+.arcade-stacker-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.arcade-stacker-stage {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 14px;
+    width: 100%;
+}
+
+.arcade-stacker-board-wrapper {
+    position: relative;
+    width: 200px;
+    height: 400px;
+    background: #0a0e14;
+    border: 1px solid rgba(0, 255, 255, 0.35);
+    border-radius: 4px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 255, 255, 0.16);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+#stacker-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.arcade-stacker-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.arcade-stacker-panel {
+    background: rgba(13, 17, 23, 0.95);
+    border: 1px solid rgba(57, 255, 20, 0.25);
+    border-radius: 4px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.arcade-panel-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-family: var(--font-mono, monospace);
+}
+
+.arcade-next-canvas-wrapper {
+    width: 80px;
+    height: 80px;
+    background: #0a0e14;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#stacker-next-canvas {
+    width: 80px;
+    height: 80px;
+    display: block;
+    image-rendering: pixelated;
+}
+
+.arcade-next-token-name {
+    font-size: 9px;
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+    color: var(--accent-cyan);
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.arcade-buffer-panel {
+    padding: 8px 6px;
+}
+
+.arcade-buffer-meter {
+    width: 100%;
+    height: 120px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(57, 255, 20, 0.2);
+    border-radius: 3px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    position: relative;
+}
+
+.arcade-buffer-fill {
+    width: 100%;
+    background: var(--accent-green, #39ff14);
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    transition: height 0.2s ease, background 0.2s ease;
+}
+
+.arcade-buffer-text {
+    font-size: 8px;
+    font-family: var(--font-mono, monospace);
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* Flush Cue Feedback Overlay */
+.arcade-stacker-flush-cue {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 255, 255, 0.18);
+    border: 1px solid #00ffff;
+    border-radius: 3px;
+    padding: 6px 12px;
+    pointer-events: none;
+    z-index: 4;
+    animation: flushPulse 0.6s ease-out;
+    box-shadow: 0 0 16px rgba(0, 255, 255, 0.5);
+}
+
+.flush-cue-text {
+    font-size: 11px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 1px;
+    font-family: var(--font-mono, monospace);
+    text-shadow: 0 0 8px #00ffff;
+    white-space: nowrap;
+}
+
+@keyframes flushPulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.85);
+        opacity: 0;
+    }
+    30% {
+        transform: translate(-50%, -50%) scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+    }
+}
+
+/* Context Decay Feedback Overlay */
+.arcade-stacker-decay-cue {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 51, 102, 0.24);
+    border: 1px solid #ff3366;
+    border-radius: 3px;
+    padding: 6px 12px;
+    pointer-events: none;
+    z-index: 4;
+    animation: decayPulse 0.6s ease-out;
+    box-shadow: 0 0 18px rgba(255, 51, 102, 0.65);
+}
+
+.decay-cue-text {
+    font-size: 11px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 1px;
+    font-family: var(--font-mono, monospace);
+    text-shadow: 0 0 8px #ff3366, 0 0 14px rgba(255, 51, 102, 0.8);
+    white-space: nowrap;
+}
+
+@keyframes decayPulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.85);
+        opacity: 0;
+    }
+    25% {
+        transform: translate(-50%, -50%) scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+    }
+}
+
+.arcade-gameover-extra-stats {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    font-size: 10px;
+    color: var(--text-secondary);
+    font-family: var(--font-mono, monospace);
+    margin-bottom: 6px;
+}
+
+.arcade-gameover-extra-stats strong {
+    color: var(--accent-green);
+}
+
+/* Token Stacker Overlay Layout & Text Overflow Prevention */
+.arcade-stacker-board-wrapper .arcade-game-overlay {
+    padding: 6px 4px;
+    align-items: safe center;
+    justify-content: center;
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-card {
+    padding: 8px 6px;
+    gap: 5px;
+    max-width: 100%;
+    width: 100%;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-tag {
+    font-size: 8px;
+    letter-spacing: 0.5px;
+    padding: 2px 4px;
+    line-height: 1.25;
+    text-align: center;
+    word-break: normal;
+    white-space: normal;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-title {
+    font-size: 10.5px;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-desc {
+    font-size: 8px;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.arcade-stacker-board-wrapper pre.arcade-ascii-art {
+    display: none;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-controls-hint {
+    grid-template-columns: 1fr;
+    gap: 2px;
+    margin: 2px 0;
+    font-size: 8px;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-controls-hint .hint-item {
+    padding: 2px 4px;
+    gap: 4px;
+    font-size: 7.5px;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-controls-hint .hint-item kbd {
+    font-size: 7.5px;
+    padding: 1px 3px;
+}
+
+.arcade-stacker-board-wrapper .arcade-gameover-scores {
+    margin: 2px 0;
+    gap: 6px;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.arcade-stacker-board-wrapper .arcade-gameover-stat .stat-label {
+    font-size: 8px;
+    margin-bottom: 1px;
+    white-space: nowrap;
+}
+
+.arcade-stacker-board-wrapper .arcade-gameover-stat .stat-val {
+    font-size: 15px;
+    letter-spacing: 0.5px;
+}
+
+.arcade-stacker-board-wrapper .arcade-gameover-extra-stats {
+    font-size: 8px;
+    gap: 5px;
+    margin-bottom: 2px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.arcade-stacker-board-wrapper .arcade-new-record {
+    font-size: 8px;
+    padding: 2px 6px;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.arcade-stacker-board-wrapper .arcade-overlay-actions {
+    gap: 4px;
+    margin-top: 2px;
+    width: 100%;
+}
+
+.arcade-stacker-board-wrapper .arcade-btn {
+    font-size: 9px;
+    padding: 5px 8px;
+    min-height: 30px;
+    letter-spacing: 0.3px;
+}
+
+/* Touch Controls */
+.arcade-stacker-touch-controls {
+    margin-top: 6px;
+}
+
+.arcade-stacker-touch-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.arcade-touch-btn {
+    min-width: 48px;
+    min-height: 48px;
+    padding: 8px 12px;
+    background: rgba(13, 17, 23, 0.92);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+    color: var(--accent-green);
+    font-family: var(--font-mono, monospace);
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    transition: background 0.1s, transform 0.05s, border-color 0.1s;
+}
+
+.arcade-touch-btn:hover {
+    background: rgba(57, 255, 20, 0.15);
+    border-color: var(--accent-green);
+}
+
+.arcade-touch-btn:active {
+    background: rgba(57, 255, 20, 0.3);
+    border-color: var(--accent-green);
+    transform: scale(0.92);
+}
+
+.arcade-touch-btn:focus-visible {
+    outline: 2px solid var(--accent-green);
+    outline-offset: 1px;
+}
+
+.touch-btn-harddrop {
+    font-size: 11px;
+    color: var(--accent-cyan);
+    border-color: rgba(0, 255, 255, 0.4);
+    background: rgba(0, 255, 255, 0.08);
+}
+
+.touch-btn-harddrop:hover {
+    background: rgba(0, 255, 255, 0.2);
+    border-color: var(--accent-cyan);
+    color: #ffffff;
+}
+
+.touch-btn-harddrop:active {
+    background: rgba(0, 255, 255, 0.35);
+    border-color: var(--accent-cyan);
+    color: #ffffff;
+}
+
+/* Temperature Stepper in HUD */
+.arcade-hud-temp-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.arcade-temp-stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 1px 4px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 180, 84, 0.25);
+}
+
+.arcade-temp-btn {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 180, 84, 0.12);
+    border: 1px solid rgba(255, 180, 84, 0.4);
+    color: var(--accent-yellow, #ffb454);
+    font-family: var(--font-mono, monospace);
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.15s, border-color 0.15s, transform 0.05s;
+    user-select: none;
+    -webkit-user-select: none;
+    line-height: 1;
+}
+
+.arcade-temp-btn:hover {
+    background: rgba(255, 180, 84, 0.28);
+    border-color: var(--accent-yellow, #ffb454);
+    box-shadow: 0 0 6px rgba(255, 180, 84, 0.4);
+}
+
+.arcade-temp-btn:active {
+    background: rgba(255, 180, 84, 0.45);
+    transform: scale(0.92);
+}
+
+.arcade-temp-btn:focus-visible {
+    outline: 2px solid var(--accent-yellow, #ffb454);
+    outline-offset: 1px;
+}
+
+.arcade-hud-temp {
+    color: var(--accent-yellow, #ffb454);
+    font-weight: 700;
+    min-width: 36px;
+    text-align: center;
+    text-shadow: 0 0 6px rgba(255, 180, 84, 0.4);
+}
+
+.arcade-hud-decayed {
+    color: var(--accent-red, #ff3366);
+    font-weight: 700;
+    text-shadow: 0 0 6px rgba(255, 51, 102, 0.4);
+}
+
+/* Temperature Controls in Mobile Touch Panel */
+.arcade-stacker-temp-row {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.touch-btn-temp {
+    min-width: 84px;
+    min-height: 44px;
+    font-size: 12px;
+    color: var(--accent-yellow, #ffb454);
+    border-color: rgba(255, 180, 84, 0.4);
+    background: rgba(255, 180, 84, 0.08);
+}
+
+.touch-btn-temp:hover {
+    background: rgba(255, 180, 84, 0.22);
+    border-color: var(--accent-yellow, #ffb454);
+    color: #ffffff;
+}
+
+.touch-btn-temp:active {
+    background: rgba(255, 180, 84, 0.38);
+    border-color: var(--accent-yellow, #ffb454);
+    transform: scale(0.94);
+}
+
+.arcade-touch-temp-readout {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono, monospace);
+    font-size: 13px;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 180, 84, 0.2);
+    border-radius: 4px;
+}
+
+.touch-temp-label {
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 11px;
+}
+
+.touch-temp-val {
+    color: var(--accent-yellow, #ffb454);
+    font-weight: 700;
+    min-width: 38px;
+    text-align: center;
+    text-shadow: 0 0 6px rgba(255, 180, 84, 0.35);
+}
+
 @media (prefers-reduced-motion: reduce) {
     .lightbox-modal-backdrop,
     .lightbox-window-pane,
@@ -4595,12 +5145,21 @@ button {
     .arcade-back-btn,
     .arcade-new-record,
     .arcade-dpad-btn,
+    .arcade-touch-btn,
     .arcade-btn,
     .arcade-hud-btn,
-    .coherence-destabilized {
+    .coherence-destabilized,
+    .arcade-buffer-fill {
         transition: none !important;
         animation: none !important;
         transform: none !important;
+    }
+
+    .arcade-stacker-flush-cue,
+    .arcade-stacker-decay-cue {
+        transition: none !important;
+        animation: none !important;
+        transform: translate(-50%, -50%) !important;
     }
 
     .coherence-destabilized #snake-coherence-display {

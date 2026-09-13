@@ -2,7 +2,7 @@
   "header": {
     "directory": "~/arcade",
     "command": "ls -la arcade/",
-    "total": 1,
+    "total": 2,
     "user": "alij",
     "group": "staff",
     "date": "Sep 04"
@@ -31,6 +31,32 @@
         " | |     / _ \\ | | |  _| |  \\| | | |  ",
         " | |___ / ___ \\| | | |___| |\\  | | |  ",
         " |_____/_/   \\_\\_| |_____|_| \\_| |_|  "
+      ]
+    },
+    {
+      "id": "token-stacker",
+      "title": "Token Stacker",
+      "executable": "token_stacker.sh",
+      "size": "5.2K",
+      "permissions": "-rwxr-xr-x",
+      "badge": "PLAYABLE",
+      "status": "playable",
+      "description": "Stack incoming tokens to keep your context window from overflowing. Flush full context lines before buffer memory fills.",
+      "genre": "Context Buffer / Arcade",
+      "version": "v1.0.0",
+      "controlsPreview": [
+        { "key": "WASD / ↑↓←→", "action": "Translate & rotate token block" },
+        { "key": "Space", "action": "Hard drop / flush to buffer" },
+        { "key": "P", "action": "Suspend context thread" },
+        { "key": "R", "action": "Reinitialize context buffer" },
+        { "key": "ESC", "action": "Quit to terminal menu" }
+      ],
+      "asciiArt": [
+        " _____ ___  _  _______ _   _ ",
+        "|_   _/ _ \\| |/ / ____| \\ | |",
+        "  | || | | | ' /|  _| |  \\| |",
+        "  | || |_| | . \\| |___| |\\  |",
+        "  |_| \\___/|_|\\_\\_____|_| \\_|"
       ]
     }
   ]
