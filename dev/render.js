@@ -1124,6 +1124,222 @@ function renderSnakeGame(game, highScore = 0) {
     `;
 }
 
+/**
+ * Renders the interactive terminal Token Stacker (Tetris-like) game interface.
+ * @param {Object} game - Game metadata object
+ * @param {number} highScore - Best saved score
+ * @returns {string} HTML markup string
+ */
+function renderStackerGame(game, highScore = 0) {
+    const formattedBest = String(highScore).padStart(6, '0');
+    const asciiLines = (game && Array.isArray(game.asciiArt)) ? game.asciiArt.join('\n') : '';
+
+    return `
+        <div class="arcade-game-container arcade-stacker-container" role="region" aria-label="Token Stacker Game Terminal Workspace">
+            <div class="arcade-detail-nav">
+                <button class="arcade-back-btn" id="arcade-back-to-menu-btn" type="button" aria-label="Back to arcade executables directory">
+                    <span aria-hidden="true">←</span> cd .. (Back to Arcade Menu) <span class="arcade-key-hint" aria-hidden="true">[ESC]</span>
+                </button>
+                <div class="arcade-process-status">
+                    <span class="arcade-pulse-dot" aria-hidden="true"></span>
+                    <span class="arcade-status-text" id="stacker-status-text">AGENT: 0x4B3A // STATUS: READY</span>
+                </div>
+            </div>
+
+            <!-- Game HUD / Scoreboard Telemetry -->
+            <div class="arcade-hud" role="status" aria-label="Live Game Telemetry">
+                <div class="arcade-hud-metrics">
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label"><span class="hud-full-label">TOKENS PROCESSED:</span><span class="hud-short-label" aria-hidden="true">TOKENS:</span></span>
+                        <span class="arcade-hud-val" id="stacker-score-display">000000</span>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label">PEAK:</span>
+                        <span class="arcade-hud-val arcade-hud-best" id="stacker-highscore-display">${formattedBest}</span>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label"><span class="hud-full-label">CONTEXT FLUSHED:</span><span class="hud-short-label" aria-hidden="true">FLUSHED:</span></span>
+                        <span class="arcade-hud-val" id="stacker-lines-display">00</span>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label">DEPTH:</span>
+                        <span class="arcade-hud-val" id="stacker-level-display">00</span>
+                    </div>
+                    <div class="arcade-hud-item arcade-hud-temp-group">
+                        <span class="arcade-hud-label">TEMP:</span>
+                        <div class="arcade-temp-stepper">
+                            <button class="arcade-temp-btn" id="stacker-temp-dec-btn" type="button" aria-label="Decrease Temperature (Key: Left Bracket)">-</button>
+                            <span class="arcade-hud-val arcade-hud-temp" id="stacker-temp-display">1.0x</span>
+                            <button class="arcade-temp-btn" id="stacker-temp-inc-btn" type="button" aria-label="Increase Temperature (Key: Right Bracket)">+</button>
+                        </div>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label"><span class="hud-full-label">DECAYED:</span><span class="hud-short-label" aria-hidden="true">LOST:</span></span>
+                        <span class="arcade-hud-val arcade-hud-decayed" id="stacker-decayed-display">00</span>
+                    </div>
+                </div>
+                <div class="arcade-hud-actions">
+                    <button class="arcade-hud-btn" id="stacker-pause-btn" type="button" aria-label="Pause or resume token stream">
+                        <span id="stacker-pause-btn-text">PAUSE [P]</span>
+                    </button>
+                    <button class="arcade-hud-btn" id="stacker-restart-hud-btn" type="button" aria-label="Restart context buffer">
+                        RESTART [R]
+                    </button>
+                </div>
+            </div>
+
+            <!-- Screen Reader Live Status Announcer -->
+            <div id="stacker-live-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+            <!-- Stage: Board Viewport + Next Token Sidebar -->
+            <div class="arcade-stacker-stage">
+                <div class="arcade-stacker-board-wrapper" id="stacker-canvas-wrapper">
+                    <canvas id="stacker-canvas" width="200" height="400" role="img" aria-label="Interactive Token Stacker game board. 10 by 20 grid. Use Left and Right arrows to shift, Up to rotate, Down to drop, Space for hard drop."></canvas>
+
+                    <!-- Flush Feedback Overlay Banner -->
+                    <div class="arcade-stacker-flush-cue" id="stacker-flush-cue" style="display: none;" aria-hidden="true">
+                        <span class="flush-cue-text" id="stacker-flush-cue-text">CONTEXT FLUSHED</span>
+                    </div>
+
+                    <!-- Decay Feedback Overlay Banner -->
+                    <div class="arcade-stacker-decay-cue" id="stacker-decay-cue" style="display: none;" aria-hidden="true">
+                        <span class="decay-cue-text" id="stacker-decay-cue-text">CONTEXT DECAYED [-1 ROW]</span>
+                    </div>
+
+                    <!-- Start Overlay -->
+                    <div class="arcade-game-overlay" id="stacker-start-overlay">
+                        <div class="arcade-overlay-card">
+                            ${asciiLines ? `<pre class="arcade-ascii-art" aria-hidden="true">${asciiLines}</pre>` : ''}
+                            <h3 class="arcade-overlay-title">TOKEN_STACKER // CONTEXT_BUFFER</h3>
+                            <p class="arcade-overlay-desc">
+                                Stack incoming token blocks to keep your context window from overflowing. Adjust temperature to balance processing speed against context decay risk. Flush full context lines to purge memory.
+                            </p>
+                            <div class="arcade-overlay-controls-hint">
+                                <div class="hint-item"><kbd class="arcade-key-badge">A/D / ←→</kbd> <span>Shift Position</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">W / ↑</kbd> <span>Rotate</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">S / ↓</kbd> <span>Soft Drop</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">Space</kbd> <span>Hard Flush</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">[ / ]</kbd> <span>Temperature Dial</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">P</kbd> <span>Suspend Thread</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">R</kbd> <span>Restart</span></div>
+                            </div>
+                            <button class="arcade-btn arcade-btn-primary" id="stacker-start-btn" type="button">
+                                ▶ INITIALIZE CONTEXT [ENTER / TAP]
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pause Overlay -->
+                    <div class="arcade-game-overlay" id="stacker-pause-overlay" style="display: none;">
+                        <div class="arcade-overlay-card">
+                            <div class="arcade-overlay-tag">[ THREAD SUSPENDED ]</div>
+                            <h3 class="arcade-overlay-title">TOKEN STREAM PAUSED</h3>
+                            <p class="arcade-overlay-desc">CPU tick halted. Press P, Space, or click Resume to continue token ingestion.</p>
+                            <div class="arcade-overlay-actions">
+                                <button class="arcade-btn arcade-btn-primary" id="stacker-resume-btn" type="button">
+                                    ▶ RESUME THREAD [P]
+                                </button>
+                                <button class="arcade-btn arcade-btn-secondary" id="stacker-restart-from-pause-btn" type="button">
+                                    ↺ RESTART [R]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game Over Overlay -->
+                    <div class="arcade-game-overlay" id="stacker-gameover-overlay" style="display: none;">
+                        <div class="arcade-overlay-card arcade-overlay-gameover">
+                            <div class="arcade-overlay-tag arcade-tag-danger">[ OOM: CONTEXT BUFFER LIMIT EXCEEDED ]</div>
+                            <h3 class="arcade-overlay-title">CONTEXT WINDOW OVERFLOW</h3>
+                            <div class="arcade-gameover-scores">
+                                <div class="arcade-gameover-stat">
+                                    <span class="stat-label">TOKENS PROCESSED</span>
+                                    <span class="stat-val" id="stacker-final-score">000000</span>
+                                </div>
+                                <div class="arcade-gameover-stat">
+                                    <span class="stat-label">PEAK RECORD</span>
+                                    <span class="stat-val" id="stacker-gameover-best">${formattedBest}</span>
+                                </div>
+                            </div>
+                            <div class="arcade-gameover-extra-stats">
+                                <span class="arcade-mini-stat">CONTEXT FLUSHED: <strong id="stacker-gameover-lines">00</strong></span>
+                                <span class="arcade-mini-stat">DECAYED: <strong id="stacker-gameover-decayed">00</strong></span>
+                                <span class="arcade-mini-stat">DEPTH: <strong id="stacker-gameover-depth">00</strong></span>
+                            </div>
+                            <div id="stacker-new-highscore-badge" class="arcade-new-record" style="display: none;">
+                                ★ NEW PEAK RECORD COMMITTED TO REGISTRY ★
+                            </div>
+                            <div class="arcade-overlay-actions">
+                                <button class="arcade-btn arcade-btn-primary" id="stacker-restart-btn" type="button">
+                                    ↺ PURGE & RESTART [R / ENTER]
+                                </button>
+                                <button class="arcade-btn arcade-btn-secondary" id="stacker-exit-to-menu-btn" type="button">
+                                    ← ARCADE MENU [ESC]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar: Next Token Preview & Buffer Level -->
+                <div class="arcade-stacker-sidebar">
+                    <div class="arcade-stacker-panel">
+                        <div class="arcade-panel-label">NEXT TOKEN</div>
+                        <div class="arcade-next-canvas-wrapper">
+                            <canvas id="stacker-next-canvas" width="80" height="80" role="img" aria-label="Preview of next upcoming token piece"></canvas>
+                        </div>
+                        <div class="arcade-next-token-name" id="stacker-next-name">---</div>
+                    </div>
+
+                    <div class="arcade-stacker-panel arcade-buffer-panel">
+                        <div class="arcade-panel-label">BUFFER CAPACITY</div>
+                        <div class="arcade-buffer-meter" aria-hidden="true">
+                            <div class="arcade-buffer-fill" id="stacker-buffer-fill" style="height: 0%;"></div>
+                        </div>
+                        <div class="arcade-buffer-text" id="stacker-buffer-text">0 / 20 LINES (0%)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Touch Controls for Mobile Viewports -->
+            <div class="arcade-touch-controls arcade-stacker-touch-controls" id="stacker-touch-controls" aria-label="On-screen game controls">
+                <div class="arcade-stacker-touch-row">
+                    <button class="arcade-touch-btn" id="touch-left" type="button" aria-label="Shift Token Left">
+                        <span aria-hidden="true">◀</span>
+                    </button>
+                    <button class="arcade-touch-btn" id="touch-rotate" type="button" aria-label="Rotate Token">
+                        <span aria-hidden="true">↻</span>
+                    </button>
+                    <button class="arcade-touch-btn" id="touch-right" type="button" aria-label="Shift Token Right">
+                        <span aria-hidden="true">▶</span>
+                    </button>
+                    <button class="arcade-touch-btn" id="touch-down" type="button" aria-label="Soft Drop Token">
+                        <span aria-hidden="true">▼</span>
+                    </button>
+                    <button class="arcade-touch-btn touch-btn-harddrop" id="touch-harddrop" type="button" aria-label="Hard Flush Token">
+                        <span aria-hidden="true">⚡ FLUSH</span>
+                    </button>
+                </div>
+                <div class="arcade-stacker-touch-row arcade-stacker-temp-row">
+                    <button class="arcade-touch-btn touch-btn-temp" id="touch-temp-dec" type="button" aria-label="Decrease Temperature">
+                        <span>TEMP -</span>
+                    </button>
+                    <div class="arcade-touch-temp-readout" aria-hidden="true">
+                        <span class="touch-temp-label">TEMP:</span>
+                        <span class="touch-temp-val" id="touch-temp-display">1.0x</span>
+                    </div>
+                    <button class="arcade-touch-btn touch-btn-temp" id="touch-temp-inc" type="button" aria-label="Increase Temperature">
+                        <span>TEMP +</span>
+                    </button>
+                </div>
+                <div class="arcade-touch-tip" aria-hidden="true">
+                    <span>Tap controls to shift, rotate, or flush tokens. Adjust TEMP to balance speed vs reward.</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 if (typeof window !== 'undefined') {
     window.renderCard = renderCard;
     window.renderSection = renderSection;
@@ -1133,5 +1349,7 @@ if (typeof window !== 'undefined') {
     window.renderArcadeMenu = renderArcadeMenu;
     window.renderArcadeGamePlaceholder = renderArcadeGamePlaceholder;
     window.renderSnakeGame = renderSnakeGame;
+    window.renderStackerGame = renderStackerGame;
 }
+
 
