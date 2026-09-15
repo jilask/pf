@@ -1887,7 +1887,7 @@ ACHIEVEMENTS
             header: {
                 directory: '~/arcade',
                 command: 'ls -la arcade/',
-                total: 2,
+                total: 3,
                 user: 'alij',
                 group: 'staff',
                 date: 'Sep 04'
@@ -1942,6 +1942,33 @@ ACHIEVEMENTS
                         "  | || | | | ' /|  _| |  \\| |",
                         "  | || |_| | . \\| |___| |\\  |",
                         "  |_| \\___/|_|\\_\\_____|_| \\_|"
+                    ]
+                },
+                {
+                    id: 'gradient-descent',
+                    title: 'Gradient Descent',
+                    executable: 'gradient_descent.sh',
+                    size: '4.8K',
+                    permissions: '-rwxr-xr-x',
+                    badge: 'PLAYABLE',
+                    status: 'playable',
+                    description: 'Navigate the loss landscape to convergence — avoid getting stuck in local minima.',
+                    genre: 'Optimization / Breakout',
+                    version: 'v1.0.0',
+                    controlsPreview: [
+                        { key: 'A/D / ←→', action: 'Steer optimizer paddle' },
+                        { key: 'Space', action: 'Launch parameter ball / Resume' },
+                        { key: '[ / ]', action: 'Adjust learning rate dial' },
+                        { key: 'P', action: 'Suspend optimization thread' },
+                        { key: 'R', action: 'Restart optimization' },
+                        { key: 'ESC', action: 'Quit to terminal menu' }
+                    ],
+                    asciiArt: [
+                        "  ____ ____      _    ____ ___ _____ _   _ _____ ",
+                        " / ___|  _ \\    / \\  |  _ \\_ _| ____| \\ | |_   _|",
+                        "| |  _| |_) |  / _ \\ | | | | ||  _| |  \\| | | |  ",
+                        "| |_| |  _ <  / ___ \\| |_| | || |___| |\\  | | |  ",
+                        " \\____|_| \\_\\/_/   \\_\\____/___|_____|_| \\_| |_|  "
                     ]
                 }
             ]
