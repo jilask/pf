@@ -5134,6 +5134,289 @@ button {
     text-shadow: 0 0 6px rgba(255, 180, 84, 0.35);
 }
 
+/* ==========================================================================
+   Workspace 5: Gradient Descent Game Terminal Interface & Controls
+   ========================================================================== */
+
+.arcade-gradient-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.arcade-gradient-stage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.arcade-gradient-board-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 4 / 5;
+    background: #0a0e14;
+    border: 1px solid rgba(0, 255, 255, 0.35);
+    border-radius: 4px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 255, 255, 0.16);
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+#gradient-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.arcade-gradient-board-wrapper .arcade-game-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 14, 20, 0.88);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 5;
+    text-align: center;
+}
+
+.arcade-gradient-board-wrapper .arcade-overlay-card {
+    background: rgba(13, 17, 23, 0.96);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+    border-radius: 4px;
+    padding: 16px;
+    max-width: 360px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.9), 0 0 16px rgba(57, 255, 20, 0.12);
+}
+
+.arcade-gradient-board-wrapper .arcade-overlay-tag {
+    font-size: 9.5px;
+    letter-spacing: 1px;
+    color: var(--accent-cyan);
+    padding: 2px 8px;
+    background: rgba(0, 245, 255, 0.08);
+    border: 1px solid rgba(0, 245, 255, 0.25);
+    border-radius: 2px;
+}
+
+.arcade-gradient-board-wrapper .arcade-tag-success {
+    color: var(--accent-green, #39ff14);
+    background: rgba(57, 255, 20, 0.1);
+    border-color: rgba(57, 255, 20, 0.35);
+}
+
+.arcade-gradient-board-wrapper .arcade-tag-danger {
+    color: var(--accent-red, #ff3366);
+    background: rgba(255, 51, 102, 0.1);
+    border-color: rgba(255, 51, 102, 0.35);
+}
+
+.arcade-gradient-board-wrapper .arcade-overlay-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+.arcade-gradient-board-wrapper .arcade-overlay-desc {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    text-align: center;
+}
+
+.arcade-gradient-board-wrapper pre.arcade-ascii-art {
+    margin: 0;
+}
+
+.arcade-gradient-board-wrapper .arcade-overlay-controls-hint {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 10px;
+    width: 100%;
+    margin: 4px 0;
+}
+
+.arcade-gradient-board-wrapper .arcade-overlay-controls-hint .hint-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--text-dim);
+}
+
+.arcade-gradient-board-wrapper .arcade-overlay-controls-hint .hint-item kbd {
+    background: #161b22;
+    border: 1px solid rgba(57, 255, 20, 0.25);
+    color: var(--accent-green);
+    padding: 2px 5px;
+    border-radius: 2px;
+    font-size: 9.5px;
+}
+
+.arcade-gradient-board-wrapper .arcade-gameover-scores {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin: 6px 0;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.arcade-gradient-board-wrapper .arcade-gameover-stat .stat-label {
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+    display: block;
+}
+
+.arcade-gradient-board-wrapper .arcade-gameover-stat .stat-val {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent-green);
+    font-family: var(--font-mono, monospace);
+}
+
+.arcade-gradient-board-wrapper .arcade-gameover-extra-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+.arcade-gradient-board-wrapper .arcade-gameover-extra-stats strong {
+    color: var(--accent-cyan);
+}
+
+.arcade-gradient-board-wrapper .arcade-new-record {
+    color: var(--accent-yellow, #ffb454);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    animation: arcade-glow 1.5s infinite alternate;
+}
+
+.arcade-gradient-board-wrapper .arcade-overlay-actions {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.arcade-gradient-board-wrapper .arcade-btn {
+    flex: 1;
+    font-size: 11px;
+    padding: 8px 12px;
+}
+
+/* Local Minima Feedback Cue */
+.arcade-gradient-cue {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(13, 17, 23, 0.94);
+    border: 1px solid var(--accent-yellow, #ffb454);
+    box-shadow: 0 0 20px rgba(255, 95, 0, 0.5), inset 0 0 12px rgba(255, 180, 84, 0.2);
+    padding: 8px 16px;
+    border-radius: 4px;
+    color: var(--accent-yellow, #ffb454);
+    font-family: var(--font-mono, monospace);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    z-index: 4;
+    pointer-events: none;
+    text-align: center;
+    white-space: nowrap;
+    animation: arcade-cue-pulse 1.2s infinite ease-in-out;
+}
+
+@keyframes arcade-cue-pulse {
+    0%, 100% { opacity: 0.92; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.04); }
+}
+
+/* Learning Rate HUD Stepper */
+.arcade-hud-lr-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.arcade-lr-stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 1px 4px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 180, 84, 0.25);
+}
+
+.arcade-hud-lr {
+    color: var(--accent-yellow, #ffb454);
+    font-weight: 700;
+    min-width: 36px;
+    text-align: center;
+    text-shadow: 0 0 6px rgba(255, 180, 84, 0.4);
+}
+
+.arcade-hud-lives {
+    color: var(--accent-cyan, #00f5ff);
+    font-weight: 700;
+    text-shadow: 0 0 6px rgba(0, 255, 255, 0.4);
+}
+
+/* Gradient Descent Mobile Touch Controls */
+.arcade-gradient-touch-controls {
+    margin-top: 8px;
+}
+
+.arcade-gradient-touch-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.arcade-gradient-lr-row {
+    margin-top: 6px;
+}
+
+.touch-btn-launch {
+    font-size: 11px;
+    color: var(--accent-cyan);
+    border-color: rgba(0, 255, 255, 0.4);
+    background: rgba(0, 255, 255, 0.08);
+}
+
+.touch-btn-launch:hover {
+    background: rgba(0, 255, 255, 0.2);
+    border-color: var(--accent-cyan);
+    color: #ffffff;
+}
+
+.touch-btn-launch:active {
+    background: rgba(0, 255, 255, 0.35);
+    border-color: var(--accent-cyan);
+    color: #ffffff;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .lightbox-modal-backdrop,
     .lightbox-window-pane,
@@ -5156,7 +5439,8 @@ button {
     }
 
     .arcade-stacker-flush-cue,
-    .arcade-stacker-decay-cue {
+    .arcade-stacker-decay-cue,
+    .arcade-gradient-cue {
         transition: none !important;
         animation: none !important;
         transform: translate(-50%, -50%) !important;
@@ -5166,4 +5450,5 @@ button {
         text-shadow: none !important;
     }
 }
+
 
