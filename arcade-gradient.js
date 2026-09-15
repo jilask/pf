@@ -324,8 +324,10 @@ class ArcadeGradientGame {
         this.lrIndex = Math.max(0, Math.min(LEARNING_RATE_LEVELS.length - 1, index));
         this.learningRate = LEARNING_RATE_LEVELS[this.lrIndex];
 
-        if (this.dom.lrDisplay) this.dom.lrDisplay.textContent = `${this.learningRate.toFixed(2).replace(/\.00$/, '.0')}x`;
-        if (this.dom.touchLrDisplay) this.dom.touchLrDisplay.textContent = `${this.learningRate.toFixed(2).replace(/\.00$/, '.0')}x`;
+        const lrLabels = { 0.5: '0.5x', 0.75: '0.75x', 1.0: '1.0x', 1.5: '1.5x', 2.0: '2.0x' };
+        const lrText = lrLabels[this.learningRate] || `${this.learningRate}x`;
+        if (this.dom.lrDisplay) this.dom.lrDisplay.textContent = lrText;
+        if (this.dom.touchLrDisplay) this.dom.touchLrDisplay.textContent = lrText;
 
         // If trapped in a local minimum, increasing LR breaks out faster
         if (this.trap.isTrapped) {
@@ -522,8 +524,10 @@ class ArcadeGradientGame {
         if (this.dom.highscoreDisplay) this.dom.highscoreDisplay.textContent = String(this.highScore).padStart(6, '0');
         if (this.dom.epochDisplay) this.dom.epochDisplay.textContent = String(this.epoch).padStart(2, '0');
         if (this.dom.livesDisplay) this.dom.livesDisplay.textContent = String(this.lives);
-        if (this.dom.lrDisplay) this.dom.lrDisplay.textContent = `${this.learningRate.toFixed(2).replace(/\.00$/, '.0')}x`;
-        if (this.dom.touchLrDisplay) this.dom.touchLrDisplay.textContent = `${this.learningRate.toFixed(2).replace(/\.00$/, '.0')}x`;
+        const lrLabels = { 0.5: '0.5x', 0.75: '0.75x', 1.0: '1.0x', 1.5: '1.5x', 2.0: '2.0x' };
+        const lrText = lrLabels[this.learningRate] || `${this.learningRate}x`;
+        if (this.dom.lrDisplay) this.dom.lrDisplay.textContent = lrText;
+        if (this.dom.touchLrDisplay) this.dom.touchLrDisplay.textContent = lrText;
     }
 
     bindEvents() {
