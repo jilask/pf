@@ -514,6 +514,10 @@ class ArcadeGradientGame {
     }
 
     updateHUD() {
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            this.saveHighScore(this.score);
+        }
         if (this.dom.scoreDisplay) this.dom.scoreDisplay.textContent = String(this.score).padStart(6, '0');
         if (this.dom.highscoreDisplay) this.dom.highscoreDisplay.textContent = String(this.highScore).padStart(6, '0');
         if (this.dom.epochDisplay) this.dom.epochDisplay.textContent = String(this.epoch).padStart(2, '0');
