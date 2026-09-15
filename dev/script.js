@@ -555,6 +555,10 @@ class ArchPortfolio {
             this.activeStackerGame.destroy();
             this.activeStackerGame = null;
         }
+        if (this.activeGradientGame) {
+            this.activeGradientGame.destroy();
+            this.activeGradientGame = null;
+        }
 
         if (arcadeWindow) {
             const focusWasInArcade = arcadeWindow.contains(document.activeElement);
@@ -1887,7 +1891,7 @@ ACHIEVEMENTS
             header: {
                 directory: '~/arcade',
                 command: 'ls -la arcade/',
-                total: 2,
+                total: 3,
                 user: 'alij',
                 group: 'staff',
                 date: 'Sep 04'
@@ -1943,6 +1947,33 @@ ACHIEVEMENTS
                         "  | || |_| | . \\| |___| |\\  |",
                         "  |_| \\___/|_|\\_\\_____|_| \\_|"
                     ]
+                },
+                {
+                    id: 'gradient-descent',
+                    title: 'Gradient Descent',
+                    executable: 'gradient_descent.sh',
+                    size: '4.8K',
+                    permissions: '-rwxr-xr-x',
+                    badge: 'PLAYABLE',
+                    status: 'playable',
+                    description: 'Navigate the loss landscape to convergence — avoid getting stuck in local minima.',
+                    genre: 'Optimization / Breakout',
+                    version: 'v1.0.0',
+                    controlsPreview: [
+                        { key: 'A/D / ←→', action: 'Steer optimizer paddle' },
+                        { key: 'Space', action: 'Launch parameter ball / Resume' },
+                        { key: '[ / ]', action: 'Adjust learning rate dial' },
+                        { key: 'P', action: 'Suspend optimization thread' },
+                        { key: 'R', action: 'Restart optimization' },
+                        { key: 'ESC', action: 'Quit to terminal menu' }
+                    ],
+                    asciiArt: [
+                        "  ____ ____      _    ____ ___ _____ _   _ _____ ",
+                        " / ___|  _ \\    / \\  |  _ \\_ _| ____| \\ | |_   _|",
+                        "| |  _| |_) |  / _ \\ | | | | ||  _| |  \\| | | |  ",
+                        "| |_| |  _ <  / ___ \\| |_| | || |___| |\\  | | |  ",
+                        " \\____|_| \\_\\/_/   \\_\\____/___|_____|_| \\_| |_|  "
+                    ]
                 }
             ]
         };
@@ -1968,6 +1999,16 @@ ACHIEVEMENTS
         }
     }
 
+    getGradientHighScore() {
+        try {
+            const saved = localStorage.getItem('arcade-gradient-descent-highscore');
+            const val = parseInt(saved, 10);
+            return isNaN(val) || val < 0 ? 0 : val;
+        } catch (e) {
+            return 0;
+        }
+    }
+
     renderArcade() {
         const arcadeContent = document.getElementById('arcade-content');
         const arcadeTitle = document.getElementById('arcade-window-title');
@@ -1981,6 +2022,10 @@ ACHIEVEMENTS
         if (this.activeStackerGame) {
             this.activeStackerGame.destroy();
             this.activeStackerGame = null;
+        }
+        if (this.activeGradientGame) {
+            this.activeGradientGame.destroy();
+            this.activeGradientGame = null;
         }
 
         const arcadeData = (this.data && this.data.arcade) ? this.data.arcade : this.getFallbackArcadeData();
@@ -2064,6 +2109,29 @@ ACHIEVEMENTS
             if (startBtn) {
                 startBtn.focus();
             }
+        } else if (this.currentArcadeView === 'gradient-descent') {
+            const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
+            const game = games.find(g => g.id === 'gradient-descent') || games[0];
+
+            if (arcadeTitle) {
+                arcadeTitle.textContent = `USER@SYSTEM: ~/arcade/${game ? game.executable : 'gradient_descent.sh'}`;
+            }
+
+            const highScore = this.getGradientHighScore();
+            if (typeof window.renderGradientGame === 'function') {
+                arcadeContent.innerHTML = window.renderGradientGame(game, highScore);
+            }
+
+            if (typeof window.ArcadeGradientGame === 'function') {
+                this.activeGradientGame = new window.ArcadeGradientGame({
+                    onReturnToMenu: () => this.returnToArcadeMenu()
+                });
+            }
+
+            const startBtn = document.getElementById('gradient-start-btn');
+            if (startBtn) {
+                startBtn.focus();
+            }
         } else {
             // Detailed game placeholder view
             const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
@@ -2101,6 +2169,10 @@ ACHIEVEMENTS
         if (this.activeStackerGame) {
             this.activeStackerGame.destroy();
             this.activeStackerGame = null;
+        }
+        if (this.activeGradientGame) {
+            this.activeGradientGame.destroy();
+            this.activeGradientGame = null;
         }
         this.currentArcadeView = 'menu';
         this.renderArcade();
