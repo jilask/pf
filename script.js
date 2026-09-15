@@ -1995,6 +1995,16 @@ ACHIEVEMENTS
         }
     }
 
+    getGradientHighScore() {
+        try {
+            const saved = localStorage.getItem('arcade-gradient-descent-highscore');
+            const val = parseInt(saved, 10);
+            return isNaN(val) || val < 0 ? 0 : val;
+        } catch (e) {
+            return 0;
+        }
+    }
+
     renderArcade() {
         const arcadeContent = document.getElementById('arcade-content');
         const arcadeTitle = document.getElementById('arcade-window-title');
@@ -2008,6 +2018,10 @@ ACHIEVEMENTS
         if (this.activeStackerGame) {
             this.activeStackerGame.destroy();
             this.activeStackerGame = null;
+        }
+        if (this.activeGradientGame) {
+            this.activeGradientGame.destroy();
+            this.activeGradientGame = null;
         }
 
         const arcadeData = (this.data && this.data.arcade) ? this.data.arcade : this.getFallbackArcadeData();
@@ -2091,6 +2105,29 @@ ACHIEVEMENTS
             if (startBtn) {
                 startBtn.focus();
             }
+        } else if (this.currentArcadeView === 'gradient-descent') {
+            const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
+            const game = games.find(g => g.id === 'gradient-descent') || games[0];
+
+            if (arcadeTitle) {
+                arcadeTitle.textContent = `USER@SYSTEM: ~/arcade/${game ? game.executable : 'gradient_descent.sh'}`;
+            }
+
+            const highScore = this.getGradientHighScore();
+            if (typeof window.renderGradientGame === 'function') {
+                arcadeContent.innerHTML = window.renderGradientGame(game, highScore);
+            }
+
+            if (typeof window.ArcadeGradientGame === 'function') {
+                this.activeGradientGame = new window.ArcadeGradientGame({
+                    onReturnToMenu: () => this.returnToArcadeMenu()
+                });
+            }
+
+            const startBtn = document.getElementById('gradient-start-btn');
+            if (startBtn) {
+                startBtn.focus();
+            }
         } else {
             // Detailed game placeholder view
             const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
@@ -2128,6 +2165,10 @@ ACHIEVEMENTS
         if (this.activeStackerGame) {
             this.activeStackerGame.destroy();
             this.activeStackerGame = null;
+        }
+        if (this.activeGradientGame) {
+            this.activeGradientGame.destroy();
+            this.activeGradientGame = null;
         }
         this.currentArcadeView = 'menu';
         this.renderArcade();

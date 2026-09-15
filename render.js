@@ -1336,6 +1336,206 @@ function renderStackerGame(game, highScore = 0) {
                     <span>Tap controls to shift, rotate, or flush tokens. Adjust TEMP to balance speed vs reward.</span>
                 </div>
             </div>
+/**
+ * Renders the interactive terminal Gradient Descent (Breakout-like) game interface.
+ * @param {Object} game - Game metadata object
+ * @param {number} highScore - Best saved score
+ * @returns {string} HTML markup string
+ */
+function renderGradientGame(game, highScore = 0) {
+    const formattedBest = String(highScore).padStart(6, '0');
+    const asciiLines = (game && Array.isArray(game.asciiArt)) ? game.asciiArt.join('\n') : '';
+
+    return `
+        <div class="arcade-game-container arcade-gradient-container" role="region" aria-label="Gradient Descent Game Terminal Workspace">
+            <div class="arcade-detail-nav">
+                <button class="arcade-back-btn" id="arcade-back-to-menu-btn" type="button" aria-label="Back to arcade executables directory">
+                    <span aria-hidden="true">←</span> cd .. (Back to Arcade Menu) <span class="arcade-key-hint" aria-hidden="true">[ESC]</span>
+                </button>
+                <div class="arcade-process-status">
+                    <span class="arcade-pulse-dot" aria-hidden="true"></span>
+                    <span class="arcade-status-text" id="gradient-status-text">OPTIMIZER: 0x6E4D // STATUS: READY</span>
+                </div>
+            </div>
+
+            <!-- Game HUD / Scoreboard Telemetry -->
+            <div class="arcade-hud" role="status" aria-label="Live Game Telemetry">
+                <div class="arcade-hud-metrics">
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label"><span class="hud-full-label">LOSS REDUCED:</span><span class="hud-short-label" aria-hidden="true">LOSS:</span></span>
+                        <span class="arcade-hud-val" id="gradient-score-display">000000</span>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label">PEAK:</span>
+                        <span class="arcade-hud-val arcade-hud-best" id="gradient-highscore-display">${formattedBest}</span>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label">EPOCH:</span>
+                        <span class="arcade-hud-val" id="gradient-epoch-display">01</span>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label"><span class="hud-full-label">GRADIENT STEPS:</span><span class="hud-short-label" aria-hidden="true">STEPS:</span></span>
+                        <span class="arcade-hud-val arcade-hud-lives" id="gradient-lives-display">3</span>
+                    </div>
+                    <div class="arcade-hud-item arcade-hud-lr-group">
+                        <span class="arcade-hud-label">LR:</span>
+                        <div class="arcade-lr-stepper">
+                            <button class="arcade-temp-btn" id="gradient-lr-dec-btn" type="button" aria-label="Decrease Learning Rate (Key: Left Bracket)">-</button>
+                            <span class="arcade-hud-val arcade-hud-lr" id="gradient-lr-display">1.0x</span>
+                            <button class="arcade-temp-btn" id="gradient-lr-inc-btn" type="button" aria-label="Increase Learning Rate (Key: Right Bracket)">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="arcade-hud-actions">
+                    <button class="arcade-hud-btn" id="gradient-pause-btn" type="button" aria-label="Pause or resume optimization thread">
+                        <span id="gradient-pause-btn-text">PAUSE [P]</span>
+                    </button>
+                    <button class="arcade-hud-btn" id="gradient-restart-hud-btn" type="button" aria-label="Restart loss landscape optimization">
+                        RESTART [R]
+                    </button>
+                </div>
+            </div>
+
+            <!-- Screen Reader Live Status Announcer -->
+            <div id="gradient-live-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+            <!-- Stage: Board Viewport -->
+            <div class="arcade-gradient-stage">
+                <div class="arcade-gradient-board-wrapper" id="gradient-canvas-wrapper">
+                    <canvas id="gradient-canvas" width="400" height="500" role="img" aria-label="Interactive Gradient Descent game board. Steer optimizer paddle with arrows or drag to eliminate loss terms."></canvas>
+
+                    <!-- Feedback Cue Banner (Local Minima, Escape, Convergence) -->
+                    <div class="arcade-gradient-cue" id="gradient-cue" style="display: none;" aria-hidden="true">
+                        <span class="gradient-cue-text" id="gradient-cue-text">STUCK IN LOCAL MINIMUM</span>
+                    </div>
+
+                    <!-- Start Overlay -->
+                    <div class="arcade-game-overlay" id="gradient-start-overlay">
+                        <div class="arcade-overlay-card">
+                            ${asciiLines ? `<pre class="arcade-ascii-art" aria-hidden="true">${asciiLines}</pre>` : ''}
+                            <h3 class="arcade-overlay-title">GRADIENT_DESCENT // LOSS_LANDSCAPE</h3>
+                            <p class="arcade-overlay-desc">
+                                Navigate parameter position through the loss landscape. Steer the optimizer paddle to eliminate loss terms and converge to global minimum. Adjust learning rate to escape local minima traps.
+                            </p>
+                            <div class="arcade-overlay-controls-hint">
+                                <div class="hint-item"><kbd class="arcade-key-badge">A/D / ←→</kbd> <span>Steer Optimizer</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">Space</kbd> <span>Launch / Pause</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">[ / ]</kbd> <span>Learning Rate Dial</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">P</kbd> <span>Suspend Thread</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">R</kbd> <span>Restart</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">ESC</kbd> <span>Arcade Menu</span></div>
+                            </div>
+                            <button class="arcade-btn arcade-btn-primary" id="gradient-start-btn" type="button">
+                                ▶ LAUNCH OPTIMIZATION [ENTER / TAP]
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pause Overlay -->
+                    <div class="arcade-game-overlay" id="gradient-pause-overlay" style="display: none;">
+                        <div class="arcade-overlay-card">
+                            <div class="arcade-overlay-tag">[ OPTIMIZER SUSPENDED ]</div>
+                            <h3 class="arcade-overlay-title">OPTIMIZATION PAUSED</h3>
+                            <p class="arcade-overlay-desc">Gradient updates halted. Press P, Space, or click Resume to continue descent.</p>
+                            <div class="arcade-overlay-actions">
+                                <button class="arcade-btn arcade-btn-primary" id="gradient-resume-btn" type="button">
+                                    ▶ RESUME THREAD [P]
+                                </button>
+                                <button class="arcade-btn arcade-btn-secondary" id="gradient-restart-from-pause-btn" type="button">
+                                    ↺ RESTART [R]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Converged (Epoch Clear) Overlay -->
+                    <div class="arcade-game-overlay" id="gradient-converged-overlay" style="display: none;">
+                        <div class="arcade-overlay-card arcade-overlay-converged">
+                            <div class="arcade-overlay-tag arcade-tag-success">[ GLOBAL MINIMUM REACHED // CONVERGENCE ]</div>
+                            <h3 class="arcade-overlay-title">CONVERGED!</h3>
+                            <p class="arcade-overlay-desc">All loss terms in epoch eliminated. Parameter weights converged.</p>
+                            <div class="arcade-gameover-scores">
+                                <div class="arcade-gameover-stat">
+                                    <span class="stat-label">LOSS REDUCED</span>
+                                    <span class="stat-val" id="gradient-converged-score">000000</span>
+                                </div>
+                                <div class="arcade-gameover-stat">
+                                    <span class="stat-label">EPOCH COMPLETED</span>
+                                    <span class="stat-val" id="gradient-converged-epoch">01</span>
+                                </div>
+                            </div>
+                            <div class="arcade-overlay-actions">
+                                <button class="arcade-btn arcade-btn-primary" id="gradient-next-epoch-btn" type="button">
+                                    ▶ PROCEED TO NEXT EPOCH [SPACE / ENTER]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game Over (Diverged) Overlay -->
+                    <div class="arcade-game-overlay" id="gradient-gameover-overlay" style="display: none;">
+                        <div class="arcade-overlay-card arcade-overlay-gameover">
+                            <div class="arcade-overlay-tag arcade-tag-danger">[ OPTIMIZATION FAILED: LOSS DIVERGENCE ]</div>
+                            <h3 class="arcade-overlay-title">DIVERGED!</h3>
+                            <div class="arcade-gameover-scores">
+                                <div class="arcade-gameover-stat">
+                                    <span class="stat-label">LOSS REDUCED</span>
+                                    <span class="stat-val" id="gradient-final-score">000000</span>
+                                </div>
+                                <div class="arcade-gameover-stat">
+                                    <span class="stat-label">PEAK RECORD</span>
+                                    <span class="stat-val" id="gradient-gameover-best">${formattedBest}</span>
+                                </div>
+                            </div>
+                            <div class="arcade-gameover-extra-stats">
+                                <span class="arcade-mini-stat">EPOCH REACHED: <strong id="gradient-gameover-epoch">01</strong></span>
+                                <span class="arcade-mini-stat">TERMS CLEARED: <strong id="gradient-gameover-blocks">00</strong></span>
+                            </div>
+                            <div id="gradient-new-highscore-badge" class="arcade-new-record" style="display: none;">
+                                ★ NEW PEAK CONVERGENCE RECORD COMMITTED ★
+                            </div>
+                            <div class="arcade-overlay-actions">
+                                <button class="arcade-btn arcade-btn-primary" id="gradient-restart-btn" type="button">
+                                    ↺ RE-INITIALIZE OPTIMIZER [R / ENTER]
+                                </button>
+                                <button class="arcade-btn arcade-btn-secondary" id="gradient-exit-to-menu-btn" type="button">
+                                    ← ARCADE MENU [ESC]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Touch Controls for Mobile Viewports -->
+            <div class="arcade-touch-controls arcade-gradient-touch-controls" id="gradient-touch-controls" aria-label="On-screen game controls">
+                <div class="arcade-gradient-touch-row">
+                    <button class="arcade-touch-btn" id="touch-paddle-left" type="button" aria-label="Steer Optimizer Left">
+                        <span aria-hidden="true">◀ STEER</span>
+                    </button>
+                    <button class="arcade-touch-btn touch-btn-launch" id="touch-launch" type="button" aria-label="Launch Ball or Pause">
+                        <span id="touch-launch-text" aria-hidden="true">⚡ LAUNCH</span>
+                    </button>
+                    <button class="arcade-touch-btn" id="touch-paddle-right" type="button" aria-label="Steer Optimizer Right">
+                        <span aria-hidden="true">STEER ▶</span>
+                    </button>
+                </div>
+                <div class="arcade-gradient-touch-row arcade-gradient-lr-row">
+                    <button class="arcade-touch-btn touch-btn-temp" id="touch-lr-dec" type="button" aria-label="Decrease Learning Rate">
+                        <span>LR -</span>
+                    </button>
+                    <div class="arcade-touch-temp-readout" aria-hidden="true">
+                        <span class="touch-temp-label">LEARNING RATE:</span>
+                        <span class="touch-temp-val" id="touch-lr-display">1.0x</span>
+                    </div>
+                    <button class="arcade-touch-btn touch-btn-temp" id="touch-lr-inc" type="button" aria-label="Increase Learning Rate">
+                        <span>LR +</span>
+                    </button>
+                </div>
+                <div class="arcade-touch-tip" aria-hidden="true">
+                    <span>Drag across canvas to steer optimizer. Tap LR +/- to balance descent speed against overshoot risk.</span>
+                </div>
+            </div>
         </div>
     `;
 }
@@ -1350,6 +1550,7 @@ if (typeof window !== 'undefined') {
     window.renderArcadeGamePlaceholder = renderArcadeGamePlaceholder;
     window.renderSnakeGame = renderSnakeGame;
     window.renderStackerGame = renderStackerGame;
+    window.renderGradientGame = renderGradientGame;
 }
 
 
