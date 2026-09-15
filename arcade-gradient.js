@@ -257,13 +257,64 @@ class ArcadeGradientGame {
                         maxHealth: health,
                         baseScore: baseScore,
                         color: color,
-                        isLocalMinimum: false
+                        isLocalMinimum: false,
+                        pulsePhase: (r + c) * 0.5
                     });
                 }
             }
         }
 
+        // Place 1 to 3 Local Minima trap blocks within the field
+        const numMinima = Math.min(3, Math.max(1, epoch));
+        const eligibleIndices = [];
+        for (let i = 0; i < this.blocks.length; i++) {
+            // Pick interior blocks (not on the very bottom row)
+            if (this.blocks[i].y < startY + (rows - 2) * (blockH + 4) && this.blocks[i].y > startY + 10) {
+                eligibleIndices.push(i);
+            }
+        }
+
+        // Shuffle eligible indices and pick
+        for (let i = eligibleIndices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [eligibleIndices[i], eligibleIndices[j]] = [eligibleIndices[j], eligibleIndices[i]];
+        }
+
+        const picked = eligibleIndices.slice(0, numMinima);
+        for (const idx of picked) {
+            const b = this.blocks[idx];
+            b.isLocalMinimum = true;
+            b.color = '#a855f7'; // Purple / magenta local minimum well
+            b.glowColor = '#ff5f00';
+            b.baseScore = 500;
+            b.health = 1;
+        }
+
         this.totalBlocksInEpoch = this.blocks.length;
+    }
+
+    showCue(text, duration = 1800) {
+        if (!this.dom.cue || !this.dom.cueText) return;
+        if (this.trap.cueTimeout) {
+            clearTimeout(this.trap.cueTimeout);
+            this.trap.cueTimeout = null;
+        }
+        this.dom.cueText.textContent = text;
+        this.dom.cue.style.display = 'block';
+
+        if (duration > 0) {
+            this.trap.cueTimeout = setTimeout(() => {
+                if (this.dom.cue && !this.trap.isTrapped) {
+                    this.dom.cue.style.display = 'none';
+                }
+            }, duration);
+        }
+    }
+
+    hideCue() {
+        if (this.dom.cue) {
+            this.dom.cue.style.display = 'none';
+        }
     }
 
     setLearningRateIndex(index, announceChange = true) {
@@ -273,6 +324,15 @@ class ArcadeGradientGame {
 
         if (this.dom.lrDisplay) this.dom.lrDisplay.textContent = `${this.learningRate.toFixed(2).replace(/\.00$/, '.0')}x`;
         if (this.dom.touchLrDisplay) this.dom.touchLrDisplay.textContent = `${this.learningRate.toFixed(2).replace(/\.00$/, '.0')}x`;
+
+        // If trapped in a local minimum, increasing LR breaks out faster
+        if (this.trap.isTrapped) {
+            const scaledBounces = Math.max(2, Math.round(6 / this.learningRate));
+            if (this.trap.bouncesRemaining > scaledBounces) {
+                this.trap.bouncesRemaining = scaledBounces;
+                this.showCue(`STUCK IN LOCAL MINIMUM // ${this.trap.bouncesRemaining} BOUNCES TO ESCAPE`, 0);
+            }
+        }
 
         if (prev !== this.lrIndex && announceChange && this.state !== 'START') {
             this.announce(`Learning rate set to ${this.learningRate}x. Multiplier ${this.learningRate}x.`);
@@ -753,6 +813,12 @@ class ArcadeGradientGame {
             return;
         }
 
+        // If trapped in local minimum, run trapped orbital oscillation
+        if (this.trap.isTrapped) {
+            this.updateTrappedBall(dt);
+            return;
+        }
+
         // Add to ball particle trail
         this.ball.trail.push({ x: this.ball.x, y: this.ball.y, alpha: 0.6 });
         if (this.ball.trail.length > 7) this.ball.trail.shift();
@@ -787,6 +853,147 @@ class ArcadeGradientGame {
 
         // Block collision
         this.checkBlockCollisions();
+    }
+
+    trapBall(block) {
+        if (this.trap.isTrapped) return;
+        this.trap.isTrapped = true;
+        this.trap.block = block;
+
+        // Escape force tied to current learning rate
+        // Higher LR -> fewer bounces needed to escape
+        const bouncesNeeded = Math.max(2, Math.round(6 / this.learningRate));
+        this.trap.bouncesRemaining = bouncesNeeded;
+        this.trap.totalBouncesNeeded = bouncesNeeded;
+        this.trap.timer = 0;
+        this.trap.lastCycleIndex = 0;
+        this.trap.bounceInterval = 0.16; // 160ms per harmonic oscillation
+
+        const blockCenterX = block.x + block.w / 2;
+        const blockCenterY = block.y + block.h / 2;
+        this.trap.wellCenterX = blockCenterX;
+        this.trap.wellCenterY = blockCenterY;
+        this.trap.barrierDist = 22; // potential barrier radius
+
+        // Angle from block center to incoming ball
+        this.trap.oscillationAngle = Math.atan2(this.ball.y - blockCenterY, this.ball.x - blockCenterX);
+
+        this.showCue(`STUCK IN LOCAL MINIMUM // ${this.trap.bouncesRemaining} BOUNCES TO ESCAPE`, 0);
+        this.announce('Warning: Stuck in local minimum! Adjust learning rate to escape.');
+
+        // Trap entry sparks
+        for (let i = 0; i < 12; i++) {
+            this.particles.push({
+                x: blockCenterX,
+                y: blockCenterY,
+                vx: (Math.random() - 0.5) * 120,
+                vy: (Math.random() - 0.5) * 120,
+                life: 0.35,
+                maxLife: 0.35,
+                color: '#a855f7',
+                size: 2.5
+            });
+        }
+    }
+
+    updateTrappedBall(dt) {
+        const t = this.trap;
+        if (!t.isTrapped || !t.block) return;
+
+        t.timer += dt;
+
+        // Oscillate ball between block surface and potential barrier
+        const cycle = t.timer / t.bounceInterval;
+        const cycleIndex = Math.floor(cycle);
+        const phase = cycle % 1;
+
+        // Ping-pong distance (0 -> 1 -> 0)
+        const pingPong = phase < 0.5 ? phase * 2 : (1 - phase) * 2;
+        const dist = 10 + pingPong * t.barrierDist;
+
+        this.ball.x = t.wellCenterX + Math.cos(t.oscillationAngle) * dist;
+        this.ball.y = t.wellCenterY + Math.sin(t.oscillationAngle) * dist;
+
+        // Trail in trap
+        this.ball.trail.push({ x: this.ball.x, y: this.ball.y, alpha: 0.7 });
+        if (this.ball.trail.length > 5) this.ball.trail.shift();
+
+        // Count bounce cycles
+        if (cycleIndex > t.lastCycleIndex) {
+            t.lastCycleIndex = cycleIndex;
+            t.bouncesRemaining--;
+
+            // Collision spark at barrier
+            for (let i = 0; i < 5; i++) {
+                this.particles.push({
+                    x: this.ball.x,
+                    y: this.ball.y,
+                    vx: (Math.random() - 0.5) * 90,
+                    vy: (Math.random() - 0.5) * 90,
+                    life: 0.22,
+                    maxLife: 0.22,
+                    color: '#ff5f00',
+                    size: 2
+                });
+            }
+
+            if (t.bouncesRemaining > 0) {
+                this.showCue(`STUCK IN LOCAL MINIMUM // ${t.bouncesRemaining} BOUNCES TO ESCAPE`, 0);
+            } else {
+                this.escapeLocalMinimum();
+            }
+        }
+    }
+
+    escapeLocalMinimum() {
+        const t = this.trap;
+        const b = t.block;
+        t.isTrapped = false;
+        t.block = null;
+        t.lastCycleIndex = 0;
+
+        this.showCue('ESCAPED LOCAL MINIMUM! +500 PTS', 2000);
+        this.announce('Escaped local minimum! Resuming descent.');
+
+        if (b) {
+            const idx = this.blocks.indexOf(b);
+            if (idx !== -1) {
+                this.blocks.splice(idx, 1);
+            }
+            this.blocksCleared++;
+            const pointsGained = Math.round(b.baseScore * this.learningRate);
+            this.score += pointsGained;
+            this.updateHUD();
+
+            // Radial energy shockwave
+            for (let p = 0; p < 22; p++) {
+                const angle = (p / 22) * Math.PI * 2;
+                const speed = 150 + Math.random() * 80;
+                this.particles.push({
+                    x: b.x + b.w / 2,
+                    y: b.y + b.h / 2,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    life: 0.45,
+                    maxLife: 0.45,
+                    color: p % 2 === 0 ? '#a855f7' : '#ff5f00',
+                    size: 3.5
+                });
+            }
+        }
+
+        // Launch ball outward with force
+        const escapeAngle = t.oscillationAngle + (Math.random() - 0.5) * 0.4;
+        this.ball.vx = this.ball.speed * Math.cos(escapeAngle);
+        this.ball.vy = this.ball.speed * Math.sin(escapeAngle);
+
+        if (Math.abs(this.ball.vy) < 60) {
+            this.ball.vy = Math.sign(this.ball.vy || 1) * 90;
+        }
+
+        if (this.blocks.length === 0) {
+            this.triggerConverged();
+        }
     }
 
     checkPaddleCollision() {
@@ -840,6 +1047,12 @@ class ArcadeGradientGame {
             const dy = this.ball.y - nearestY;
 
             if (dx * dx + dy * dy < BALL_RADIUS * BALL_RADIUS) {
+                // If this is a Local Minimum block, trap the ball!
+                if (b.isLocalMinimum) {
+                    this.trapBall(b);
+                    return;
+                }
+
                 // Determine collision normal
                 const overlapX = (b.w / 2 + BALL_RADIUS) - Math.abs(this.ball.x - (b.x + b.w / 2));
                 const overlapY = (b.h / 2 + BALL_RADIUS) - Math.abs(this.ball.y - (b.y + b.h / 2));
@@ -941,6 +1154,11 @@ class ArcadeGradientGame {
         // Draw particles
         this.renderParticles(ctx);
 
+        // Draw trapped potential well if ball is trapped
+        if (this.trap.isTrapped) {
+            this.renderTrappedWell(ctx);
+        }
+
         // Draw ball trail & ball
         this.renderBall(ctx);
 
@@ -979,17 +1197,71 @@ class ArcadeGradientGame {
 
     renderBlocks(ctx) {
         ctx.save();
+        const now = performance.now() * 0.003;
         for (const b of this.blocks) {
-            ctx.fillStyle = b.color;
-            ctx.shadowColor = b.color;
-            ctx.shadowBlur = 6;
-            ctx.fillRect(b.x, b.y, b.w, b.h);
+            if (b.isLocalMinimum) {
+                // Local Minimum Well Block: pulsating purple/orange gradient and glow
+                const pulse = 0.5 + 0.5 * Math.sin(now * 3 + (b.pulsePhase || 0));
+                const grad = ctx.createLinearGradient(b.x, b.y, b.x + b.w, b.y + b.h);
+                grad.addColorStop(0, '#a855f7');
+                grad.addColorStop(1, '#ff5f00');
 
-            // Block inner bezel / wireframe
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(b.x + 0.5, b.y + 0.5, b.w - 1, b.h - 1);
+                ctx.fillStyle = grad;
+                ctx.shadowColor = '#ff5f00';
+                ctx.shadowBlur = 8 + pulse * 8;
+                ctx.fillRect(b.x, b.y, b.w, b.h);
+
+                // Distinct contour well ring
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(b.x + 1.5, b.y + 1.5, b.w - 3, b.h - 3);
+
+                // Small center label
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 8px monospace';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('MIN', b.x + b.w / 2, b.y + b.h / 2);
+            } else {
+                ctx.fillStyle = b.color;
+                ctx.shadowColor = b.color;
+                ctx.shadowBlur = 6;
+                ctx.fillRect(b.x, b.y, b.w, b.h);
+
+                // Block inner bezel / wireframe
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(b.x + 0.5, b.y + 0.5, b.w - 1, b.h - 1);
+            }
         }
+        ctx.restore();
+    }
+
+    renderTrappedWell(ctx) {
+        const t = this.trap;
+        if (!t.isTrapped || !t.block) return;
+
+        ctx.save();
+        const now = performance.now() * 0.005;
+        const pulse = 0.6 + 0.4 * Math.sin(now * 4);
+
+        // Draw elliptical potential well barrier
+        ctx.strokeStyle = `rgba(255, 95, 0, ${0.5 * pulse})`;
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.ellipse(t.wellCenterX, t.wellCenterY, t.barrierDist + 14, t.barrierDist + 8, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Energy attractor ray connecting ball to well center
+        ctx.strokeStyle = `rgba(168, 85, 247, ${0.4 * pulse})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(t.wellCenterX, t.wellCenterY);
+        ctx.lineTo(this.ball.x, this.ball.y);
+        ctx.stroke();
+
         ctx.restore();
     }
 
