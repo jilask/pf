@@ -1225,20 +1225,27 @@ class ArcadeGradientGame {
         ctx.restore();
     }
 
+    prefersReducedMotion() {
+        return typeof window !== 'undefined' &&
+            window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+
     renderBlocks(ctx) {
         ctx.save();
+        const reducedMotion = this.prefersReducedMotion();
         const now = performance.now() * 0.003;
         for (const b of this.blocks) {
             if (b.isLocalMinimum) {
-                // Local Minimum Well Block: pulsating purple/orange gradient and glow
-                const pulse = 0.5 + 0.5 * Math.sin(now * 3 + (b.pulsePhase || 0));
+                // Local Minimum Well Block: pulsating purple/orange gradient and glow (static if reduced motion)
+                const pulse = reducedMotion ? 0.5 : (0.5 + 0.5 * Math.sin(now * 3 + (b.pulsePhase || 0)));
                 const grad = ctx.createLinearGradient(b.x, b.y, b.x + b.w, b.y + b.h);
                 grad.addColorStop(0, '#a855f7');
                 grad.addColorStop(1, '#ff5f00');
 
                 ctx.fillStyle = grad;
                 ctx.shadowColor = '#ff5f00';
-                ctx.shadowBlur = 8 + pulse * 8;
+                ctx.shadowBlur = reducedMotion ? 8 : (8 + pulse * 8);
                 ctx.fillRect(b.x, b.y, b.w, b.h);
 
                 // Distinct contour well ring
@@ -1272,8 +1279,9 @@ class ArcadeGradientGame {
         if (!t.isTrapped || !t.block) return;
 
         ctx.save();
+        const reducedMotion = this.prefersReducedMotion();
         const now = performance.now() * 0.005;
-        const pulse = 0.6 + 0.4 * Math.sin(now * 4);
+        const pulse = reducedMotion ? 0.8 : (0.6 + 0.4 * Math.sin(now * 4));
 
         // Draw elliptical potential well barrier
         ctx.strokeStyle = `rgba(255, 95, 0, ${0.5 * pulse})`;
