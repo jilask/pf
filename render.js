@@ -1336,6 +1336,10 @@ function renderStackerGame(game, highScore = 0) {
                     <span>Tap controls to shift, rotate, or flush tokens. Adjust TEMP to balance speed vs reward.</span>
                 </div>
             </div>
+        </div>
+    `;
+}
+
 /**
  * Renders the interactive terminal Gradient Descent (Breakout-like) game interface.
  * @param {Object} game - Game metadata object
