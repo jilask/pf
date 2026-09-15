@@ -555,6 +555,10 @@ class ArchPortfolio {
             this.activeStackerGame.destroy();
             this.activeStackerGame = null;
         }
+        if (this.activeGradientGame) {
+            this.activeGradientGame.destroy();
+            this.activeGradientGame = null;
+        }
 
         if (arcadeWindow) {
             const focusWasInArcade = arcadeWindow.contains(document.activeElement);
