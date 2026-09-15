@@ -604,7 +604,7 @@ class ArcadeGradientGame {
             this.touchCleanups.push(() => this.dom.touchLrIncBtn?.removeEventListener('click', onLrInc));
         }
 
-        // Direct drag on canvas
+        // Direct drag on canvas (touch + pointer/mouse)
         if (this.canvas) {
             let isDragging = false;
             const getCanvasX = (clientX) => {
@@ -613,37 +613,59 @@ class ArcadeGradientGame {
                 return (clientX - rect.left) * scaleX;
             };
 
+            const onStart = (clientX) => {
+                isDragging = true;
+                this.paddle.targetX = getCanvasX(clientX);
+                if (this.ball.isAttached && this.state === 'PLAYING') {
+                    this.launchBall();
+                }
+            };
+
+            const onMove = (clientX) => {
+                if (isDragging) {
+                    this.paddle.targetX = getCanvasX(clientX);
+                }
+            };
+
+            const onEnd = () => {
+                isDragging = false;
+            };
+
             const onTouchStart = (e) => {
                 if (e.touches && e.touches.length > 0) {
-                    isDragging = true;
-                    const x = getCanvasX(e.touches[0].clientX);
-                    this.paddle.targetX = x;
-                    if (this.ball.isAttached && this.state === 'PLAYING') {
-                        this.launchBall();
-                    }
+                    onStart(e.touches[0].clientX);
                 }
             };
 
             const onTouchMove = (e) => {
                 if (isDragging && e.touches && e.touches.length > 0) {
                     e.preventDefault();
-                    const x = getCanvasX(e.touches[0].clientX);
-                    this.paddle.targetX = x;
+                    onMove(e.touches[0].clientX);
                 }
             };
 
-            const onTouchEnd = () => {
-                isDragging = false;
+            const onMouseDown = (e) => {
+                onStart(e.clientX);
+            };
+
+            const onMouseMove = (e) => {
+                onMove(e.clientX);
             };
 
             this.canvas.addEventListener('touchstart', onTouchStart, { passive: false });
             this.canvas.addEventListener('touchmove', onTouchMove, { passive: false });
-            this.canvas.addEventListener('touchend', onTouchEnd);
+            this.canvas.addEventListener('touchend', onEnd);
+            this.canvas.addEventListener('mousedown', onMouseDown);
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onEnd);
 
             this.touchCleanups.push(() => {
                 this.canvas.removeEventListener('touchstart', onTouchStart);
                 this.canvas.removeEventListener('touchmove', onTouchMove);
-                this.canvas.removeEventListener('touchend', onTouchEnd);
+                this.canvas.removeEventListener('touchend', onEnd);
+                this.canvas.removeEventListener('mousedown', onMouseDown);
+                window.removeEventListener('mousemove', onMouseMove);
+                window.removeEventListener('mouseup', onEnd);
             });
         }
     }
