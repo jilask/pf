@@ -1464,6 +1464,10 @@ function renderGradientGame(game, highScore = 0) {
                                     <span class="stat-val" id="gradient-converged-epoch">01</span>
                                 </div>
                             </div>
+                            <div class="arcade-gameover-extra-stats">
+                                <span class="arcade-mini-stat">STEPS REMAINING: <strong id="gradient-converged-steps">3</strong></span>
+                                <span class="arcade-mini-stat">TERMS CLEARED: <strong id="gradient-converged-blocks">00</strong></span>
+                            </div>
                             <div class="arcade-overlay-actions">
                                 <button class="arcade-btn arcade-btn-primary" id="gradient-next-epoch-btn" type="button">
                                     ▶ PROCEED TO NEXT EPOCH [SPACE / ENTER]

@@ -136,6 +136,8 @@ class ArcadeGradientGame {
             backToMenuBtn: document.getElementById('arcade-back-to-menu-btn'),
             convergedScore: document.getElementById('gradient-converged-score'),
             convergedEpoch: document.getElementById('gradient-converged-epoch'),
+            convergedSteps: document.getElementById('gradient-converged-steps'),
+            convergedBlocks: document.getElementById('gradient-converged-blocks'),
             finalScore: document.getElementById('gradient-final-score'),
             gameoverBest: document.getElementById('gradient-gameover-best'),
             gameoverEpoch: document.getElementById('gradient-gameover-epoch'),
@@ -441,6 +443,8 @@ class ArcadeGradientGame {
 
         if (this.dom.convergedScore) this.dom.convergedScore.textContent = String(this.score).padStart(6, '0');
         if (this.dom.convergedEpoch) this.dom.convergedEpoch.textContent = String(this.epoch).padStart(2, '0');
+        if (this.dom.convergedSteps) this.dom.convergedSteps.textContent = String(this.lives);
+        if (this.dom.convergedBlocks) this.dom.convergedBlocks.textContent = String(this.blocksCleared);
         if (this.dom.convergedOverlay) this.dom.convergedOverlay.style.display = 'flex';
         if (this.dom.nextEpochBtn) this.dom.nextEpochBtn.focus();
 
