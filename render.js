@@ -1378,7 +1378,7 @@ function renderGradientGame(game, highScore = 0) {
                         <span class="arcade-hud-val arcade-hud-lives" id="gradient-lives-display">3</span>
                     </div>
                     <div class="arcade-hud-item arcade-hud-lr-group">
-                        <span class="arcade-hud-label">LR:</span>
+                        <span class="arcade-hud-label"><span class="hud-full-label">LEARNING RATE:</span><span class="hud-short-label" aria-hidden="true">LR:</span></span>
                         <div class="arcade-lr-stepper">
                             <button class="arcade-temp-btn" id="gradient-lr-dec-btn" type="button" aria-label="Decrease Learning Rate (Key: Left Bracket)">-</button>
                             <span class="arcade-hud-val arcade-hud-lr" id="gradient-lr-display">1.0x</span>
