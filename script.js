@@ -291,10 +291,48 @@ class ArchPortfolio {
             statusEl.setAttribute('aria-atomic', 'true');
         }
 
-        asciiDisplay.style.cursor = 'pointer';
+        let isGlitched = false;
+        const GLITCH_PRODUCTION_PROBABILITY = 0.015; // 1.5% chance per state evaluation
+        const glitchFragments = [
+            "~/arcade",
+            "ws5: ???",
+            "ERR: /dev/arcade0",
+            "CORRUPT_SEGMENT [ws5]"
+        ];
+
+        const getGlitchProbability = () => {
+            if (typeof window !== 'undefined' && typeof window.__AI_CORE_GLITCH_PROBABILITY === 'number') {
+                return window.__AI_CORE_GLITCH_PROBABILITY;
+            }
+            return GLITCH_PRODUCTION_PROBABILITY;
+        };
+
+        const triggerGlitch = () => {
+            // Never trigger if in Workspace 5, interacting, or already glitched
+            if (isGlitched || isInteracting || this.currentWorkspace === 5) return;
+            isGlitched = true;
+
+            const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!isReducedMotion) {
+                asciiDisplay.classList.add('core-glitch');
+            }
+
+            const fragment = glitchFragments[Math.floor(Math.random() * glitchFragments.length)];
+            if (statusEl) {
+                statusEl.textContent = fragment;
+            }
+
+            setTimeout(() => {
+                asciiDisplay.classList.remove('core-glitch');
+                isGlitched = false;
+                refreshCoreDisplay();
+            }, 750);
+        };
+
+        this.triggerAiCoreGlitch = triggerGlitch;
 
         const getDesiredState = () => {
-            if (isInteracting) return null;
+            if (isInteracting || isGlitched) return null;
             if (isHovered) {
                 return { frame: 2, status: "😊 Hey there! Click me for a surprise!" };
             }
@@ -314,7 +352,7 @@ class ArchPortfolio {
         };
 
         const refreshCoreDisplay = () => {
-            if (isInteracting) return;
+            if (isInteracting || isGlitched) return;
             const desired = getDesiredState();
             if (!desired) return;
 
@@ -327,6 +365,12 @@ class ArchPortfolio {
         };
 
         this.notifyAiCoreContextChange = () => {
+            if (this.currentWorkspace !== 5 && !isInteracting && !isDormant && !isBurst && !isGlitched) {
+                if (Math.random() < getGlitchProbability()) {
+                    triggerGlitch();
+                    return;
+                }
+            }
             refreshCoreDisplay();
         };
 
@@ -359,7 +403,7 @@ class ArchPortfolio {
         });
 
         setInterval(() => {
-            if (!isDormant && !isInteracting && !isBurst && (Date.now() - lastUserActivity >= 60000)) {
+            if (!isDormant && !isInteracting && !isBurst && !isGlitched && (Date.now() - lastUserActivity >= 60000)) {
                 isDormant = true;
                 refreshCoreDisplay();
             }
@@ -437,7 +481,7 @@ class ArchPortfolio {
         // Scheduled natural blinking and mood changes without CPU-heavy polling
         const scheduleBlink = () => {
             const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            if (!isReducedMotion && !isInteracting && !isDormant && !isBurst && (currentFrame === 0 || currentFrame === 8)) {
+            if (!isReducedMotion && !isInteracting && !isDormant && !isBurst && !isGlitched && (currentFrame === 0 || currentFrame === 8)) {
                 const originalFrame = currentFrame;
                 currentFrame = 1; // blink
                 if (frameEl) {
@@ -454,10 +498,14 @@ class ArchPortfolio {
         };
 
         const scheduleMoodChange = () => {
-            if (!isInteracting && !isDormant && !isBurst) {
-                const moods = [0, 2, 5]; // idle, happy, thinking
-                currentFrame = moods[Math.floor(Math.random() * moods.length)];
-                refreshCoreDisplay();
+            if (!isInteracting && !isDormant && !isBurst && !isGlitched) {
+                if (this.currentWorkspace !== 5 && Math.random() < getGlitchProbability()) {
+                    triggerGlitch();
+                } else {
+                    const moods = [0, 2, 5]; // idle, happy, thinking
+                    currentFrame = moods[Math.floor(Math.random() * moods.length)];
+                    refreshCoreDisplay();
+                }
             }
             setTimeout(scheduleMoodChange, 8000 + Math.random() * 4000);
         };
