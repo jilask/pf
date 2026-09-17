@@ -550,6 +550,35 @@ body::after {
     transition: all 0.3s ease;
     border-radius: 6px;
     padding: 8px;
+    position: relative;
+}
+
+#ascii-animation::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(57, 255, 20, 0.035) 3px,
+        rgba(57, 255, 20, 0.035) 6px
+    );
+    background-size: 100% 12px;
+    pointer-events: none;
+    opacity: 0.6;
+    border-radius: 6px;
+    animation: ascii-scanline-drift 10s linear infinite;
+    z-index: 1;
+}
+
+@keyframes ascii-scanline-drift {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 0 100%;
+    }
 }
 
 #ascii-animation:hover {
@@ -559,29 +588,53 @@ body::after {
 }
 
 .ascii-frame {
+    position: relative;
+    z-index: 2;
     white-space: pre;
     font-family: 'Fira Code', monospace;
     font-size: 8px;
     line-height: 1.1;
     color: var(--accent-cyan);
     text-shadow: 0 0 3px var(--accent-cyan);
-    animation: gentle-glow 6s ease-in-out infinite alternate;
-    will-change: color, opacity;
+    animation: gentle-glow 8s ease-in-out infinite alternate;
+    will-change: color, opacity, text-shadow;
 }
 
 @keyframes gentle-glow {
-    0%, 100% {
+    0% {
         color: var(--accent-cyan);
-        opacity: 0.9;
+        text-shadow: 0 0 3px var(--accent-cyan);
+        opacity: 0.92;
+    }
+
+    25% {
+        color: var(--accent-cyan);
+        text-shadow: 0 0 5px var(--accent-cyan), 0 0 10px rgba(57, 255, 20, 0.25);
+        opacity: 1;
     }
 
     50% {
         color: var(--accent-blue);
-        opacity: 1;
+        text-shadow: 0 0 4px var(--accent-blue), 0 0 8px rgba(139, 92, 246, 0.2);
+        opacity: 0.95;
+    }
+
+    75% {
+        color: var(--accent-purple);
+        text-shadow: 0 0 5px var(--accent-purple), 0 0 10px rgba(168, 85, 247, 0.25);
+        opacity: 0.98;
+    }
+
+    100% {
+        color: var(--accent-cyan);
+        text-shadow: 0 0 3px var(--accent-cyan);
+        opacity: 0.92;
     }
 }
 
 .ascii-status {
+    position: relative;
+    z-index: 2;
     margin-top: 8px;
     font-size: 10px;
     color: var(--accent-green);
@@ -595,11 +648,13 @@ body::after {
     0%, 100% {
         opacity: 0.85;
         color: var(--accent-green);
+        text-shadow: 0 0 2px var(--accent-green);
     }
 
     50% {
         opacity: 1;
         color: var(--accent-cyan);
+        text-shadow: 0 0 4px var(--accent-cyan);
     }
 }
 
@@ -2633,6 +2688,7 @@ button {
     }
 
     #ascii-animation,
+    #ascii-animation::before,
     .ascii-frame,
     .ascii-status,
     .doomsday-header,
@@ -2644,6 +2700,10 @@ button {
     .disclaimer,
     .skeleton-loading {
         animation: none !important;
+    }
+
+    #ascii-animation::before {
+        display: none !important;
     }
 
     .skeleton-loading {

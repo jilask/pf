@@ -348,7 +348,8 @@ class ArchPortfolio {
 
         // Scheduled natural blinking and mood changes without CPU-heavy polling
         const scheduleBlink = () => {
-            if (!isInteracting && (currentFrame === 0 || currentFrame === 8)) {
+            const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!isReducedMotion && !isInteracting && (currentFrame === 0 || currentFrame === 8)) {
                 const originalFrame = currentFrame;
                 currentFrame = 1; // blink
                 updateFrame();
