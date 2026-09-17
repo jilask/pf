@@ -280,10 +280,15 @@ class ArchPortfolio {
         if (!frameEl || !statusEl) {
             asciiDisplay.innerHTML = `
                 <div class="ascii-frame"></div>
-                <div class="ascii-status"></div>
+                <div class="ascii-status" aria-live="polite" aria-atomic="true"></div>
             `;
             frameEl = asciiDisplay.querySelector('.ascii-frame');
             statusEl = asciiDisplay.querySelector('.ascii-status');
+        }
+
+        if (statusEl && !statusEl.hasAttribute('aria-live')) {
+            statusEl.setAttribute('aria-live', 'polite');
+            statusEl.setAttribute('aria-atomic', 'true');
         }
 
         asciiDisplay.style.cursor = 'pointer';
@@ -362,6 +367,16 @@ class ArchPortfolio {
 
         refreshCoreDisplay();
 
+        const clickFlavorMessages = [
+            "⚡ Core Pinged | Neural pathways synchronized!",
+            "📡 Signal Acknowledged | Resonance nominal at 100%",
+            "🧠 Synapse Fired | Processing auxiliary request...",
+            "✨ Quantum Pulse | Subsystem diagnostics all green",
+            "🚀 Core Resonance | High-frequency harmonics aligned!",
+            "💖 Heartbeat Checked | AI Core running at peak vitality!"
+        ];
+        let clickFlavorIndex = 0;
+
         // Click & keyboard interaction
         const triggerAsciiReaction = () => {
             isInteracting = true;
@@ -371,20 +386,23 @@ class ArchPortfolio {
                 isDormant = false;
             }
 
+            // Visual ping animation
+            asciiDisplay.classList.remove('core-ping');
+            void asciiDisplay.offsetWidth; // force reflow for re-trigger
+            asciiDisplay.classList.add('core-ping');
+            setTimeout(() => {
+                asciiDisplay.classList.remove('core-ping');
+            }, 400);
+
             const reactions = [2, 4, 6]; // happy, excited, surprised
             const reactionFrame = reactions[Math.floor(Math.random() * reactions.length)];
             if (frameEl) {
                 frameEl.textContent = asciiFrames[reactionFrame];
             }
 
-            const messages = [
-                "🎉 Yay! You activated me! I'm so happy!",
-                "🚀 Woohoo! That was fun! Trigger me again!",
-                "😲 Oh wow! You startled me! Hehe!",
-                "💖 Aww, thanks for the attention!"
-            ];
             if (statusEl) {
-                statusEl.textContent = messages[Math.floor(Math.random() * messages.length)];
+                statusEl.textContent = clickFlavorMessages[clickFlavorIndex];
+                clickFlavorIndex = (clickFlavorIndex + 1) % clickFlavorMessages.length;
             }
 
             setTimeout(() => {
