@@ -267,7 +267,12 @@ class ArchPortfolio {
 
         let currentFrame = 0;
         let isInteracting = false;
+        let isHovered = false;
+        let isBurst = false;
+        let isDormant = false;
         let lastInteraction = Date.now();
+        let lastUserActivity = Date.now();
+        let navTimestamps = [];
         const asciiDisplay = document.getElementById('ascii-animation');
 
         let frameEl = asciiDisplay.querySelector('.ascii-frame');
@@ -283,25 +288,94 @@ class ArchPortfolio {
 
         asciiDisplay.style.cursor = 'pointer';
 
-        const updateFrame = () => {
-            if (frameEl && frameEl.textContent !== asciiFrames[currentFrame]) {
-                frameEl.textContent = asciiFrames[currentFrame];
+        const getDesiredState = () => {
+            if (isInteracting) return null;
+            if (isHovered) {
+                return { frame: 2, status: "😊 Hey there! Click me for a surprise!" };
             }
-            if (statusEl && statusEl.textContent !== statusMessages[currentFrame]) {
-                statusEl.textContent = statusMessages[currentFrame];
+            if (isBurst) {
+                return { frame: 7, status: "⚡ High Load Detected | Processing request burst..." };
+            }
+            if (isDormant) {
+                return { frame: 8, status: "💤 Low Power Mode | Standing by for input..." };
+            }
+            if (this.currentWorkspace === 5 || this.activeSnakeGame || this.activeStackerGame || this.activeGradientGame || (this.currentArcadeView && this.currentArcadeView !== 'menu')) {
+                return { frame: 4, status: "🕹️ Simulation environment active | Neural Arcade" };
+            }
+            if (this.currentSection === 'gallery' || this.currentWorkspace === 3) {
+                return { frame: 5, status: "🎨 Rendering latent output... | AI Art Gallery" };
+            }
+            return { frame: currentFrame, status: statusMessages[currentFrame] };
+        };
+
+        const refreshCoreDisplay = () => {
+            if (isInteracting) return;
+            const desired = getDesiredState();
+            if (!desired) return;
+
+            if (frameEl && frameEl.textContent !== asciiFrames[desired.frame]) {
+                frameEl.textContent = asciiFrames[desired.frame];
+            }
+            if (statusEl && statusEl.textContent !== desired.status) {
+                statusEl.textContent = desired.status;
             }
         };
 
-        updateFrame();
+        this.notifyAiCoreContextChange = () => {
+            refreshCoreDisplay();
+        };
+
+        this.recordNavigationForAiCore = () => {
+            const now = Date.now();
+            navTimestamps.push(now);
+            navTimestamps = navTimestamps.filter(t => now - t <= 2500);
+            if (navTimestamps.length >= 3 && !isBurst) {
+                isBurst = true;
+                navTimestamps = [];
+                refreshCoreDisplay();
+                setTimeout(() => {
+                    isBurst = false;
+                    refreshCoreDisplay();
+                }, 1800);
+            }
+        };
+
+        // Track global user interaction across the site for the 60s inactivity / dormant state
+        const registerUserActivity = () => {
+            lastUserActivity = Date.now();
+            if (isDormant) {
+                isDormant = false;
+                refreshCoreDisplay();
+            }
+        };
+
+        ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
+            window.addEventListener(evt, registerUserActivity, { passive: true });
+        });
+
+        setInterval(() => {
+            if (!isDormant && !isInteracting && !isBurst && (Date.now() - lastUserActivity >= 60000)) {
+                isDormant = true;
+                refreshCoreDisplay();
+            }
+        }, 1000);
+
+        refreshCoreDisplay();
 
         // Click & keyboard interaction
         const triggerAsciiReaction = () => {
             isInteracting = true;
             lastInteraction = Date.now();
+            lastUserActivity = Date.now();
+            if (isDormant) {
+                isDormant = false;
+            }
 
             const reactions = [2, 4, 6]; // happy, excited, surprised
-            currentFrame = reactions[Math.floor(Math.random() * reactions.length)];
-            updateFrame();
+            const reactionFrame = reactions[Math.floor(Math.random() * reactions.length)];
+            if (frameEl) {
+                frameEl.textContent = asciiFrames[reactionFrame];
+            }
 
             const messages = [
                 "🎉 Yay! You activated me! I'm so happy!",
@@ -315,8 +389,7 @@ class ArchPortfolio {
 
             setTimeout(() => {
                 isInteracting = false;
-                currentFrame = 0;
-                updateFrame();
+                refreshCoreDisplay();
             }, 2000);
         };
 
@@ -331,32 +404,31 @@ class ArchPortfolio {
         // Hover interaction
         asciiDisplay.addEventListener('mouseenter', () => {
             if (!isInteracting) {
-                currentFrame = 2; // happy face
-                updateFrame();
-                if (statusEl) {
-                    statusEl.textContent = "😊 Hey there! Click me for a surprise!";
-                }
+                isHovered = true;
+                refreshCoreDisplay();
             }
         });
 
         asciiDisplay.addEventListener('mouseleave', () => {
             if (!isInteracting) {
-                currentFrame = 0; // back to normal
-                updateFrame();
+                isHovered = false;
+                refreshCoreDisplay();
             }
         });
 
         // Scheduled natural blinking and mood changes without CPU-heavy polling
         const scheduleBlink = () => {
             const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            if (!isReducedMotion && !isInteracting && (currentFrame === 0 || currentFrame === 8)) {
+            if (!isReducedMotion && !isInteracting && !isDormant && !isBurst && (currentFrame === 0 || currentFrame === 8)) {
                 const originalFrame = currentFrame;
                 currentFrame = 1; // blink
-                updateFrame();
+                if (frameEl) {
+                    frameEl.textContent = asciiFrames[1];
+                }
                 setTimeout(() => {
                     if (!isInteracting && currentFrame === 1) {
                         currentFrame = originalFrame;
-                        updateFrame();
+                        refreshCoreDisplay();
                     }
                 }, 200);
             }
@@ -364,15 +436,10 @@ class ArchPortfolio {
         };
 
         const scheduleMoodChange = () => {
-            if (!isInteracting) {
-                const now = Date.now();
-                if (now - lastInteraction > 30000) {
-                    currentFrame = 8; // sleepy
-                } else {
-                    const moods = [0, 2, 5]; // idle, happy, thinking
-                    currentFrame = moods[Math.floor(Math.random() * moods.length)];
-                }
-                updateFrame();
+            if (!isInteracting && !isDormant && !isBurst) {
+                const moods = [0, 2, 5]; // idle, happy, thinking
+                currentFrame = moods[Math.floor(Math.random() * moods.length)];
+                refreshCoreDisplay();
             }
             setTimeout(scheduleMoodChange, 8000 + Math.random() * 4000);
         };
@@ -477,6 +544,9 @@ class ArchPortfolio {
     }
 
     switchWorkspace(index) {
+        if (typeof this.recordNavigationForAiCore === 'function') {
+            this.recordNavigationForAiCore();
+        }
         if (this.currentWorkspace === index) return;
         this.currentWorkspace = index;
 
@@ -544,6 +614,9 @@ class ArchPortfolio {
             }
 
             this.renderArcade();
+            if (typeof this.notifyAiCoreContextChange === 'function') {
+                this.notifyAiCoreContextChange();
+            }
             return;
         }
 
@@ -588,6 +661,9 @@ class ArchPortfolio {
                 mainWindow.style.gridColumn = '';
                 mainWindow.style.gridRow = '';
             }
+            if (typeof this.notifyAiCoreContextChange === 'function') {
+                this.notifyAiCoreContextChange();
+            }
             return;
         }
 
@@ -614,6 +690,10 @@ class ArchPortfolio {
                 mainWindow.style.gridColumn = '';
                 mainWindow.style.gridRow = '';
             }
+        }
+
+        if (typeof this.notifyAiCoreContextChange === 'function') {
+            this.notifyAiCoreContextChange();
         }
     }
 
@@ -828,7 +908,13 @@ class ArchPortfolio {
     }
 
     loadSection(section) {
+        if (typeof this.recordNavigationForAiCore === 'function') {
+            this.recordNavigationForAiCore();
+        }
         this.currentSection = section;
+        if (typeof this.notifyAiCoreContextChange === 'function') {
+            this.notifyAiCoreContextChange();
+        }
         const contentArea = document.getElementById('portfolio-content');
         contentArea.innerHTML = '';
 
@@ -2153,6 +2239,10 @@ ACHIEVEMENTS
                 });
                 backBtn.focus();
             }
+        }
+
+        if (typeof this.notifyAiCoreContextChange === 'function') {
+            this.notifyAiCoreContextChange();
         }
     }
 
