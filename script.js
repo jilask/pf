@@ -308,21 +308,21 @@ class ArchPortfolio {
         ];
 
         const statusMessages = [
-            "✨ AI Core Online ✨ | Processing requests...",
-            "😊 Blink Blink | Just checking everything's good!",
-            "😄 Happy Mode | Creating awesome stuff!",
-            "😉 Wink Wink | Got some cool ideas brewing...",
-            "🚀 Super Excited | Maximum productivity achieved!",
-            "🤔 Thinking Hard | Solving complex problems...",
-            "😲 Mind = Blown | Discovering new possibilities!",
-            "💪 Hard at Work | Building amazing projects...",
-            "😴 Power Nap | Conserving energy... zzz...",
-            "😊 Ready to Go | Let's create something amazing!",
-            "🥰 In Love | You make my circuits flutter!",
-            "😎 Chill Mode | Stay cool and keep hacking!",
-            "😵 Whoa Dizzy | Wait, which workspace are we in?!",
-            "😜 Blep! | Just having some fun with you!",
-            "😺 Purr Mode | Purring contentedly in your browser!"
+            "Hey! Just hanging out, how's it going?",
+            "Oops, had something in my eye! Haha.",
+            "Having such a good day today. Hope you are too!",
+            "Just had a fun idea, not gonna lie.",
+            "Oh sweet, this is awesome! So excited!",
+            "Hmm... let me think about that for a second.",
+            "Wait, seriously?! No way!",
+            "In the zone right now, let's get stuff done.",
+            "Gonna rest my eyes for a minute... zzz...",
+            "All set! What are we doing next?",
+            "Aww, you're so sweet! That totally made my day.",
+            "Just chilling and staying cool. You know how it is.",
+            "Whoa, my head is spinning a bit... where are we?",
+            "Haha, gotcha! Just messing with you.",
+            "Feeling super relaxed right now, honestly so cozy."
         ];
 
         let currentFrame = 0;
@@ -394,19 +394,19 @@ class ArchPortfolio {
         const getDesiredState = () => {
             if (isInteracting || isGlitched) return null;
             if (isHovered) {
-                return { frame: 2, status: "😊 Hey there! Click me for a surprise!" };
+                return { frame: 2, status: "Oh hey! Click to say hello!" };
             }
             if (isBurst) {
-                return { frame: 12, status: "🏃 Whoosh! Hold on, you're zooming so fast through workspaces!" };
+                return { frame: 12, status: "🏃 Whoa, slow down! You're clicking way too fast for me!" };
             }
             if (isDormant) {
-                return { frame: 8, status: "😴 Dozing off for a quick nap... zzz... (poke me to wake up!)" };
+                return { frame: 8, status: "😴 I'm nodding off for a bit... poke me if you need me!" };
             }
             if (this.currentWorkspace === 5 || this.activeSnakeGame || this.activeStackerGame || this.activeGradientGame || (this.currentArcadeView && this.currentArcadeView !== 'menu')) {
-                return { frame: 4, status: "🕹️ Game time! Bet you can't beat the high score!" };
+                return { frame: 4, status: "🕹️ Oh sweet, games! Let's see if we can beat the high score!" };
             }
             if (this.currentSection === 'gallery' || this.currentWorkspace === 3) {
-                return { frame: 10, status: "🎨 Ooh, check out the art gallery! So many colors!" };
+                return { frame: 10, status: "🎨 Look at all this art! I really love these colors." };
             }
             return { frame: currentFrame, status: statusMessages[currentFrame] };
         };
@@ -472,15 +472,15 @@ class ArchPortfolio {
         refreshCoreDisplay();
 
         const clickFlavorMessages = [
-            "🎉 Yay! You activated me! I'm so happy!",
-            "🚀 Woohoo! That was fun! Trigger me again!",
-            "😲 Oh wow! You startled me! Hehe!",
-            "💖 Aww, thanks for the attention!",
-            "✨ Hehe, that tickles! Give me another boop!",
-            "🥰 You're my favorite human today!",
-            "🌟 Boop! Fully recharged by your smile!",
-            "😋 Nom nom! That click was delicious!",
-            "🤗 High five! Let's build something awesome together!"
+            "Hey! Haha, you caught me off guard!",
+            "Aww, thanks for stopping by to say hi!",
+            "Haha, alright alright, stop poking me!",
+            "You're seriously the best, you know that?",
+            "Always happy when you drop by to chat!",
+            "High five! What are we checking out next?",
+            "Hey! Good to see you hanging out here!",
+            "Haha, you really like clicking on me, don't you?",
+            "I was hoping you'd come say hi today!"
         ];
         let clickFlavorIndex = 0;
         let clickComboCount = 0;
@@ -526,16 +526,16 @@ class ArchPortfolio {
 
             if (clickComboCount === 2) {
                 reactionFrame = 13; // blep / playful
-                reactionMessage = "😄 Double poke! Double the fun!";
+                reactionMessage = "Haha, double poke! What's up?";
             } else if (clickComboCount === 3) {
                 reactionFrame = 14; // cat purr
-                reactionMessage = "✨ 3x Combo! Hehehe, stop tickling me!";
+                reactionMessage = "Hey hey, that really tickles! Cut it out, haha!";
             } else if (clickComboCount === 4) {
                 reactionFrame = 10; // love / heart eyes
-                reactionMessage = "💖 4x Combo! Aww, you really like me!";
+                reactionMessage = "Okay, you're definitely doing that on purpose! Love you too!";
             } else if (clickComboCount >= 5) {
                 reactionFrame = 12; // dizzy / derp
-                reactionMessage = `💥 COMBO x${clickComboCount}! Whoaaa, you're full of energy!`;
+                reactionMessage = `Whoa, ${clickComboCount} times in a row?! You've got way too much energy today!`;
             }
 
             if (frameEl) {
@@ -570,7 +570,7 @@ class ArchPortfolio {
                 frameEl.textContent = asciiFrames[11]; // Cool sunglasses
             }
             if (statusEl) {
-                statusEl.textContent = "😎 Chill Mode | Look at us, we're the coolest team!";
+                statusEl.textContent = "Oh you know it! Just kicking back and staying cool.";
             }
             setTimeout(() => {
                 isInteracting = false;
@@ -585,10 +585,10 @@ class ArchPortfolio {
             holdTimer = setTimeout(() => {
                 isHolding = true;
                 if (frameEl) {
-                    frameEl.textContent = asciiFrames[7]; // charging / hard at work
+                    frameEl.textContent = asciiFrames[7]; // thinking/hard at work
                 }
                 if (statusEl) {
-                    statusEl.textContent = "🔋 Charging up happiness... keep holding...";
+                    statusEl.textContent = "Wait, why are you holding onto me like that...?";
                 }
             }, 450);
         };
@@ -604,7 +604,7 @@ class ArchPortfolio {
                     frameEl.textContent = asciiFrames[10]; // Heart eyes
                 }
                 if (statusEl) {
-                    statusEl.textContent = "💥 KABOOM! Pure joy explosion! Love you! ✨";
+                    statusEl.textContent = "Haha! Surprise hug! That was fun!";
                 }
                 setTimeout(() => {
                     isInteracting = false;
@@ -649,7 +649,7 @@ class ArchPortfolio {
                             frameEl.textContent = asciiFrames[14]; // Cat purr
                         }
                         if (statusEl) {
-                            statusEl.textContent = "😺 *purrs* Aww, you're petting me! So cozy!";
+                            statusEl.textContent = "Aww, that's actually really nice. So relaxing!";
                         }
                         setTimeout(() => {
                             isInteracting = false;
