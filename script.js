@@ -249,6 +249,61 @@ class ArchPortfolio {
 ║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
 ║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
 ║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+╚═══════════════════════════════════════╝`,
+            // In Love / Heart Eyes
+            `╔═══════════════════════════════════════╗
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░██░░██░░██░░██░░░░░░░░░░░░░░░░░░░░   ║
+║   ░██████░░██████░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░████░░░░████░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░▄▄░░░░░░░░▄▄░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░▄▄▄▄▄▄▄▄░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+╚═══════════════════════════════════════╝`,
+            // Cool Shades Hackerman
+            `╔═══════════════════════════════════════╗
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░██████████████░░░░░░░░░░░░░░░░░░░░   ║
+║   ░████░░░░░░████░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░▄▄▄▄▄▄░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░▄▄▄▄▄▄░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+╚═══════════════════════════════════════╝`,
+            // Dizzy / Derp
+            `╔═══════════════════════════════════════╗
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░▄▄░░▄▄░░▄▄░░▄▄░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░▄▄░░▄▄░░▄▄░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+╚═══════════════════════════════════════╝`,
+            // Playful Blep
+            `╔═══════════════════════════════════════╗
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░▄▄░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░▄▄░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░▄▄▄▄▄▄▄▄░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+╚═══════════════════════════════════════╝`,
+            // Cute Kitty Purr
+            `╔═══════════════════════════════════════╗
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░██░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░██░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░▄░░░░░░░░▄░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░▄▄░░▄▄░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
 ╚═══════════════════════════════════════╝`
         ];
 
@@ -262,7 +317,12 @@ class ArchPortfolio {
             "😲 Mind = Blown | Discovering new possibilities!",
             "💪 Hard at Work | Building amazing projects...",
             "😴 Power Nap | Conserving energy... zzz...",
-            "😊 Ready to Go | Let's create something amazing!"
+            "😊 Ready to Go | Let's create something amazing!",
+            "🥰 In Love | You make my circuits flutter!",
+            "😎 Chill Mode | Stay cool and keep hacking!",
+            "😵 Whoa Dizzy | Wait, which workspace are we in?!",
+            "😜 Blep! | Just having some fun with you!",
+            "😺 Purr Mode | Purring contentedly in your browser!"
         ];
 
         let currentFrame = 0;
@@ -337,16 +397,16 @@ class ArchPortfolio {
                 return { frame: 2, status: "😊 Hey there! Click me for a surprise!" };
             }
             if (isBurst) {
-                return { frame: 7, status: "⚡ High Load Detected | Processing request burst..." };
+                return { frame: 12, status: "🏃 Whoosh! Hold on, you're zooming so fast through workspaces!" };
             }
             if (isDormant) {
-                return { frame: 8, status: "💤 Low Power Mode | Standing by for input..." };
+                return { frame: 8, status: "😴 Dozing off for a quick nap... zzz... (poke me to wake up!)" };
             }
             if (this.currentWorkspace === 5 || this.activeSnakeGame || this.activeStackerGame || this.activeGradientGame || (this.currentArcadeView && this.currentArcadeView !== 'menu')) {
-                return { frame: 4, status: "🕹️ Simulation environment active | Neural Arcade" };
+                return { frame: 4, status: "🕹️ Game time! Bet you can't beat the high score!" };
             }
             if (this.currentSection === 'gallery' || this.currentWorkspace === 3) {
-                return { frame: 5, status: "🎨 Rendering latent output... | AI Art Gallery" };
+                return { frame: 10, status: "🎨 Ooh, check out the art gallery! So many colors!" };
             }
             return { frame: currentFrame, status: statusMessages[currentFrame] };
         };
@@ -412,17 +472,37 @@ class ArchPortfolio {
         refreshCoreDisplay();
 
         const clickFlavorMessages = [
-            "⚡ Core Pinged | Neural pathways synchronized!",
-            "📡 Signal Acknowledged | Resonance nominal at 100%",
-            "🧠 Synapse Fired | Processing auxiliary request...",
-            "✨ Quantum Pulse | Subsystem diagnostics all green",
-            "🚀 Core Resonance | High-frequency harmonics aligned!",
-            "💖 Heartbeat Checked | AI Core running at peak vitality!"
+            "🎉 Yay! You activated me! I'm so happy!",
+            "🚀 Woohoo! That was fun! Trigger me again!",
+            "😲 Oh wow! You startled me! Hehe!",
+            "💖 Aww, thanks for the attention!",
+            "✨ Hehe, that tickles! Give me another boop!",
+            "🥰 You're my favorite human today!",
+            "🌟 Boop! Fully recharged by your smile!",
+            "😋 Nom nom! That click was delicious!",
+            "🤗 High five! Let's build something awesome together!"
         ];
         let clickFlavorIndex = 0;
+        let clickComboCount = 0;
+        let comboResetTimer = null;
+        let holdTimer = null;
+        let isHolding = false;
+        let petPassCount = 0;
+        let lastPetTime = Date.now();
+        let lastPetX = null;
 
-        // Click & keyboard interaction
+        const triggerPingAnimation = () => {
+            asciiDisplay.classList.remove('core-ping');
+            void asciiDisplay.offsetWidth;
+            asciiDisplay.classList.add('core-ping');
+            setTimeout(() => {
+                asciiDisplay.classList.remove('core-ping');
+            }, 400);
+        };
+
+        // Click & keyboard interaction with combos
         const triggerAsciiReaction = () => {
+            if (isHolding) return;
             isInteracting = true;
             lastInteraction = Date.now();
             lastUserActivity = Date.now();
@@ -430,23 +510,40 @@ class ArchPortfolio {
                 isDormant = false;
             }
 
-            // Visual ping animation
-            asciiDisplay.classList.remove('core-ping');
-            void asciiDisplay.offsetWidth; // force reflow for re-trigger
-            asciiDisplay.classList.add('core-ping');
-            setTimeout(() => {
-                asciiDisplay.classList.remove('core-ping');
-            }, 400);
+            triggerPingAnimation();
 
-            const reactions = [2, 4, 6]; // happy, excited, surprised
-            const reactionFrame = reactions[Math.floor(Math.random() * reactions.length)];
+            // Track rapid click combos (within 1.2s)
+            clickComboCount++;
+            clearTimeout(comboResetTimer);
+            comboResetTimer = setTimeout(() => {
+                clickComboCount = 0;
+            }, 1200);
+
+            const reactions = [2, 4, 6, 10, 13, 14]; // happy, excited, surprised, love, blep, cat!
+            let reactionFrame = reactions[Math.floor(Math.random() * reactions.length)];
+            let reactionMessage = clickFlavorMessages[clickFlavorIndex];
+            clickFlavorIndex = (clickFlavorIndex + 1) % clickFlavorMessages.length;
+
+            if (clickComboCount === 2) {
+                reactionFrame = 13; // blep / playful
+                reactionMessage = "😄 Double poke! Double the fun!";
+            } else if (clickComboCount === 3) {
+                reactionFrame = 14; // cat purr
+                reactionMessage = "✨ 3x Combo! Hehehe, stop tickling me!";
+            } else if (clickComboCount === 4) {
+                reactionFrame = 10; // love / heart eyes
+                reactionMessage = "💖 4x Combo! Aww, you really like me!";
+            } else if (clickComboCount >= 5) {
+                reactionFrame = 12; // dizzy / derp
+                reactionMessage = `💥 COMBO x${clickComboCount}! Whoaaa, you're full of energy!`;
+            }
+
             if (frameEl) {
                 frameEl.textContent = asciiFrames[reactionFrame];
             }
 
             if (statusEl) {
-                statusEl.textContent = clickFlavorMessages[clickFlavorIndex];
-                clickFlavorIndex = (clickFlavorIndex + 1) % clickFlavorMessages.length;
+                statusEl.textContent = reactionMessage;
             }
 
             setTimeout(() => {
@@ -463,25 +560,114 @@ class ArchPortfolio {
             }
         });
 
+        // Double-click easter egg (Cool sunglasses Hackerman mode)
+        asciiDisplay.addEventListener('dblclick', (e) => {
+            e.preventDefault();
+            isInteracting = true;
+            lastUserActivity = Date.now();
+            triggerPingAnimation();
+            if (frameEl) {
+                frameEl.textContent = asciiFrames[11]; // Cool sunglasses
+            }
+            if (statusEl) {
+                statusEl.textContent = "😎 Chill Mode | Look at us, we're the coolest team!";
+            }
+            setTimeout(() => {
+                isInteracting = false;
+                refreshCoreDisplay();
+            }, 2500);
+        });
+
+        // Long-press / Hold energy charge interaction
+        const startHold = () => {
+            if (isInteracting || isGlitched) return;
+            clearTimeout(holdTimer);
+            holdTimer = setTimeout(() => {
+                isHolding = true;
+                if (frameEl) {
+                    frameEl.textContent = asciiFrames[7]; // charging / hard at work
+                }
+                if (statusEl) {
+                    statusEl.textContent = "🔋 Charging up happiness... keep holding...";
+                }
+            }, 450);
+        };
+
+        const releaseHold = () => {
+            clearTimeout(holdTimer);
+            if (isHolding) {
+                isHolding = false;
+                isInteracting = true;
+                lastUserActivity = Date.now();
+                triggerPingAnimation();
+                if (frameEl) {
+                    frameEl.textContent = asciiFrames[10]; // Heart eyes
+                }
+                if (statusEl) {
+                    statusEl.textContent = "💥 KABOOM! Pure joy explosion! Love you! ✨";
+                }
+                setTimeout(() => {
+                    isInteracting = false;
+                    refreshCoreDisplay();
+                }, 2500);
+            }
+        };
+
+        asciiDisplay.addEventListener('mousedown', startHold);
+        asciiDisplay.addEventListener('mouseup', releaseHold);
+        asciiDisplay.addEventListener('touchstart', startHold, { passive: true });
+        asciiDisplay.addEventListener('touchend', releaseHold, { passive: true });
+
         // Hover interaction
         asciiDisplay.addEventListener('mouseenter', () => {
-            if (!isInteracting) {
+            if (!isInteracting && !isHolding) {
                 isHovered = true;
                 refreshCoreDisplay();
             }
         });
 
         asciiDisplay.addEventListener('mouseleave', () => {
+            releaseHold();
             if (!isInteracting) {
                 isHovered = false;
                 refreshCoreDisplay();
             }
         });
 
+        // Petting / Mouse scrubbing interaction
+        asciiDisplay.addEventListener('mousemove', (e) => {
+            if (isInteracting || isGlitched || isDormant || isHolding) return;
+            const now = Date.now();
+            if (lastPetX !== null && Math.abs(e.clientX - lastPetX) > 15) {
+                if (now - lastPetTime < 500) {
+                    petPassCount++;
+                    if (petPassCount >= 6) {
+                        isInteracting = true;
+                        petPassCount = 0;
+                        triggerPingAnimation();
+                        if (frameEl) {
+                            frameEl.textContent = asciiFrames[14]; // Cat purr
+                        }
+                        if (statusEl) {
+                            statusEl.textContent = "😺 *purrs* Aww, you're petting me! So cozy!";
+                        }
+                        setTimeout(() => {
+                            isInteracting = false;
+                            refreshCoreDisplay();
+                        }, 2200);
+                    }
+                } else {
+                    petPassCount = 1;
+                }
+                lastPetTime = now;
+            }
+            lastPetX = e.clientX;
+        });
+
         // Scheduled natural blinking and mood changes without CPU-heavy polling
         const scheduleBlink = () => {
             const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            if (!isReducedMotion && !isInteracting && !isDormant && !isBurst && !isGlitched && (currentFrame === 0 || currentFrame === 8)) {
+            if (!isReducedMotion && !isInteracting && !isDormant && !isBurst && !isGlitched && !isHolding && (currentFrame === 0 || currentFrame === 8)) {
                 const originalFrame = currentFrame;
                 currentFrame = 1; // blink
                 if (frameEl) {
@@ -498,11 +684,11 @@ class ArchPortfolio {
         };
 
         const scheduleMoodChange = () => {
-            if (!isInteracting && !isDormant && !isBurst && !isGlitched) {
+            if (!isInteracting && !isDormant && !isBurst && !isGlitched && !isHolding) {
                 if (this.currentWorkspace !== 5 && Math.random() < getGlitchProbability()) {
                     triggerGlitch();
                 } else {
-                    const moods = [0, 2, 5]; // idle, happy, thinking
+                    const moods = [0, 2, 3, 5, 9, 10, 11, 13, 14]; // expanded playful mood set
                     currentFrame = moods[Math.floor(Math.random() * moods.length)];
                     refreshCoreDisplay();
                 }
