@@ -1,0 +1,90 @@
+{
+  "header": {
+    "directory": "~/arcade",
+    "command": "ls -la arcade/",
+    "total": 3,
+    "user": "alij",
+    "group": "staff",
+    "date": "Sep 04"
+  },
+  "games": [
+    {
+      "id": "snake",
+      "title": "Latent Explorer",
+      "executable": "latent_explorer.sh",
+      "size": "4.2K",
+      "permissions": "-rwxr-xr-x",
+      "badge": "PLAYABLE",
+      "status": "playable",
+      "description": "Navigate a vector through latent space, collecting embeddings without colliding with your own trajectory.",
+      "genre": "Neural Sandbox / Arcade",
+      "version": "v1.0.0",
+      "controlsPreview": [
+        { "key": "WASD / ↑↓←→", "action": "Steer vector trajectory" },
+        { "key": "Space / P", "action": "Pause thread" },
+        { "key": "R", "action": "Restart trajectory" },
+        { "key": "ESC", "action": "Quit to terminal menu" }
+      ],
+      "asciiArt": [
+        "  _        _  _____ _____ _   _ _____ ",
+        " | |      / \\|_   _| ____| \\ | |_   _|",
+        " | |     / _ \\ | | |  _| |  \\| | | |  ",
+        " | |___ / ___ \\| | | |___| |\\  | | |  ",
+        " |_____/_/   \\_\\_| |_____|_| \\_| |_|  "
+      ]
+    },
+    {
+      "id": "token-stacker",
+      "title": "Token Stacker",
+      "executable": "token_stacker.sh",
+      "size": "5.2K",
+      "permissions": "-rwxr-xr-x",
+      "badge": "PLAYABLE",
+      "status": "playable",
+      "description": "Stack incoming tokens to keep your context window from overflowing. Flush full context lines before buffer memory fills.",
+      "genre": "Context Buffer / Arcade",
+      "version": "v1.0.0",
+      "controlsPreview": [
+        { "key": "WASD / ↑↓←→", "action": "Translate & rotate token block" },
+        { "key": "Space", "action": "Hard drop / flush to buffer" },
+        { "key": "P", "action": "Suspend context thread" },
+        { "key": "R", "action": "Reinitialize context buffer" },
+        { "key": "ESC", "action": "Quit to terminal menu" }
+      ],
+      "asciiArt": [
+        " _____ ___  _  _______ _   _ ",
+        "|_   _/ _ \\| |/ / ____| \\ | |",
+        "  | || | | | ' /|  _| |  \\| |",
+        "  | || |_| | . \\| |___| |\\  |",
+        "  |_| \\___/|_|\\_\\_____|_| \\_|"
+      ]
+    },
+    {
+      "id": "gradient-descent",
+      "title": "Gradient Descent",
+      "executable": "gradient_descent.sh",
+      "size": "4.8K",
+      "permissions": "-rwxr-xr-x",
+      "badge": "PLAYABLE",
+      "status": "playable",
+      "description": "Navigate the loss landscape to convergence — avoid getting stuck in local minima.",
+      "genre": "Optimization / Breakout",
+      "version": "v1.0.0",
+      "controlsPreview": [
+        { "key": "A/D / ←→", "action": "Steer optimizer paddle" },
+        { "key": "Space", "action": "Launch parameter ball / Resume" },
+        { "key": "[ / ]", "action": "Adjust learning rate dial" },
+        { "key": "P", "action": "Suspend optimization thread" },
+        { "key": "R", "action": "Restart optimization" },
+        { "key": "ESC", "action": "Quit to terminal menu" }
+      ],
+      "asciiArt": [
+        "  ____ ____      _    ____ ___ _____ _   _ _____ ",
+        " / ___|  _ \\    / \\  |  _ \\_ _| ____| \\ | |_   _|",
+        "| |  _| |_) |  / _ \\ | | | | ||  _| |  \\| | | |  ",
+        "| |_| |  _ <  / ___ \\| |_| | || |___| |\\  | | |  ",
+        " \\____|_| \\_\\/_/   \\_\\____/___|_____|_| \\_| |_|  "
+      ]
+    }
+  ]
+}

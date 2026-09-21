@@ -814,10 +814,751 @@ function renderProjectDetails(project) {
         `;
 }
 
+/**
+ * Renders the interactive terminal arcade directory menu (styled like ls -la ~/arcade).
+ * @param {Object} arcadeData - Metadata and games list
+ * @returns {string} HTML markup string
+ */
+function renderArcadeMenu(arcadeData) {
+    const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
+    const header = (arcadeData && arcadeData.header) ? arcadeData.header : {
+        directory: '~/arcade',
+        command: 'ls -la arcade/',
+        total: games.length,
+        user: 'alij',
+        group: 'staff',
+        date: 'Sep 04'
+    };
+
+    const gamesRows = games.map((game) => {
+        const badgeText = game.badge || (game.status === 'coming_soon' ? 'COMING SOON' : 'PLAYABLE');
+        const badgeClass = game.status === 'coming_soon' ? 'arcade-badge-soon' : 'arcade-badge-active';
+        return `
+            <button class="arcade-game-row" type="button" data-game-id="${game.id}" aria-label="Launch ${game.title} executable: ${game.executable}. Status: ${badgeText}. ${game.description}">
+                <div class="arcade-col-perms" aria-hidden="true">${game.permissions || '-rwxr-xr-x'}</div>
+                <div class="arcade-col-owner" aria-hidden="true">${header.user || 'alij'} ${header.group || 'staff'}</div>
+                <div class="arcade-col-size" aria-hidden="true">${game.size || '4.0K'}</div>
+                <div class="arcade-col-date" aria-hidden="true">${header.date || 'Sep 04'}</div>
+                <div class="arcade-col-name">
+                    <span class="arcade-exec-icon" aria-hidden="true">⚙</span>
+                    <span class="arcade-exec-name">${game.executable || `${game.id}.sh`}*</span>
+                    <span class="arcade-game-title">(${game.title})</span>
+                </div>
+                <div class="arcade-col-badge">
+                    <span class="arcade-badge ${badgeClass}">${badgeText}</span>
+                </div>
+                <div class="arcade-col-action" aria-hidden="true">
+                    <span class="arcade-action-btn">[RUN]</span>
+                </div>
+            </button>
+        `;
+    }).join('');
+
+    return `
+        <div class="arcade-menu-container">
+            <div class="arcade-terminal-prompt">
+                <span class="user">${header.user || 'alij'}@portfolio</span><span class="separator">:</span><span class="path">${header.directory || '~/arcade'}</span><span class="prompt">$</span>
+                <span class="arcade-typed-cmd">${header.command || 'ls -la arcade/'}</span>
+            </div>
+            
+            <div class="arcade-listing-header">
+                <div class="arcade-total-info">total ${games.length} file(s) (workspace 5 kernel sandbox)</div>
+                <div class="arcade-table-headers" aria-hidden="true">
+                    <span class="arcade-th perms">PERMISSIONS</span>
+                    <span class="arcade-th owner">OWNER</span>
+                    <span class="arcade-th size">SIZE</span>
+                    <span class="arcade-th date">DATE</span>
+                    <span class="arcade-th name">EXECUTABLE // PROGRAM</span>
+                    <span class="arcade-th badge">STATUS</span>
+                    <span class="arcade-th action">ACTION</span>
+                </div>
+            </div>
+
+            <div class="arcade-games-list" role="list" aria-label="Arcade Executables Directory">
+                ${gamesRows}
+            </div>
+
+            <div class="arcade-directory-footer">
+                <div class="arcade-terminal-tip">
+                    <span class="arcade-tip-icon" aria-hidden="true">ℹ</span>
+                    <span>Select an executable using <strong>Tab / Click</strong> and press <strong>[Enter]</strong> • Press <strong>[ESC]</strong> to exit arcade.</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Renders the detailed view/placeholder for a selected arcade game.
+ * @param {Object} game - Game metadata object
+ * @returns {string} HTML markup string
+ */
+function renderArcadeGamePlaceholder(game) {
+    if (!game) {
+        return `<div class="arcade-placeholder-error">Error: Game executable not found.</div>`;
+    }
+
+    const asciiLines = Array.isArray(game.asciiArt) ? game.asciiArt.join('\n') : '';
+    const controls = Array.isArray(game.controlsPreview) ? game.controlsPreview : [];
+
+    const controlsHtml = controls.map(c => `
+        <div class="arcade-control-item">
+            <kbd class="arcade-key-badge">${c.key}</kbd>
+            <span class="arcade-control-action">${c.action}</span>
+        </div>
+    `).join('');
+
+    return `
+        <div class="arcade-game-detail-container" role="region" aria-label="${game.title} details and status">
+            <div class="arcade-detail-nav">
+                <button class="arcade-back-btn" id="arcade-back-to-menu-btn" type="button" aria-label="Back to arcade executables directory">
+                    <span aria-hidden="true">←</span> cd .. (Back to Arcade Menu) <span class="arcade-key-hint" aria-hidden="true">[ESC]</span>
+                </button>
+                <div class="arcade-process-status">
+                    <span class="arcade-pulse-dot" aria-hidden="true"></span>
+                    <span class="arcade-status-text">PID: 7701 // STATUS: STAGED_FOR_DEPLOYMENT</span>
+                </div>
+            </div>
+
+            <div class="arcade-placeholder-content">
+                <div class="arcade-header-block">
+                    <div class="arcade-executable-meta">
+                        <span class="arcade-meta-tag">EXE: ./${game.executable}</span>
+                        <span class="arcade-meta-tag">VER: ${game.version || 'v0.1.0-alpha'}</span>
+                        <span class="arcade-meta-tag">GENRE: ${game.genre || 'Terminal Arcade'}</span>
+                    </div>
+                    ${asciiLines ? `<pre class="arcade-ascii-art" aria-hidden="true">${asciiLines}</pre>` : ''}
+                    <h3 class="arcade-game-headline">${game.title} - Terminal Arcade</h3>
+                    <p class="arcade-game-summary">${game.description}</p>
+                </div>
+
+                <div class="arcade-stage-notice">
+                    <div class="arcade-notice-badge">
+                        <span class="arcade-notice-icon" aria-hidden="true">⏳</span>
+                        <span>DEPLOYMENT STAGE: COMING SOON</span>
+                    </div>
+                    <p class="arcade-notice-desc">
+                        Process binary <code>./${game.executable}</code> is currently being compiled in kernel sandbox. The full interactive terminal simulation will launch in the next sprint deployment.
+                    </p>
+                </div>
+
+                <div class="arcade-preview-section">
+                    <h4 class="arcade-section-title">// PLANNED INPUT MAPPINGS</h4>
+                    <div class="arcade-controls-grid">
+                        ${controlsHtml}
+                    </div>
+                </div>
+
+                <div class="arcade-preview-section">
+                    <h4 class="arcade-section-title">// SYSTEM ENVIRONMENT</h4>
+                    <div class="arcade-env-specs">
+                        <div class="arcade-spec-item">
+                            <span class="arcade-spec-label">Terminal Renderer:</span>
+                            <span class="arcade-spec-val">HTML5 Canvas / Fixed-grid CharBuffer</span>
+                        </div>
+                        <div class="arcade-spec-item">
+                            <span class="arcade-spec-label">Audio Engine:</span>
+                            <span class="arcade-spec-val">WebAudio Synthesized Retro Chiptune Bleeps</span>
+                        </div>
+                        <div class="arcade-spec-item">
+                            <span class="arcade-spec-label">Tick Rate:</span>
+                            <span class="arcade-spec-val">10 Hz (Classic 100ms cycle)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Renders the interactive terminal Snake game interface.
+ * @param {Object} game - Game metadata object
+ * @param {number} highScore - Best saved score
+ * @returns {string} HTML markup string
+ */
+function renderSnakeGame(game, highScore = 0) {
+    const formattedBest = String(highScore).padStart(4, '0');
+    const asciiLines = (game && Array.isArray(game.asciiArt)) ? game.asciiArt.join('\n') : '';
+
+    return `
+        <div class="arcade-game-container arcade-snake-container" role="region" aria-label="Latent Explorer Game Terminal Workspace">
+            <div class="arcade-detail-nav">
+                <button class="arcade-back-btn" id="arcade-back-to-menu-btn" type="button" aria-label="Back to arcade executables directory">
+                    <span aria-hidden="true">←</span> cd .. (Back to Arcade Menu) <span class="arcade-key-hint" aria-hidden="true">[ESC]</span>
+                </button>
+                <div class="arcade-process-status">
+                    <span class="arcade-pulse-dot" aria-hidden="true"></span>
+                    <span class="arcade-status-text" id="snake-status-text">AGENT: 0x7701 // STATUS: READY</span>
+                </div>
+            </div>
+
+            <!-- Game HUD / Scoreboard -->
+            <div class="arcade-hud" role="status" aria-label="Live Game Telemetry">
+                <div class="arcade-hud-metrics">
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label">VECTORS:</span>
+                        <span class="arcade-hud-val" id="snake-score-display">0000</span>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label">PEAK:</span>
+                        <span class="arcade-hud-val arcade-hud-best" id="snake-highscore-display">${formattedBest}</span>
+                    </div>
+                    <div class="arcade-hud-item arcade-hud-extra">
+                        <span class="arcade-hud-label">DIM:</span>
+                        <span class="arcade-hud-val" id="snake-length-display">03</span>
+                    </div>
+                    <div class="arcade-hud-item" id="snake-coherence-item">
+                        <span class="arcade-hud-label">COHERENCE:</span>
+                        <span class="arcade-hud-val" id="snake-coherence-display">1.0x</span>
+                    </div>
+                </div>
+                <div class="arcade-hud-actions">
+                    <button class="arcade-hud-btn" id="snake-pause-btn" type="button" aria-label="Pause or resume game execution">
+                        <span id="snake-pause-btn-text">PAUSE [SPACE]</span>
+                    </button>
+                    <button class="arcade-hud-btn" id="snake-restart-hud-btn" type="button" aria-label="Restart game process">
+                        RESTART [R]
+                    </button>
+                </div>
+            </div>
+
+            <!-- Screen Reader Live Status Announcer -->
+            <div id="snake-live-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+            <!-- Canvas Viewport with Layered Terminal Overlays -->
+            <div class="arcade-canvas-wrapper" id="snake-canvas-wrapper">
+                <canvas id="snake-canvas" width="400" height="400" role="img" aria-label="Interactive Latent Explorer game board. Use Arrow keys or WASD on desktop, or touch controls below on mobile."></canvas>
+
+                <!-- Start Overlay -->
+                <div class="arcade-game-overlay" id="snake-start-overlay">
+                    <div class="arcade-overlay-card">
+                        ${asciiLines ? `<pre class="arcade-ascii-art" aria-hidden="true">${asciiLines}</pre>` : ''}
+                        <h3 class="arcade-overlay-title">LATENT_EXPLORER // VECTOR NAVIGATOR</h3>
+                        <p class="arcade-overlay-desc">
+                            Navigate a vector through latent space to collect data nodes (embeddings). Avoid boundary collapse or self-intersecting your trajectory.
+                        </p>
+                        <div class="arcade-overlay-controls-hint">
+                            <div class="hint-item"><kbd class="arcade-key-badge">WASD / ↑↓←→</kbd> <span>Steer Vector</span></div>
+                            <div class="hint-item"><kbd class="arcade-key-badge">Space / P</kbd> <span>Pause Thread</span></div>
+                            <div class="hint-item"><kbd class="arcade-key-badge">R</kbd> <span>Restart</span></div>
+                            <div class="hint-item"><kbd class="arcade-key-badge">ESC</kbd> <span>Arcade Menu</span></div>
+                        </div>
+                        <button class="arcade-btn arcade-btn-primary" id="snake-start-btn" type="button">
+                            ▶ LAUNCH VECTOR [PRESS ANY KEY / TAP]
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pause Overlay -->
+                <div class="arcade-game-overlay" id="snake-pause-overlay" style="display: none;">
+                    <div class="arcade-overlay-card">
+                        <div class="arcade-overlay-tag">[ THREAD SUSPENDED ]</div>
+                        <h3 class="arcade-overlay-title">GAME PAUSED</h3>
+                        <p class="arcade-overlay-desc">CPU tick halted. Press Space, P, or click Resume to continue execution.</p>
+                        <div class="arcade-overlay-actions">
+                            <button class="arcade-btn arcade-btn-primary" id="snake-resume-btn" type="button">
+                                ▶ RESUME THREAD [SPACE]
+                            </button>
+                            <button class="arcade-btn arcade-btn-secondary" id="snake-restart-from-pause-btn" type="button">
+                                ↺ RESTART [R]
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Over Overlay -->
+                <div class="arcade-game-overlay" id="snake-gameover-overlay" style="display: none;">
+                    <div class="arcade-overlay-card arcade-overlay-gameover">
+                        <div class="arcade-overlay-tag arcade-tag-danger">[ TRAJECTORY COLLAPSED: BOUNDARY DRIFT ]</div>
+                        <h3 class="arcade-overlay-title">TRAJECTORY COLLAPSED</h3>
+                        <div class="arcade-gameover-scores">
+                            <div class="arcade-gameover-stat">
+                                <span class="stat-label">FINAL VECTORS</span>
+                                <span class="stat-val" id="snake-final-score">0000</span>
+                            </div>
+                            <div class="arcade-gameover-stat">
+                                <span class="stat-label">PEAK EMBEDDINGS</span>
+                                <span class="stat-val" id="snake-gameover-best">${formattedBest}</span>
+                            </div>
+                        </div>
+                        <div id="snake-new-highscore-badge" class="arcade-new-record" style="display: none;">
+                            ★ NEW PEAK RECORDED TO LATENT REGISTRY ★
+                        </div>
+                        <div class="arcade-overlay-actions">
+                            <button class="arcade-btn arcade-btn-primary" id="snake-restart-btn" type="button">
+                                ↺ EXPLORE AGAIN [R / ENTER]
+                            </button>
+                            <button class="arcade-btn arcade-btn-secondary" id="snake-exit-to-menu-btn" type="button">
+                                ← ARCADE MENU [ESC]
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Touch Controls / D-Pad for Mobile Viewports -->
+            <div class="arcade-touch-controls" id="snake-touch-controls" aria-label="On-screen directional controls">
+                <div class="arcade-dpad">
+                    <button class="arcade-dpad-btn dpad-up" id="dpad-up" type="button" aria-label="Steer Up">
+                        <span aria-hidden="true">▲</span>
+                    </button>
+                    <div class="arcade-dpad-middle">
+                        <button class="arcade-dpad-btn dpad-left" id="dpad-left" type="button" aria-label="Steer Left">
+                            <span aria-hidden="true">◀</span>
+                        </button>
+                        <div class="arcade-dpad-center" aria-hidden="true">●</div>
+                        <button class="arcade-dpad-btn dpad-right" id="dpad-right" type="button" aria-label="Steer Right">
+                            <span aria-hidden="true">▶</span>
+                        </button>
+                    </div>
+                    <button class="arcade-dpad-btn dpad-down" id="dpad-down" type="button" aria-label="Steer Down">
+                        <span aria-hidden="true">▼</span>
+                    </button>
+                </div>
+                <div class="arcade-touch-tip" aria-hidden="true">
+                    <span>Swipe on canvas or tap D-pad to steer</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Renders the interactive terminal Token Stacker (Tetris-like) game interface.
+ * @param {Object} game - Game metadata object
+ * @param {number} highScore - Best saved score
+ * @returns {string} HTML markup string
+ */
+function renderStackerGame(game, highScore = 0) {
+    const formattedBest = String(highScore).padStart(6, '0');
+    const asciiLines = (game && Array.isArray(game.asciiArt)) ? game.asciiArt.join('\n') : '';
+
+    return `
+        <div class="arcade-game-container arcade-stacker-container" role="region" aria-label="Token Stacker Game Terminal Workspace">
+            <div class="arcade-detail-nav">
+                <button class="arcade-back-btn" id="arcade-back-to-menu-btn" type="button" aria-label="Back to arcade executables directory">
+                    <span aria-hidden="true">←</span> cd .. (Back to Arcade Menu) <span class="arcade-key-hint" aria-hidden="true">[ESC]</span>
+                </button>
+                <div class="arcade-process-status">
+                    <span class="arcade-pulse-dot" aria-hidden="true"></span>
+                    <span class="arcade-status-text" id="stacker-status-text">AGENT: 0x4B3A // STATUS: READY</span>
+                </div>
+            </div>
+
+            <!-- Game HUD / Scoreboard Telemetry -->
+            <div class="arcade-hud" role="status" aria-label="Live Game Telemetry">
+                <div class="arcade-hud-metrics">
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label"><span class="hud-full-label">TOKENS PROCESSED:</span><span class="hud-short-label" aria-hidden="true">TOKENS:</span></span>
+                        <span class="arcade-hud-val" id="stacker-score-display">000000</span>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label">PEAK:</span>
+                        <span class="arcade-hud-val arcade-hud-best" id="stacker-highscore-display">${formattedBest}</span>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label"><span class="hud-full-label">CONTEXT FLUSHED:</span><span class="hud-short-label" aria-hidden="true">FLUSHED:</span></span>
+                        <span class="arcade-hud-val" id="stacker-lines-display">00</span>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label">DEPTH:</span>
+                        <span class="arcade-hud-val" id="stacker-level-display">00</span>
+                    </div>
+                    <div class="arcade-hud-item arcade-hud-temp-group">
+                        <span class="arcade-hud-label">TEMP:</span>
+                        <div class="arcade-temp-stepper">
+                            <button class="arcade-temp-btn" id="stacker-temp-dec-btn" type="button" aria-label="Decrease Temperature (Key: Left Bracket)">-</button>
+                            <span class="arcade-hud-val arcade-hud-temp" id="stacker-temp-display">1.0x</span>
+                            <button class="arcade-temp-btn" id="stacker-temp-inc-btn" type="button" aria-label="Increase Temperature (Key: Right Bracket)">+</button>
+                        </div>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label"><span class="hud-full-label">DECAYED:</span><span class="hud-short-label" aria-hidden="true">LOST:</span></span>
+                        <span class="arcade-hud-val arcade-hud-decayed" id="stacker-decayed-display">00</span>
+                    </div>
+                </div>
+                <div class="arcade-hud-actions">
+                    <button class="arcade-hud-btn" id="stacker-pause-btn" type="button" aria-label="Pause or resume token stream">
+                        <span id="stacker-pause-btn-text">PAUSE [P]</span>
+                    </button>
+                    <button class="arcade-hud-btn" id="stacker-restart-hud-btn" type="button" aria-label="Restart context buffer">
+                        RESTART [R]
+                    </button>
+                </div>
+            </div>
+
+            <!-- Screen Reader Live Status Announcer -->
+            <div id="stacker-live-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+            <!-- Stage: Board Viewport + Next Token Sidebar -->
+            <div class="arcade-stacker-stage">
+                <div class="arcade-stacker-board-wrapper" id="stacker-canvas-wrapper">
+                    <canvas id="stacker-canvas" width="200" height="400" role="img" aria-label="Interactive Token Stacker game board. 10 by 20 grid. Use Left and Right arrows to shift, Up to rotate, Down to drop, Space for hard drop."></canvas>
+
+                    <!-- Flush Feedback Overlay Banner -->
+                    <div class="arcade-stacker-flush-cue" id="stacker-flush-cue" style="display: none;" aria-hidden="true">
+                        <span class="flush-cue-text" id="stacker-flush-cue-text">CONTEXT FLUSHED</span>
+                    </div>
+
+                    <!-- Decay Feedback Overlay Banner -->
+                    <div class="arcade-stacker-decay-cue" id="stacker-decay-cue" style="display: none;" aria-hidden="true">
+                        <span class="decay-cue-text" id="stacker-decay-cue-text">CONTEXT DECAYED [-1 ROW]</span>
+                    </div>
+
+                    <!-- Start Overlay -->
+                    <div class="arcade-game-overlay" id="stacker-start-overlay">
+                        <div class="arcade-overlay-card">
+                            ${asciiLines ? `<pre class="arcade-ascii-art" aria-hidden="true">${asciiLines}</pre>` : ''}
+                            <h3 class="arcade-overlay-title">TOKEN_STACKER // CONTEXT_BUFFER</h3>
+                            <p class="arcade-overlay-desc">
+                                Stack incoming token blocks to keep your context window from overflowing. Adjust temperature to balance processing speed against context decay risk. Flush full context lines to purge memory.
+                            </p>
+                            <div class="arcade-overlay-controls-hint">
+                                <div class="hint-item"><kbd class="arcade-key-badge">A/D / ←→</kbd> <span>Shift Position</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">W / ↑</kbd> <span>Rotate</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">S / ↓</kbd> <span>Soft Drop</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">Space</kbd> <span>Hard Flush</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">[ / ]</kbd> <span>Temperature Dial</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">P</kbd> <span>Suspend Thread</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">R</kbd> <span>Restart</span></div>
+                            </div>
+                            <button class="arcade-btn arcade-btn-primary" id="stacker-start-btn" type="button">
+                                ▶ INITIALIZE CONTEXT [ENTER / TAP]
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pause Overlay -->
+                    <div class="arcade-game-overlay" id="stacker-pause-overlay" style="display: none;">
+                        <div class="arcade-overlay-card">
+                            <div class="arcade-overlay-tag">[ THREAD SUSPENDED ]</div>
+                            <h3 class="arcade-overlay-title">TOKEN STREAM PAUSED</h3>
+                            <p class="arcade-overlay-desc">CPU tick halted. Press P, Space, or click Resume to continue token ingestion.</p>
+                            <div class="arcade-overlay-actions">
+                                <button class="arcade-btn arcade-btn-primary" id="stacker-resume-btn" type="button">
+                                    ▶ RESUME THREAD [P]
+                                </button>
+                                <button class="arcade-btn arcade-btn-secondary" id="stacker-restart-from-pause-btn" type="button">
+                                    ↺ RESTART [R]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game Over Overlay -->
+                    <div class="arcade-game-overlay" id="stacker-gameover-overlay" style="display: none;">
+                        <div class="arcade-overlay-card arcade-overlay-gameover">
+                            <div class="arcade-overlay-tag arcade-tag-danger">[ OOM: CONTEXT BUFFER LIMIT EXCEEDED ]</div>
+                            <h3 class="arcade-overlay-title">CONTEXT WINDOW OVERFLOW</h3>
+                            <div class="arcade-gameover-scores">
+                                <div class="arcade-gameover-stat">
+                                    <span class="stat-label">TOKENS PROCESSED</span>
+                                    <span class="stat-val" id="stacker-final-score">000000</span>
+                                </div>
+                                <div class="arcade-gameover-stat">
+                                    <span class="stat-label">PEAK RECORD</span>
+                                    <span class="stat-val" id="stacker-gameover-best">${formattedBest}</span>
+                                </div>
+                            </div>
+                            <div class="arcade-gameover-extra-stats">
+                                <span class="arcade-mini-stat">CONTEXT FLUSHED: <strong id="stacker-gameover-lines">00</strong></span>
+                                <span class="arcade-mini-stat">DECAYED: <strong id="stacker-gameover-decayed">00</strong></span>
+                                <span class="arcade-mini-stat">DEPTH: <strong id="stacker-gameover-depth">00</strong></span>
+                            </div>
+                            <div id="stacker-new-highscore-badge" class="arcade-new-record" style="display: none;">
+                                ★ NEW PEAK RECORD COMMITTED TO REGISTRY ★
+                            </div>
+                            <div class="arcade-overlay-actions">
+                                <button class="arcade-btn arcade-btn-primary" id="stacker-restart-btn" type="button">
+                                    ↺ PURGE & RESTART [R / ENTER]
+                                </button>
+                                <button class="arcade-btn arcade-btn-secondary" id="stacker-exit-to-menu-btn" type="button">
+                                    ← ARCADE MENU [ESC]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar: Next Token Preview & Buffer Level -->
+                <div class="arcade-stacker-sidebar">
+                    <div class="arcade-stacker-panel">
+                        <div class="arcade-panel-label">NEXT TOKEN</div>
+                        <div class="arcade-next-canvas-wrapper">
+                            <canvas id="stacker-next-canvas" width="80" height="80" role="img" aria-label="Preview of next upcoming token piece"></canvas>
+                        </div>
+                        <div class="arcade-next-token-name" id="stacker-next-name">---</div>
+                    </div>
+
+                    <div class="arcade-stacker-panel arcade-buffer-panel">
+                        <div class="arcade-panel-label">BUFFER CAPACITY</div>
+                        <div class="arcade-buffer-meter" aria-hidden="true">
+                            <div class="arcade-buffer-fill" id="stacker-buffer-fill" style="height: 0%;"></div>
+                        </div>
+                        <div class="arcade-buffer-text" id="stacker-buffer-text">0 / 20 LINES (0%)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Touch Controls for Mobile Viewports -->
+            <div class="arcade-touch-controls arcade-stacker-touch-controls" id="stacker-touch-controls" aria-label="On-screen game controls">
+                <div class="arcade-stacker-touch-row">
+                    <button class="arcade-touch-btn" id="touch-left" type="button" aria-label="Shift Token Left">
+                        <span aria-hidden="true">◀</span>
+                    </button>
+                    <button class="arcade-touch-btn" id="touch-rotate" type="button" aria-label="Rotate Token">
+                        <span aria-hidden="true">↻</span>
+                    </button>
+                    <button class="arcade-touch-btn" id="touch-right" type="button" aria-label="Shift Token Right">
+                        <span aria-hidden="true">▶</span>
+                    </button>
+                    <button class="arcade-touch-btn" id="touch-down" type="button" aria-label="Soft Drop Token">
+                        <span aria-hidden="true">▼</span>
+                    </button>
+                    <button class="arcade-touch-btn touch-btn-harddrop" id="touch-harddrop" type="button" aria-label="Hard Flush Token">
+                        <span aria-hidden="true">⚡ FLUSH</span>
+                    </button>
+                </div>
+                <div class="arcade-stacker-touch-row arcade-stacker-temp-row">
+                    <button class="arcade-touch-btn touch-btn-temp" id="touch-temp-dec" type="button" aria-label="Decrease Temperature">
+                        <span>TEMP -</span>
+                    </button>
+                    <div class="arcade-touch-temp-readout" aria-hidden="true">
+                        <span class="touch-temp-label">TEMP:</span>
+                        <span class="touch-temp-val" id="touch-temp-display">1.0x</span>
+                    </div>
+                    <button class="arcade-touch-btn touch-btn-temp" id="touch-temp-inc" type="button" aria-label="Increase Temperature">
+                        <span>TEMP +</span>
+                    </button>
+                </div>
+                <div class="arcade-touch-tip" aria-hidden="true">
+                    <span>Tap controls to shift, rotate, or flush tokens. Adjust TEMP to balance speed vs reward.</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Renders the interactive terminal Gradient Descent (Breakout-like) game interface.
+ * @param {Object} game - Game metadata object
+ * @param {number} highScore - Best saved score
+ * @returns {string} HTML markup string
+ */
+function renderGradientGame(game, highScore = 0) {
+    const formattedBest = String(highScore).padStart(6, '0');
+    const asciiLines = (game && Array.isArray(game.asciiArt)) ? game.asciiArt.join('\n') : '';
+
+    return `
+        <div class="arcade-game-container arcade-gradient-container" role="region" aria-label="Gradient Descent Game Terminal Workspace">
+            <div class="arcade-detail-nav">
+                <button class="arcade-back-btn" id="arcade-back-to-menu-btn" type="button" aria-label="Back to arcade executables directory">
+                    <span aria-hidden="true">←</span> cd .. (Back to Arcade Menu) <span class="arcade-key-hint" aria-hidden="true">[ESC]</span>
+                </button>
+                <div class="arcade-process-status">
+                    <span class="arcade-pulse-dot" aria-hidden="true"></span>
+                    <span class="arcade-status-text" id="gradient-status-text">OPTIMIZER: 0x6E4D // STATUS: READY</span>
+                </div>
+            </div>
+
+            <!-- Game HUD / Scoreboard Telemetry -->
+            <div class="arcade-hud" role="status" aria-label="Live Game Telemetry">
+                <div class="arcade-hud-metrics">
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label"><span class="hud-full-label">LOSS REDUCED:</span><span class="hud-short-label" aria-hidden="true">LOSS:</span></span>
+                        <span class="arcade-hud-val" id="gradient-score-display">000000</span>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label">PEAK:</span>
+                        <span class="arcade-hud-val arcade-hud-best" id="gradient-highscore-display">${formattedBest}</span>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label">EPOCH:</span>
+                        <span class="arcade-hud-val" id="gradient-epoch-display">01</span>
+                    </div>
+                    <div class="arcade-hud-item">
+                        <span class="arcade-hud-label"><span class="hud-full-label">GRADIENT STEPS:</span><span class="hud-short-label" aria-hidden="true">STEPS:</span></span>
+                        <span class="arcade-hud-val arcade-hud-lives" id="gradient-lives-display">3</span>
+                    </div>
+                    <div class="arcade-hud-item arcade-hud-lr-group">
+                        <span class="arcade-hud-label"><span class="hud-full-label">LEARNING RATE:</span><span class="hud-short-label" aria-hidden="true">LR:</span></span>
+                        <div class="arcade-lr-stepper">
+                            <button class="arcade-temp-btn" id="gradient-lr-dec-btn" type="button" aria-label="Decrease Learning Rate (Key: Left Bracket)">-</button>
+                            <span class="arcade-hud-val arcade-hud-lr" id="gradient-lr-display">1.0x</span>
+                            <button class="arcade-temp-btn" id="gradient-lr-inc-btn" type="button" aria-label="Increase Learning Rate (Key: Right Bracket)">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="arcade-hud-actions">
+                    <button class="arcade-hud-btn" id="gradient-pause-btn" type="button" aria-label="Pause or resume optimization thread">
+                        <span id="gradient-pause-btn-text">PAUSE [P]</span>
+                    </button>
+                    <button class="arcade-hud-btn" id="gradient-restart-hud-btn" type="button" aria-label="Restart loss landscape optimization">
+                        RESTART [R]
+                    </button>
+                </div>
+            </div>
+
+            <!-- Screen Reader Live Status Announcer -->
+            <div id="gradient-live-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+            <!-- Stage: Board Viewport -->
+            <div class="arcade-gradient-stage">
+                <div class="arcade-gradient-board-wrapper" id="gradient-canvas-wrapper">
+                    <canvas id="gradient-canvas" width="400" height="500" role="img" aria-label="Interactive Gradient Descent game board. Steer optimizer paddle with arrows or drag to eliminate loss terms."></canvas>
+
+                    <!-- Feedback Cue Banner (Local Minima, Escape, Convergence) -->
+                    <div class="arcade-gradient-cue" id="gradient-cue" style="display: none;" aria-hidden="true">
+                        <span class="gradient-cue-text" id="gradient-cue-text">STUCK IN LOCAL MINIMUM</span>
+                    </div>
+
+                    <!-- Start Overlay -->
+                    <div class="arcade-game-overlay" id="gradient-start-overlay">
+                        <div class="arcade-overlay-card">
+                            ${asciiLines ? `<pre class="arcade-ascii-art" aria-hidden="true">${asciiLines}</pre>` : ''}
+                            <h3 class="arcade-overlay-title">GRADIENT_DESCENT // LOSS_LANDSCAPE</h3>
+                            <p class="arcade-overlay-desc">
+                                Navigate parameter position through the loss landscape. Steer the optimizer paddle to eliminate loss terms and converge to global minimum. Adjust learning rate to escape local minima traps.
+                            </p>
+                            <div class="arcade-overlay-controls-hint">
+                                <div class="hint-item"><kbd class="arcade-key-badge">A/D / ←→</kbd> <span>Steer Optimizer</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">Space</kbd> <span>Launch / Pause</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">[ / ]</kbd> <span>Learning Rate Dial</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">P</kbd> <span>Suspend Thread</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">R</kbd> <span>Restart</span></div>
+                                <div class="hint-item"><kbd class="arcade-key-badge">ESC</kbd> <span>Arcade Menu</span></div>
+                            </div>
+                            <button class="arcade-btn arcade-btn-primary" id="gradient-start-btn" type="button">
+                                ▶ LAUNCH OPTIMIZATION [ENTER / TAP]
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pause Overlay -->
+                    <div class="arcade-game-overlay" id="gradient-pause-overlay" style="display: none;">
+                        <div class="arcade-overlay-card">
+                            <div class="arcade-overlay-tag">[ OPTIMIZER SUSPENDED ]</div>
+                            <h3 class="arcade-overlay-title">OPTIMIZATION PAUSED</h3>
+                            <p class="arcade-overlay-desc">Gradient updates halted. Press P, Space, or click Resume to continue descent.</p>
+                            <div class="arcade-overlay-actions">
+                                <button class="arcade-btn arcade-btn-primary" id="gradient-resume-btn" type="button">
+                                    ▶ RESUME THREAD [P]
+                                </button>
+                                <button class="arcade-btn arcade-btn-secondary" id="gradient-restart-from-pause-btn" type="button">
+                                    ↺ RESTART [R]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Converged (Epoch Clear) Overlay -->
+                    <div class="arcade-game-overlay" id="gradient-converged-overlay" style="display: none;">
+                        <div class="arcade-overlay-card arcade-overlay-converged">
+                            <div class="arcade-overlay-tag arcade-tag-success">[ GLOBAL MINIMUM REACHED // CONVERGENCE ]</div>
+                            <h3 class="arcade-overlay-title">CONVERGED!</h3>
+                            <p class="arcade-overlay-desc">All loss terms in epoch eliminated. Parameter weights converged.</p>
+                            <div class="arcade-gameover-scores">
+                                <div class="arcade-gameover-stat">
+                                    <span class="stat-label">LOSS REDUCED</span>
+                                    <span class="stat-val" id="gradient-converged-score">000000</span>
+                                </div>
+                                <div class="arcade-gameover-stat">
+                                    <span class="stat-label">EPOCH COMPLETED</span>
+                                    <span class="stat-val" id="gradient-converged-epoch">01</span>
+                                </div>
+                            </div>
+                            <div class="arcade-gameover-extra-stats">
+                                <span class="arcade-mini-stat">STEPS REMAINING: <strong id="gradient-converged-steps">3</strong></span>
+                                <span class="arcade-mini-stat">TERMS CLEARED: <strong id="gradient-converged-blocks">00</strong></span>
+                            </div>
+                            <div class="arcade-overlay-actions">
+                                <button class="arcade-btn arcade-btn-primary" id="gradient-next-epoch-btn" type="button">
+                                    ▶ PROCEED TO NEXT EPOCH [SPACE / ENTER]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game Over (Diverged) Overlay -->
+                    <div class="arcade-game-overlay" id="gradient-gameover-overlay" style="display: none;">
+                        <div class="arcade-overlay-card arcade-overlay-gameover">
+                            <div class="arcade-overlay-tag arcade-tag-danger">[ OPTIMIZATION FAILED: LOSS DIVERGENCE ]</div>
+                            <h3 class="arcade-overlay-title">DIVERGED!</h3>
+                            <div class="arcade-gameover-scores">
+                                <div class="arcade-gameover-stat">
+                                    <span class="stat-label">LOSS REDUCED</span>
+                                    <span class="stat-val" id="gradient-final-score">000000</span>
+                                </div>
+                                <div class="arcade-gameover-stat">
+                                    <span class="stat-label">PEAK RECORD</span>
+                                    <span class="stat-val" id="gradient-gameover-best">${formattedBest}</span>
+                                </div>
+                            </div>
+                            <div class="arcade-gameover-extra-stats">
+                                <span class="arcade-mini-stat">EPOCH REACHED: <strong id="gradient-gameover-epoch">01</strong></span>
+                                <span class="arcade-mini-stat">TERMS CLEARED: <strong id="gradient-gameover-blocks">00</strong></span>
+                            </div>
+                            <div id="gradient-new-highscore-badge" class="arcade-new-record" style="display: none;">
+                                ★ NEW PEAK CONVERGENCE RECORD COMMITTED ★
+                            </div>
+                            <div class="arcade-overlay-actions">
+                                <button class="arcade-btn arcade-btn-primary" id="gradient-restart-btn" type="button">
+                                    ↺ RE-INITIALIZE OPTIMIZER [R / ENTER]
+                                </button>
+                                <button class="arcade-btn arcade-btn-secondary" id="gradient-exit-to-menu-btn" type="button">
+                                    ← ARCADE MENU [ESC]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Touch Controls for Mobile Viewports -->
+            <div class="arcade-touch-controls arcade-gradient-touch-controls" id="gradient-touch-controls" aria-label="On-screen game controls">
+                <div class="arcade-gradient-touch-row">
+                    <button class="arcade-touch-btn" id="touch-paddle-left" type="button" aria-label="Steer Optimizer Left">
+                        <span aria-hidden="true">◀ STEER</span>
+                    </button>
+                    <button class="arcade-touch-btn touch-btn-launch" id="touch-launch" type="button" aria-label="Launch Ball or Pause">
+                        <span id="touch-launch-text" aria-hidden="true">⚡ LAUNCH</span>
+                    </button>
+                    <button class="arcade-touch-btn" id="touch-paddle-right" type="button" aria-label="Steer Optimizer Right">
+                        <span aria-hidden="true">STEER ▶</span>
+                    </button>
+                </div>
+                <div class="arcade-gradient-touch-row arcade-gradient-lr-row">
+                    <button class="arcade-touch-btn touch-btn-temp" id="touch-lr-dec" type="button" aria-label="Decrease Learning Rate">
+                        <span>LR -</span>
+                    </button>
+                    <div class="arcade-touch-temp-readout" aria-hidden="true">
+                        <span class="touch-temp-label">LEARNING RATE:</span>
+                        <span class="touch-temp-val" id="touch-lr-display">1.0x</span>
+                    </div>
+                    <button class="arcade-touch-btn touch-btn-temp" id="touch-lr-inc" type="button" aria-label="Increase Learning Rate">
+                        <span>LR +</span>
+                    </button>
+                </div>
+                <div class="arcade-touch-tip" aria-hidden="true">
+                    <span>Drag across canvas to steer optimizer. Tap LR +/- to balance descent speed against overshoot risk.</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 if (typeof window !== 'undefined') {
     window.renderCard = renderCard;
     window.renderSection = renderSection;
     window.renderGallery = renderGallery;
     window.renderGalleryPagination = renderGalleryPagination;
     window.renderProjectDetails = renderProjectDetails;
+    window.renderArcadeMenu = renderArcadeMenu;
+    window.renderArcadeGamePlaceholder = renderArcadeGamePlaceholder;
+    window.renderSnakeGame = renderSnakeGame;
+    window.renderStackerGame = renderStackerGame;
+    window.renderGradientGame = renderGradientGame;
 }
+
+

@@ -30,12 +30,20 @@ class ArchPortfolio {
         this.galleryVisibleCount = 12;
         this.currentRenderedLightboxItemId = null;
 
+        // Workspace 5 Arcade Shell state
+        this.currentArcadeView = 'menu';
+        this.lastFocusedArcadeRowId = null;
+        this.activeSnakeGame = null;
+
         this.init();
     }
 
     async loadJson(url) {
         try {
-            const res = await fetch(url);
+            let res = await fetch(url);
+            if (!res.ok && url.startsWith('./data/')) {
+                res = await fetch('.' + url);
+            }
             if (!res.ok) {
                 throw new Error(`HTTP ${res.status}: ${res.statusText}`);
             }
@@ -48,14 +56,15 @@ class ArchPortfolio {
 
     async loadAllData() {
         try {
-            const [about, skills, experience, achievements, portfolio, gallery, contact] = await Promise.all([
+            const [about, skills, experience, achievements, portfolio, gallery, contact, arcade] = await Promise.all([
                 this.loadJson('./data/about.json'),
                 this.loadJson('./data/skills.json'),
                 this.loadJson('./data/experience.json'),
                 this.loadJson('./data/achievements.json'),
                 this.loadJson('./data/projects.json'),
                 this.loadJson('./data/gallery.json'),
-                this.loadJson('./data/contact.json')
+                this.loadJson('./data/contact.json'),
+                this.loadJson('./data/arcade-games.json')
             ]);
 
             this.data = {
@@ -65,7 +74,8 @@ class ArchPortfolio {
                 achievements,
                 portfolio,
                 gallery,
-                contact
+                contact,
+                arcade: arcade || this.getFallbackArcadeData()
             };
         } catch (err) {
             console.error('[Portfolio Error] Critical error during data initialization:', err);
@@ -79,6 +89,7 @@ class ArchPortfolio {
         this.setupSystemMetrics();
         this.setupNavigation();
         this.setupGalleryLightbox();
+        this.setupArcade();
         await this.loadAllData();
 
         // Check for direct link / auto-open pane flag or query parameter
@@ -98,28 +109,6 @@ class ArchPortfolio {
             this.updateSystemMetrics();
             setInterval(() => this.updateSystemMetrics(), 3000);
         }
-    }
-
-    setupWaybar() {
-        this.updateClock();
-        setInterval(() => this.updateClock(), 1000);
-
-        // Workspace switching via top bar
-        document.querySelectorAll('.workspace-item').forEach((item, index) => {
-            item.addEventListener('click', () => {
-                this.switchWorkspace(index + 1);
-            });
-            item.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    this.switchWorkspace(index + 1);
-                }
-            });
-        });
-
-        // Update system info
-        this.updateSystemInfo();
-        setInterval(() => this.updateSystemInfo(), 5000);
     }
 
     updateClock() {
@@ -260,25 +249,90 @@ class ArchPortfolio {
 ║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
 ║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
 ║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+╚═══════════════════════════════════════╝`,
+            // In Love / Heart Eyes
+            `╔═══════════════════════════════════════╗
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░██░░██░░██░░██░░░░░░░░░░░░░░░░░░░░   ║
+║   ░██████░░██████░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░████░░░░████░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░▄▄░░░░░░░░▄▄░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░▄▄▄▄▄▄▄▄░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+╚═══════════════════════════════════════╝`,
+            // Cool Shades Hackerman
+            `╔═══════════════════════════════════════╗
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░██████████████░░░░░░░░░░░░░░░░░░░░   ║
+║   ░████░░░░░░████░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░▄▄▄▄▄▄░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░▄▄▄▄▄▄░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+╚═══════════════════════════════════════╝`,
+            // Dizzy / Derp
+            `╔═══════════════════════════════════════╗
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░▄▄░░▄▄░░▄▄░░▄▄░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░▄▄░░▄▄░░▄▄░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+╚═══════════════════════════════════════╝`,
+            // Playful Blep
+            `╔═══════════════════════════════════════╗
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░▄▄░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░▄▄░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░▄▄▄▄▄▄▄▄░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+╚═══════════════════════════════════════╝`,
+            // Cute Kitty Purr
+            `╔═══════════════════════════════════════╗
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░██░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░██░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░▄░░░░░░░░▄░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░▄▄░░▄▄░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
+║   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ║
 ╚═══════════════════════════════════════╝`
         ];
 
         const statusMessages = [
-            "✨ AI Core Online ✨ | Processing requests...",
-            "😊 Blink Blink | Just checking everything's good!",
-            "😄 Happy Mode | Creating awesome stuff!",
-            "😉 Wink Wink | Got some cool ideas brewing...",
-            "🚀 Super Excited | Maximum productivity achieved!",
-            "🤔 Thinking Hard | Solving complex problems...",
-            "😲 Mind = Blown | Discovering new possibilities!",
-            "💪 Hard at Work | Building amazing projects...",
-            "😴 Power Nap | Conserving energy... zzz...",
-            "😊 Ready to Go | Let's create something amazing!"
+            "Hey! Just hanging out, how's it going?",
+            "Oops, had something in my eye! Haha.",
+            "Having such a good day today. Hope you are too!",
+            "Just had a fun idea, not gonna lie.",
+            "Oh sweet, this is awesome! So excited!",
+            "Hmm... let me think about that for a second.",
+            "Wait, seriously?! No way!",
+            "In the zone right now, let's get stuff done.",
+            "Gonna rest my eyes for a minute... zzz...",
+            "All set! What are we doing next?",
+            "Aww, you're so sweet! That totally made my day.",
+            "Just chilling and staying cool. You know how it is.",
+            "Whoa, my head is spinning a bit... where are we?",
+            "Haha, gotcha! Just messing with you.",
+            "Feeling super relaxed right now, honestly so cozy."
         ];
 
         let currentFrame = 0;
         let isInteracting = false;
+        let isHovered = false;
+        let isBurst = false;
+        let isDormant = false;
         let lastInteraction = Date.now();
+        let lastUserActivity = Date.now();
+        let navTimestamps = [];
         const asciiDisplay = document.getElementById('ascii-animation');
 
         let frameEl = asciiDisplay.querySelector('.ascii-frame');
@@ -286,48 +340,215 @@ class ArchPortfolio {
         if (!frameEl || !statusEl) {
             asciiDisplay.innerHTML = `
                 <div class="ascii-frame"></div>
-                <div class="ascii-status"></div>
+                <div class="ascii-status" aria-live="polite" aria-atomic="true"></div>
             `;
             frameEl = asciiDisplay.querySelector('.ascii-frame');
             statusEl = asciiDisplay.querySelector('.ascii-status');
         }
 
-        asciiDisplay.style.cursor = 'pointer';
+        if (statusEl && !statusEl.hasAttribute('aria-live')) {
+            statusEl.setAttribute('aria-live', 'polite');
+            statusEl.setAttribute('aria-atomic', 'true');
+        }
 
-        const updateFrame = () => {
-            if (frameEl && frameEl.textContent !== asciiFrames[currentFrame]) {
-                frameEl.textContent = asciiFrames[currentFrame];
+        let isGlitched = false;
+        const GLITCH_PRODUCTION_PROBABILITY = 0.015; // 1.5% chance per state evaluation
+        const glitchFragments = [
+            "~/arcade",
+            "ws5: ???",
+            "ERR: /dev/arcade0",
+            "CORRUPT_SEGMENT [ws5]"
+        ];
+
+        const getGlitchProbability = () => {
+            if (typeof window !== 'undefined' && typeof window.__AI_CORE_GLITCH_PROBABILITY === 'number') {
+                return window.__AI_CORE_GLITCH_PROBABILITY;
             }
-            if (statusEl && statusEl.textContent !== statusMessages[currentFrame]) {
-                statusEl.textContent = statusMessages[currentFrame];
+            return GLITCH_PRODUCTION_PROBABILITY;
+        };
+
+        const triggerGlitch = () => {
+            // Never trigger if in Workspace 5, interacting, or already glitched
+            if (isGlitched || isInteracting || this.currentWorkspace === 5) return;
+            isGlitched = true;
+
+            const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!isReducedMotion) {
+                asciiDisplay.classList.add('core-glitch');
+            }
+
+            const fragment = glitchFragments[Math.floor(Math.random() * glitchFragments.length)];
+            if (statusEl) {
+                statusEl.textContent = fragment;
+            }
+
+            setTimeout(() => {
+                asciiDisplay.classList.remove('core-glitch');
+                isGlitched = false;
+                refreshCoreDisplay();
+            }, 750);
+        };
+
+        this.triggerAiCoreGlitch = triggerGlitch;
+
+        const getDesiredState = () => {
+            if (isInteracting || isGlitched) return null;
+            if (isHovered) {
+                return { frame: 2, status: "Oh hey! Click to say hello!" };
+            }
+            if (isBurst) {
+                return { frame: 12, status: "🏃 Whoa, slow down! You're clicking way too fast for me!" };
+            }
+            if (isDormant) {
+                return { frame: 8, status: "😴 I'm nodding off for a bit... poke me if you need me!" };
+            }
+            if (this.currentWorkspace === 5 || this.activeSnakeGame || this.activeStackerGame || this.activeGradientGame || (this.currentArcadeView && this.currentArcadeView !== 'menu')) {
+                return { frame: 4, status: "🕹️ Oh sweet, games! Let's see if we can beat the high score!" };
+            }
+            if (this.currentSection === 'gallery' || this.currentWorkspace === 3) {
+                return { frame: 10, status: "🎨 Look at all this art! I really love these colors." };
+            }
+            return { frame: currentFrame, status: statusMessages[currentFrame] };
+        };
+
+        const refreshCoreDisplay = () => {
+            if (isInteracting || isGlitched) return;
+            const desired = getDesiredState();
+            if (!desired) return;
+
+            if (frameEl && frameEl.textContent !== asciiFrames[desired.frame]) {
+                frameEl.textContent = asciiFrames[desired.frame];
+            }
+            if (statusEl && statusEl.textContent !== desired.status) {
+                statusEl.textContent = desired.status;
             }
         };
 
-        updateFrame();
+        this.notifyAiCoreContextChange = () => {
+            if (this.currentWorkspace !== 5 && !isInteracting && !isDormant && !isBurst && !isGlitched) {
+                if (Math.random() < getGlitchProbability()) {
+                    triggerGlitch();
+                    return;
+                }
+            }
+            refreshCoreDisplay();
+        };
 
-        // Click & keyboard interaction
+        this.recordNavigationForAiCore = () => {
+            const now = Date.now();
+            navTimestamps.push(now);
+            navTimestamps = navTimestamps.filter(t => now - t <= 2500);
+            if (navTimestamps.length >= 3 && !isBurst) {
+                isBurst = true;
+                navTimestamps = [];
+                refreshCoreDisplay();
+                setTimeout(() => {
+                    isBurst = false;
+                    refreshCoreDisplay();
+                }, 1800);
+            }
+        };
+
+        // Track global user interaction across the site for the 60s inactivity / dormant state
+        const registerUserActivity = () => {
+            lastUserActivity = Date.now();
+            if (isDormant) {
+                isDormant = false;
+                refreshCoreDisplay();
+            }
+        };
+
+        ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
+            window.addEventListener(evt, registerUserActivity, { passive: true });
+        });
+
+        setInterval(() => {
+            if (!isDormant && !isInteracting && !isBurst && !isGlitched && (Date.now() - lastUserActivity >= 60000)) {
+                isDormant = true;
+                refreshCoreDisplay();
+            }
+        }, 1000);
+
+        refreshCoreDisplay();
+
+        const clickFlavorMessages = [
+            "Hey! Haha, you caught me off guard!",
+            "Aww, thanks for stopping by to say hi!",
+            "Haha, alright alright, stop poking me!",
+            "You're seriously the best, you know that?",
+            "Always happy when you drop by to chat!",
+            "High five! What are we checking out next?",
+            "Hey! Good to see you hanging out here!",
+            "Haha, you really like clicking on me, don't you?",
+            "I was hoping you'd come say hi today!"
+        ];
+        let clickFlavorIndex = 0;
+        let clickComboCount = 0;
+        let comboResetTimer = null;
+        let holdTimer = null;
+        let isHolding = false;
+        let petPassCount = 0;
+        let lastPetTime = Date.now();
+        let lastPetX = null;
+
+        const triggerPingAnimation = () => {
+            asciiDisplay.classList.remove('core-ping');
+            void asciiDisplay.offsetWidth;
+            asciiDisplay.classList.add('core-ping');
+            setTimeout(() => {
+                asciiDisplay.classList.remove('core-ping');
+            }, 400);
+        };
+
+        // Click & keyboard interaction with combos
         const triggerAsciiReaction = () => {
+            if (isHolding) return;
             isInteracting = true;
             lastInteraction = Date.now();
+            lastUserActivity = Date.now();
+            if (isDormant) {
+                isDormant = false;
+            }
 
-            const reactions = [2, 4, 6]; // happy, excited, surprised
-            currentFrame = reactions[Math.floor(Math.random() * reactions.length)];
-            updateFrame();
+            triggerPingAnimation();
 
-            const messages = [
-                "🎉 Yay! You activated me! I'm so happy!",
-                "🚀 Woohoo! That was fun! Trigger me again!",
-                "😲 Oh wow! You startled me! Hehe!",
-                "💖 Aww, thanks for the attention!"
-            ];
+            // Track rapid click combos (within 1.2s)
+            clickComboCount++;
+            clearTimeout(comboResetTimer);
+            comboResetTimer = setTimeout(() => {
+                clickComboCount = 0;
+            }, 1200);
+
+            const reactions = [2, 4, 6, 10, 13, 14]; // happy, excited, surprised, love, blep, cat!
+            let reactionFrame = reactions[Math.floor(Math.random() * reactions.length)];
+            let reactionMessage = clickFlavorMessages[clickFlavorIndex];
+            clickFlavorIndex = (clickFlavorIndex + 1) % clickFlavorMessages.length;
+
+            if (clickComboCount === 2) {
+                reactionFrame = 13; // blep / playful
+                reactionMessage = "Haha, double poke! What's up?";
+            } else if (clickComboCount === 3) {
+                reactionFrame = 14; // cat purr
+                reactionMessage = "Hey hey, that really tickles! Cut it out, haha!";
+            } else if (clickComboCount === 4) {
+                reactionFrame = 10; // love / heart eyes
+                reactionMessage = "Okay, you're definitely doing that on purpose! Love you too!";
+            } else if (clickComboCount >= 5) {
+                reactionFrame = 12; // dizzy / derp
+                reactionMessage = `Whoa, ${clickComboCount} times in a row?! You've got way too much energy today!`;
+            }
+
+            if (frameEl) {
+                frameEl.textContent = asciiFrames[reactionFrame];
+            }
+
             if (statusEl) {
-                statusEl.textContent = messages[Math.floor(Math.random() * messages.length)];
+                statusEl.textContent = reactionMessage;
             }
 
             setTimeout(() => {
                 isInteracting = false;
-                currentFrame = 0;
-                updateFrame();
+                refreshCoreDisplay();
             }, 2000);
         };
 
@@ -339,34 +560,123 @@ class ArchPortfolio {
             }
         });
 
+        // Double-click easter egg (Cool sunglasses Hackerman mode)
+        asciiDisplay.addEventListener('dblclick', (e) => {
+            e.preventDefault();
+            isInteracting = true;
+            lastUserActivity = Date.now();
+            triggerPingAnimation();
+            if (frameEl) {
+                frameEl.textContent = asciiFrames[11]; // Cool sunglasses
+            }
+            if (statusEl) {
+                statusEl.textContent = "Oh you know it! Just kicking back and staying cool.";
+            }
+            setTimeout(() => {
+                isInteracting = false;
+                refreshCoreDisplay();
+            }, 2500);
+        });
+
+        // Long-press / Hold energy charge interaction
+        const startHold = () => {
+            if (isInteracting || isGlitched) return;
+            clearTimeout(holdTimer);
+            holdTimer = setTimeout(() => {
+                isHolding = true;
+                if (frameEl) {
+                    frameEl.textContent = asciiFrames[7]; // thinking/hard at work
+                }
+                if (statusEl) {
+                    statusEl.textContent = "Wait, why are you holding onto me like that...?";
+                }
+            }, 450);
+        };
+
+        const releaseHold = () => {
+            clearTimeout(holdTimer);
+            if (isHolding) {
+                isHolding = false;
+                isInteracting = true;
+                lastUserActivity = Date.now();
+                triggerPingAnimation();
+                if (frameEl) {
+                    frameEl.textContent = asciiFrames[10]; // Heart eyes
+                }
+                if (statusEl) {
+                    statusEl.textContent = "Haha! Surprise hug! That was fun!";
+                }
+                setTimeout(() => {
+                    isInteracting = false;
+                    refreshCoreDisplay();
+                }, 2500);
+            }
+        };
+
+        asciiDisplay.addEventListener('mousedown', startHold);
+        asciiDisplay.addEventListener('mouseup', releaseHold);
+        asciiDisplay.addEventListener('touchstart', startHold, { passive: true });
+        asciiDisplay.addEventListener('touchend', releaseHold, { passive: true });
+
         // Hover interaction
         asciiDisplay.addEventListener('mouseenter', () => {
-            if (!isInteracting) {
-                currentFrame = 2; // happy face
-                updateFrame();
-                if (statusEl) {
-                    statusEl.textContent = "😊 Hey there! Click me for a surprise!";
-                }
+            if (!isInteracting && !isHolding) {
+                isHovered = true;
+                refreshCoreDisplay();
             }
         });
 
         asciiDisplay.addEventListener('mouseleave', () => {
+            releaseHold();
             if (!isInteracting) {
-                currentFrame = 0; // back to normal
-                updateFrame();
+                isHovered = false;
+                refreshCoreDisplay();
             }
+        });
+
+        // Petting / Mouse scrubbing interaction
+        asciiDisplay.addEventListener('mousemove', (e) => {
+            if (isInteracting || isGlitched || isDormant || isHolding) return;
+            const now = Date.now();
+            if (lastPetX !== null && Math.abs(e.clientX - lastPetX) > 15) {
+                if (now - lastPetTime < 500) {
+                    petPassCount++;
+                    if (petPassCount >= 6) {
+                        isInteracting = true;
+                        petPassCount = 0;
+                        triggerPingAnimation();
+                        if (frameEl) {
+                            frameEl.textContent = asciiFrames[14]; // Cat purr
+                        }
+                        if (statusEl) {
+                            statusEl.textContent = "Aww, that's actually really nice. So relaxing!";
+                        }
+                        setTimeout(() => {
+                            isInteracting = false;
+                            refreshCoreDisplay();
+                        }, 2200);
+                    }
+                } else {
+                    petPassCount = 1;
+                }
+                lastPetTime = now;
+            }
+            lastPetX = e.clientX;
         });
 
         // Scheduled natural blinking and mood changes without CPU-heavy polling
         const scheduleBlink = () => {
-            if (!isInteracting && (currentFrame === 0 || currentFrame === 8)) {
+            const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!isReducedMotion && !isInteracting && !isDormant && !isBurst && !isGlitched && !isHolding && (currentFrame === 0 || currentFrame === 8)) {
                 const originalFrame = currentFrame;
                 currentFrame = 1; // blink
-                updateFrame();
+                if (frameEl) {
+                    frameEl.textContent = asciiFrames[1];
+                }
                 setTimeout(() => {
                     if (!isInteracting && currentFrame === 1) {
                         currentFrame = originalFrame;
-                        updateFrame();
+                        refreshCoreDisplay();
                     }
                 }, 200);
             }
@@ -374,15 +684,14 @@ class ArchPortfolio {
         };
 
         const scheduleMoodChange = () => {
-            if (!isInteracting) {
-                const now = Date.now();
-                if (now - lastInteraction > 30000) {
-                    currentFrame = 8; // sleepy
+            if (!isInteracting && !isDormant && !isBurst && !isGlitched && !isHolding) {
+                if (this.currentWorkspace !== 5 && Math.random() < getGlitchProbability()) {
+                    triggerGlitch();
                 } else {
-                    const moods = [0, 2, 5]; // idle, happy, thinking
+                    const moods = [0, 2, 3, 5, 9, 10, 11, 13, 14]; // expanded playful mood set
                     currentFrame = moods[Math.floor(Math.random() * moods.length)];
+                    refreshCoreDisplay();
                 }
-                updateFrame();
             }
             setTimeout(scheduleMoodChange, 8000 + Math.random() * 4000);
         };
@@ -396,7 +705,8 @@ class ArchPortfolio {
         setInterval(() => this.updateClock(), 1000);
 
         // Workspace switching via top bar
-        document.querySelectorAll('.workspace-item').forEach((item, index) => {
+        const workspaceItems = Array.from(document.querySelectorAll('.workspace-item'));
+        workspaceItems.forEach((item, index) => {
             const handleWorkspaceClick = () => {
                 const targetWorkspace = index + 1;
                 this.switchWorkspace(targetWorkspace);
@@ -422,6 +732,20 @@ class ArchPortfolio {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     handleWorkspaceClick();
+                } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    const nextIndex = (index + 1) % workspaceItems.length;
+                    workspaceItems[nextIndex].focus();
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const prevIndex = (index - 1 + workspaceItems.length) % workspaceItems.length;
+                    workspaceItems[prevIndex].focus();
+                } else if (e.key === 'Home') {
+                    e.preventDefault();
+                    workspaceItems[0].focus();
+                } else if (e.key === 'End') {
+                    e.preventDefault();
+                    workspaceItems[workspaceItems.length - 1].focus();
                 }
             });
         });
@@ -472,6 +796,9 @@ class ArchPortfolio {
     }
 
     switchWorkspace(index) {
+        if (typeof this.recordNavigationForAiCore === 'function') {
+            this.recordNavigationForAiCore();
+        }
         if (this.currentWorkspace === index) return;
         this.currentWorkspace = index;
 
@@ -512,6 +839,69 @@ class ArchPortfolio {
         const mainWindow = document.getElementById('portfolio-window');
         const asciiViz = document.getElementById('ascii-viz');
         const navTerminal = document.getElementById('nav-terminal');
+        const arcadeWindow = document.getElementById('arcade-window');
+        const topBarTitle = document.getElementById('current-window');
+
+        // Workspace 5: Hidden Arcade Container
+        if (index === 5) {
+            // Hide standard dashboard panes
+            [systemMonitor, systemMetrics, asciiViz, navTerminal, mainWindow].forEach(el => {
+                if (el) el.style.display = 'none';
+            });
+
+            if (arcadeWindow) {
+                arcadeWindow.style.display = 'flex';
+                if (window.innerWidth >= 768) {
+                    arcadeWindow.style.gridColumn = '1 / -1';
+                    arcadeWindow.style.gridRow = '1 / -1';
+                } else {
+                    arcadeWindow.style.gridColumn = '';
+                    arcadeWindow.style.gridRow = '';
+                    arcadeWindow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+
+            if (topBarTitle) {
+                topBarTitle.textContent = 'AliJ A. Shaikh - Retro Terminal Arcade (Workspace 5)';
+            }
+
+            this.renderArcade();
+            if (typeof this.notifyAiCoreContextChange === 'function') {
+                this.notifyAiCoreContextChange();
+            }
+            return;
+        }
+
+        // When switching away from workspace 5, ensure arcade window is hidden and game stopped
+        if (this.activeSnakeGame) {
+            this.activeSnakeGame.destroy();
+            this.activeSnakeGame = null;
+        }
+        if (this.activeStackerGame) {
+            this.activeStackerGame.destroy();
+            this.activeStackerGame = null;
+        }
+        if (this.activeGradientGame) {
+            this.activeGradientGame.destroy();
+            this.activeGradientGame = null;
+        }
+
+        if (arcadeWindow) {
+            const focusWasInArcade = arcadeWindow.contains(document.activeElement);
+            arcadeWindow.style.display = 'none';
+            arcadeWindow.style.gridColumn = '';
+            arcadeWindow.style.gridRow = '';
+            if (focusWasInArcade) {
+                const targetTab = document.querySelector(`.workspace-item[aria-label="Workspace ${index}"]`);
+                if (targetTab) {
+                    targetTab.focus();
+                }
+            }
+        }
+
+        if (topBarTitle) {
+            topBarTitle.textContent = 'AliJ A. Shaikh - Portfolio';
+        }
 
         // Below 768px mobile breakpoint, allow CSS single-column stacked layout to manage display & grid properties
         if (window.innerWidth < 768) {
@@ -519,8 +909,12 @@ class ArchPortfolio {
                 if (el) el.style.display = '';
             });
             if (mainWindow) {
+                mainWindow.style.display = '';
                 mainWindow.style.gridColumn = '';
                 mainWindow.style.gridRow = '';
+            }
+            if (typeof this.notifyAiCoreContextChange === 'function') {
+                this.notifyAiCoreContextChange();
             }
             return;
         }
@@ -533,6 +927,7 @@ class ArchPortfolio {
             if (navTerminal) navTerminal.style.display = '';
 
             if (mainWindow) {
+                mainWindow.style.display = '';
                 mainWindow.style.gridColumn = '2 / -1';
                 mainWindow.style.gridRow = '1 / -1';
             }
@@ -543,9 +938,14 @@ class ArchPortfolio {
             if (navTerminal) navTerminal.style.display = '';
 
             if (mainWindow) {
+                mainWindow.style.display = '';
                 mainWindow.style.gridColumn = '';
                 mainWindow.style.gridRow = '';
             }
+        }
+
+        if (typeof this.notifyAiCoreContextChange === 'function') {
+            this.notifyAiCoreContextChange();
         }
     }
 
@@ -760,7 +1160,13 @@ class ArchPortfolio {
     }
 
     loadSection(section) {
+        if (typeof this.recordNavigationForAiCore === 'function') {
+            this.recordNavigationForAiCore();
+        }
         this.currentSection = section;
+        if (typeof this.notifyAiCoreContextChange === 'function') {
+            this.notifyAiCoreContextChange();
+        }
         const contentArea = document.getElementById('portfolio-content');
         contentArea.innerHTML = '';
 
@@ -1776,6 +2182,343 @@ ACHIEVEMENTS
                 ` : '')}
             `;
         }
+    }
+
+    setupArcade() {
+        // Global keydown handler for Escape when in workspace 5
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.currentWorkspace === 5) {
+                e.preventDefault();
+                if (this.currentArcadeView !== 'menu') {
+                    // If viewing a game placeholder, return to arcade menu
+                    this.returnToArcadeMenu();
+                } else {
+                    // If at root arcade menu, exit back to Workspace 1
+                    this.switchWorkspace(1);
+                    const targetTab = document.querySelector('.workspace-item[aria-label="Workspace 1"]') ||
+                                      document.querySelector('.workspace-item[aria-label="Workspace 5"]');
+                    if (targetTab) {
+                        targetTab.focus();
+                    }
+                }
+            }
+        });
+
+        // Window controls for arcade window (close -> return to workspace 1)
+        const arcadeCloseBtn = document.querySelector('#arcade-window .control.close');
+        if (arcadeCloseBtn) {
+            const handleArcadeClose = (e) => {
+                e.stopPropagation();
+                this.switchWorkspace(1);
+                const targetTab = document.querySelector('.workspace-item[aria-label="Workspace 1"]');
+                if (targetTab) {
+                    targetTab.focus();
+                }
+            };
+            arcadeCloseBtn.addEventListener('click', handleArcadeClose);
+            arcadeCloseBtn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleArcadeClose(e);
+                }
+            });
+        }
+    }
+
+    getFallbackArcadeData() {
+        return {
+            header: {
+                directory: '~/arcade',
+                command: 'ls -la arcade/',
+                total: 3,
+                user: 'alij',
+                group: 'staff',
+                date: 'Sep 04'
+            },
+            games: [
+                {
+                    id: 'snake',
+                    title: 'Latent Explorer',
+                    executable: 'latent_explorer.sh',
+                    size: '4.2K',
+                    permissions: '-rwxr-xr-x',
+                    badge: 'PLAYABLE',
+                    status: 'playable',
+                    description: 'Navigate a vector through latent space, collecting embeddings without colliding with your own trajectory.',
+                    genre: 'Neural Sandbox / Arcade',
+                    version: 'v1.0.0',
+                    controlsPreview: [
+                        { key: 'WASD / ↑↓←→', action: 'Steer vector trajectory' },
+                        { key: 'Space / P', action: 'Pause thread' },
+                        { key: 'R', action: 'Restart trajectory' },
+                        { key: 'ESC', action: 'Quit to terminal menu' }
+                    ],
+                    asciiArt: [
+                        "  _        _  _____ _____ _   _ _____ ",
+                        " | |      / \\|_   _| ____| \\ | |_   _|",
+                        " | |     / _ \\ | | |  _| |  \\| | | |  ",
+                        " | |___ / ___ \\| | | |___| |\\  | | |  ",
+                        " |_____/_/   \\_\\_| |_____|_| \\_| |_|  "
+                    ]
+                },
+                {
+                    id: 'token-stacker',
+                    title: 'Token Stacker',
+                    executable: 'token_stacker.sh',
+                    size: '5.2K',
+                    permissions: '-rwxr-xr-x',
+                    badge: 'PLAYABLE',
+                    status: 'playable',
+                    description: 'Stack incoming tokens to keep your context window from overflowing. Flush full context lines before buffer memory fills.',
+                    genre: 'Context Buffer / Arcade',
+                    version: 'v1.0.0',
+                    controlsPreview: [
+                        { key: 'WASD / ↑↓←→', action: 'Translate & rotate token block' },
+                        { key: 'Space', action: 'Hard drop / flush to buffer' },
+                        { key: 'P', action: 'Suspend context thread' },
+                        { key: 'R', action: 'Reinitialize context buffer' },
+                        { key: 'ESC', action: 'Quit to terminal menu' }
+                    ],
+                    asciiArt: [
+                        " _____ ___  _  _______ _   _ ",
+                        "|_   _/ _ \\| |/ / ____| \\ | |",
+                        "  | || | | | ' /|  _| |  \\| |",
+                        "  | || |_| | . \\| |___| |\\  |",
+                        "  |_| \\___/|_|\\_\\_____|_| \\_|"
+                    ]
+                },
+                {
+                    id: 'gradient-descent',
+                    title: 'Gradient Descent',
+                    executable: 'gradient_descent.sh',
+                    size: '4.8K',
+                    permissions: '-rwxr-xr-x',
+                    badge: 'PLAYABLE',
+                    status: 'playable',
+                    description: 'Navigate the loss landscape to convergence — avoid getting stuck in local minima.',
+                    genre: 'Optimization / Breakout',
+                    version: 'v1.0.0',
+                    controlsPreview: [
+                        { key: 'A/D / ←→', action: 'Steer optimizer paddle' },
+                        { key: 'Space', action: 'Launch parameter ball / Resume' },
+                        { key: '[ / ]', action: 'Adjust learning rate dial' },
+                        { key: 'P', action: 'Suspend optimization thread' },
+                        { key: 'R', action: 'Restart optimization' },
+                        { key: 'ESC', action: 'Quit to terminal menu' }
+                    ],
+                    asciiArt: [
+                        "  ____ ____      _    ____ ___ _____ _   _ _____ ",
+                        " / ___|  _ \\    / \\  |  _ \\_ _| ____| \\ | |_   _|",
+                        "| |  _| |_) |  / _ \\ | | | | ||  _| |  \\| | | |  ",
+                        "| |_| |  _ <  / ___ \\| |_| | || |___| |\\  | | |  ",
+                        " \\____|_| \\_\\/_/   \\_\\____/___|_____|_| \\_| |_|  "
+                    ]
+                }
+            ]
+        };
+    }
+
+    getSnakeHighScore() {
+        try {
+            const saved = localStorage.getItem('arcade-snake-highscore');
+            const val = parseInt(saved, 10);
+            return isNaN(val) || val < 0 ? 0 : val;
+        } catch (e) {
+            return 0;
+        }
+    }
+
+    getStackerHighScore() {
+        try {
+            const saved = localStorage.getItem('arcade-token-stacker-highscore');
+            const val = parseInt(saved, 10);
+            return isNaN(val) || val < 0 ? 0 : val;
+        } catch (e) {
+            return 0;
+        }
+    }
+
+    getGradientHighScore() {
+        try {
+            const saved = localStorage.getItem('arcade-gradient-descent-highscore');
+            const val = parseInt(saved, 10);
+            return isNaN(val) || val < 0 ? 0 : val;
+        } catch (e) {
+            return 0;
+        }
+    }
+
+    renderArcade() {
+        const arcadeContent = document.getElementById('arcade-content');
+        const arcadeTitle = document.getElementById('arcade-window-title');
+        if (!arcadeContent) return;
+
+        // Clean up any running game instance before switching views
+        if (this.activeSnakeGame) {
+            this.activeSnakeGame.destroy();
+            this.activeSnakeGame = null;
+        }
+        if (this.activeStackerGame) {
+            this.activeStackerGame.destroy();
+            this.activeStackerGame = null;
+        }
+        if (this.activeGradientGame) {
+            this.activeGradientGame.destroy();
+            this.activeGradientGame = null;
+        }
+
+        const arcadeData = (this.data && this.data.arcade) ? this.data.arcade : this.getFallbackArcadeData();
+
+        if (this.currentArcadeView === 'menu') {
+            if (arcadeTitle) {
+                arcadeTitle.textContent = 'USER@SYSTEM: ~/arcade';
+            }
+
+            if (typeof window.renderArcadeMenu === 'function') {
+                arcadeContent.innerHTML = window.renderArcadeMenu(arcadeData);
+            }
+
+            // Bind click & keyboard handlers to each game executable row
+            const gameRows = arcadeContent.querySelectorAll('.arcade-game-row');
+            gameRows.forEach(row => {
+                const gameId = row.dataset.gameId;
+                const handleSelect = () => {
+                    this.openArcadeGame(gameId, row);
+                };
+
+                row.addEventListener('click', handleSelect);
+                row.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleSelect();
+                    }
+                });
+            });
+
+            // Restore focus if returning from game view
+            if (this.lastFocusedArcadeRowId) {
+                const targetRow = arcadeContent.querySelector(`.arcade-game-row[data-game-id="${this.lastFocusedArcadeRowId}"]`);
+                if (targetRow) {
+                    targetRow.focus();
+                }
+            }
+        } else if (this.currentArcadeView === 'snake') {
+            const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
+            const game = games.find(g => g.id === 'snake') || games[0];
+
+            if (arcadeTitle) {
+                arcadeTitle.textContent = `USER@SYSTEM: ~/arcade/${game ? game.executable : 'snake.sh'}`;
+            }
+
+            const highScore = this.getSnakeHighScore();
+            if (typeof window.renderSnakeGame === 'function') {
+                arcadeContent.innerHTML = window.renderSnakeGame(game, highScore);
+            }
+
+            if (typeof window.ArcadeSnakeGame === 'function') {
+                this.activeSnakeGame = new window.ArcadeSnakeGame({
+                    onReturnToMenu: () => this.returnToArcadeMenu()
+                });
+            }
+
+            const startBtn = document.getElementById('snake-start-btn');
+            if (startBtn) {
+                startBtn.focus();
+            }
+        } else if (this.currentArcadeView === 'token-stacker') {
+            const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
+            const game = games.find(g => g.id === 'token-stacker') || games[0];
+
+            if (arcadeTitle) {
+                arcadeTitle.textContent = `USER@SYSTEM: ~/arcade/${game ? game.executable : 'token_stacker.sh'}`;
+            }
+
+            const highScore = this.getStackerHighScore();
+            if (typeof window.renderStackerGame === 'function') {
+                arcadeContent.innerHTML = window.renderStackerGame(game, highScore);
+            }
+
+            if (typeof window.ArcadeStackerGame === 'function') {
+                this.activeStackerGame = new window.ArcadeStackerGame({
+                    onReturnToMenu: () => this.returnToArcadeMenu()
+                });
+            }
+
+            const startBtn = document.getElementById('stacker-start-btn');
+            if (startBtn) {
+                startBtn.focus();
+            }
+        } else if (this.currentArcadeView === 'gradient-descent') {
+            const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
+            const game = games.find(g => g.id === 'gradient-descent') || games[0];
+
+            if (arcadeTitle) {
+                arcadeTitle.textContent = `USER@SYSTEM: ~/arcade/${game ? game.executable : 'gradient_descent.sh'}`;
+            }
+
+            const highScore = this.getGradientHighScore();
+            if (typeof window.renderGradientGame === 'function') {
+                arcadeContent.innerHTML = window.renderGradientGame(game, highScore);
+            }
+
+            if (typeof window.ArcadeGradientGame === 'function') {
+                this.activeGradientGame = new window.ArcadeGradientGame({
+                    onReturnToMenu: () => this.returnToArcadeMenu()
+                });
+            }
+
+            const startBtn = document.getElementById('gradient-start-btn');
+            if (startBtn) {
+                startBtn.focus();
+            }
+        } else {
+            // Detailed game placeholder view
+            const games = (arcadeData && arcadeData.games) ? arcadeData.games : [];
+            const game = games.find(g => g.id === this.currentArcadeView) || games[0];
+
+            if (arcadeTitle) {
+                arcadeTitle.textContent = `USER@SYSTEM: ~/arcade/${game ? game.executable : 'game'}`;
+            }
+
+            if (typeof window.renderArcadeGamePlaceholder === 'function') {
+                arcadeContent.innerHTML = window.renderArcadeGamePlaceholder(game);
+            }
+
+            const backBtn = document.getElementById('arcade-back-to-menu-btn');
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    this.returnToArcadeMenu();
+                });
+                backBtn.focus();
+            }
+        }
+
+        if (typeof this.notifyAiCoreContextChange === 'function') {
+            this.notifyAiCoreContextChange();
+        }
+    }
+
+    openArcadeGame(gameId, triggerEl) {
+        this.lastFocusedArcadeRowId = gameId;
+        this.currentArcadeView = gameId;
+        this.renderArcade();
+    }
+
+    returnToArcadeMenu() {
+        if (this.activeSnakeGame) {
+            this.activeSnakeGame.destroy();
+            this.activeSnakeGame = null;
+        }
+        if (this.activeStackerGame) {
+            this.activeStackerGame.destroy();
+            this.activeStackerGame = null;
+        }
+        if (this.activeGradientGame) {
+            this.activeGradientGame.destroy();
+            this.activeGradientGame = null;
+        }
+        this.currentArcadeView = 'menu';
+        this.renderArcade();
     }
 }
 
