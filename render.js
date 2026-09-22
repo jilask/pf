@@ -1604,12 +1604,64 @@ function renderGradientGame(game, highScore = 0) {
     `;
 }
 
+/**
+ * Renders the full markdown devlog post reading view.
+ * @param {Object} post - Post metadata from posts.json
+ * @param {string} renderedHtml - HTML output parsed by marked.js
+ * @returns {string} HTML markup string
+ */
+function renderPostDetails(post, renderedHtml) {
+    if (!post) return '<div>Post not found</div>';
+
+    const tags = Array.isArray(post.tags) ? post.tags : [];
+    const tagPills = tags.map(tag => `<span class="devlog-tag">${tag}</span>`).join('');
+
+    return `
+        <div class="devlog-post-container">
+            <div class="devlog-back-container" style="margin-bottom: 16px;">
+                <button type="button" class="devlog-back-btn" onclick="window.portfolio.loadSection('devlog')" aria-label="Back to Devlog post list">
+                    ← Back to Devlog
+                </button>
+            </div>
+
+            <div class="command-output">
+                <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~/devlog</span><span style="color: var(--accent-yellow);">$</span> cat ${post.markdownPath}
+            </div>
+
+            <header class="devlog-post-header" style="margin: 16px 0 20px; padding: 14px; background: rgba(255, 255, 255, 0.03); border-radius: 6px; border-left: 3px solid var(--accent-cyan);">
+                <div class="devlog-post-meta" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 8px; font-size: 11px; font-family: 'Fira Code', monospace; color: var(--text-secondary);">
+                    <time datetime="${post.date}">📅 ${post.date}</time>
+                    <span aria-hidden="true">•</span>
+                    <span>AUTHOR: AliJ A. Shaikh</span>
+                    <span aria-hidden="true">•</span>
+                    <span>STATUS: PUBLISHED</span>
+                </div>
+                <div class="devlog-post-tags" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;">
+                    ${tagPills}
+                </div>
+            </header>
+
+            <article class="devlog-markdown-body">
+                ${renderedHtml}
+            </article>
+
+            <div class="devlog-post-footer" style="margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <button type="button" class="devlog-back-btn" onclick="window.portfolio.loadSection('devlog')" aria-label="Back to Devlog post list">
+                    ← Back to Devlog
+                </button>
+                <span style="font-size: 11px; color: var(--text-dim); font-family: 'Fira Code', monospace;">EOF // ${post.id}.md</span>
+            </div>
+        </div>
+    `;
+}
+
 if (typeof window !== 'undefined') {
     window.renderCard = renderCard;
     window.renderSection = renderSection;
     window.renderGallery = renderGallery;
     window.renderGalleryPagination = renderGalleryPagination;
     window.renderProjectDetails = renderProjectDetails;
+    window.renderPostDetails = renderPostDetails;
     window.renderArcadeMenu = renderArcadeMenu;
     window.renderArcadeGamePlaceholder = renderArcadeGamePlaceholder;
     window.renderSnakeGame = renderSnakeGame;

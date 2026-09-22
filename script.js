@@ -1262,6 +1262,92 @@ class ArchPortfolio {
         return renderProjectDetails(project);
     }
 
+    async showPost(postId) {
+        if (!this.data || !this.data.posts) {
+            await this.loadAllData();
+        }
+        const post = Array.isArray(this.data.posts)
+            ? this.data.posts.find(p => p.id === postId)
+            : null;
+
+        const contentArea = document.getElementById('portfolio-content');
+        if (!contentArea) return;
+        contentArea.innerHTML = '';
+
+        const sectionElement = document.createElement('div');
+        sectionElement.className = 'content-section';
+
+        if (!post) {
+            sectionElement.innerHTML = `
+                <div class="terminal-text" style="color: var(--accent-red); padding: 16px;">
+                    <p>[ERROR 404] Devlog post not found: ${postId}</p>
+                    <div style="margin-top: 12px;">
+                        <button type="button" class="devlog-back-btn" onclick="window.portfolio.loadSection('devlog')" aria-label="Back to Devlog post list">
+                            ← Back to Devlog
+                        </button>
+                    </div>
+                </div>
+            `;
+            contentArea.appendChild(sectionElement);
+            requestAnimationFrame(() => sectionElement.classList.add('active'));
+            return;
+        }
+
+        const windowTitle = document.getElementById('current-window');
+        if (windowTitle) {
+            windowTitle.textContent = `Devlog: ${post.title}`;
+        }
+
+        // Show loading state
+        sectionElement.innerHTML = `
+            <div class="terminal-text" style="padding: 16px;">
+                <div class="command-output">
+                    <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~/devlog</span><span style="color: var(--accent-yellow);">$</span> cat ${post.markdownPath}
+                </div>
+                <p style="margin-top: 12px; color: var(--accent-cyan);">[SYSTEM] Loading post stream...</p>
+            </div>
+        `;
+        contentArea.appendChild(sectionElement);
+        requestAnimationFrame(() => sectionElement.classList.add('active'));
+
+        try {
+            let markdownPath = post.markdownPath;
+            let res = await fetch(markdownPath);
+            if (!res.ok && !markdownPath.startsWith('./')) {
+                res = await fetch('./' + markdownPath);
+            }
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            }
+            const markdownRaw = await res.text();
+            const renderedHtml = (typeof window.marked !== 'undefined' && window.marked.parse)
+                ? window.marked.parse(markdownRaw)
+                : `<pre>${markdownRaw}</pre>`;
+
+            sectionElement.innerHTML = renderPostDetails(post, renderedHtml);
+
+            requestAnimationFrame(() => {
+                const backBtn = sectionElement.querySelector('.devlog-back-btn');
+                if (backBtn) backBtn.focus();
+            });
+        } catch (err) {
+            console.error(`[Devlog Error] Failed to fetch post at ${post.markdownPath}:`, err);
+            sectionElement.innerHTML = `
+                <div class="terminal-text" style="color: var(--accent-red); padding: 16px; border: 1px solid var(--accent-red); border-radius: 6px; background: rgba(255, 0, 0, 0.05); margin-top: 16px;">
+                    <div style="font-weight: bold; margin-bottom: 8px;">[ERROR] Failed to load devlog post</div>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Path: ${post.markdownPath} (${err.message})</p>
+                    <button type="button" class="devlog-back-btn" onclick="window.portfolio.loadSection('devlog')" aria-label="Back to Devlog post list">
+                        ← Back to Devlog
+                    </button>
+                </div>
+            `;
+            requestAnimationFrame(() => {
+                const backBtn = sectionElement.querySelector('.devlog-back-btn');
+                if (backBtn) backBtn.focus();
+            });
+        }
+    }
+
     showProject(projectId) {
         const contentArea = document.getElementById('portfolio-content');
         if (!contentArea) return;
