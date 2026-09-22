@@ -5572,4 +5572,129 @@ button {
     }
 }
 
+/* ==========================================================================
+   Devlog & Engineering Journal Styles
+   ========================================================================== */
+
+.devlog-intro-banner {
+    margin: 12px 0 16px;
+    padding: 12px 16px;
+    background: rgba(57, 255, 20, 0.04);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-cyan);
+}
+
+.devlog-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.devlog-card-wrapper {
+    display: flex;
+    width: 100%;
+}
+
+.devlog-card {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: rgba(10, 15, 10, 0.7);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 18px 20px;
+    cursor: pointer;
+    font-family: inherit;
+    color: inherit;
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), 
+                border-color 0.2s ease, 
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.devlog-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-cyan);
+    background: rgba(15, 25, 15, 0.85);
+    box-shadow: 0 6px 20px rgba(57, 255, 20, 0.15);
+}
+
+.devlog-card:focus-visible {
+    outline: 2px solid var(--accent-cyan);
+    outline-offset: 3px;
+    border-color: var(--accent-cyan);
+}
+
+.devlog-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 11px;
+    font-family: 'Fira Code', monospace;
+}
+
+.devlog-card-date {
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.devlog-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.devlog-tag {
+    background: rgba(57, 255, 20, 0.1);
+    color: var(--accent-green);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-family: 'Fira Code', monospace;
+    letter-spacing: 0.3px;
+}
+
+.devlog-card-title {
+    color: var(--accent-cyan);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    transition: color 0.2s ease;
+}
+
+.devlog-card:hover .devlog-card-title {
+    color: #ffffff;
+    text-shadow: 0 0 8px var(--accent-cyan);
+}
+
+.devlog-card-summary {
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.devlog-card-action {
+    color: var(--accent-blue);
+    font-size: 11px;
+    font-family: 'Fira Code', monospace;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.devlog-card:hover .devlog-card-action {
+    color: var(--accent-yellow);
+}
+
 

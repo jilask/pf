@@ -20,6 +20,32 @@ function renderCard(item, type) {
                 </button>
             `;
 
+        case 'devlog_post': {
+            const tags = Array.isArray(item.tags) ? item.tags : [];
+            const tagPills = tags.map(tag => `<span class="devlog-tag">${tag}</span>`).join('');
+            const ariaLabel = `Read devlog post: ${item.title}, dated ${item.date}. ${item.summary}`;
+
+            return `
+                <article class="devlog-card-wrapper">
+                    <button class="devlog-card" type="button" onclick="window.portfolio.showPost('${item.id}')" aria-label="${ariaLabel}">
+                        <div class="devlog-card-meta">
+                            <time class="devlog-card-date" datetime="${item.date}">
+                                <span class="meta-icon" aria-hidden="true">📅</span> ${item.date}
+                            </time>
+                            <div class="devlog-card-tags" aria-label="Tags">
+                                ${tagPills}
+                            </div>
+                        </div>
+                        <h3 class="devlog-card-title">${item.title}</h3>
+                        <p class="devlog-card-summary">${item.summary}</p>
+                        <div class="devlog-card-action">
+                            <span class="action-prompt" aria-hidden="true">➜</span> cat ${item.markdownPath} <span class="action-arrow" aria-hidden="true">→</span>
+                        </div>
+                    </button>
+                </article>
+            `;
+        }
+
         case 'experience':
             return `
                 <article class="experience-item">
@@ -588,6 +614,36 @@ function renderSection(sectionType, data) {
                     <!-- Gallery Pagination Controls -->
                     <div id="gallery-pagination-wrap" class="gallery-pagination-wrap">
                         ${renderGalleryPagination(filteredItems.length, visibleItems.length)}
+                    </div>
+                </div>
+            `;
+        }
+
+        case 'devlog': {
+            const posts = Array.isArray(data) ? data : (data && data.posts ? data.posts : []);
+            // Sort newest first by date
+            const sortedPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            return `
+                <h2 class="section-title typewriter"># Devlog &amp; Engineering Journal</h2>
+                <div class="terminal-text" style="margin-top: 16px;">
+                    <div class="command-output">
+                        <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~</span><span style="color: var(--accent-yellow);">$</span> cat devlog.md
+                    </div>
+                    <div class="devlog-intro-banner" style="margin: 12px 0; padding: 12px; background: rgba(57, 255, 20, 0.04); border-radius: 6px; border-left: 3px solid var(--accent-cyan);">
+                        <p style="margin-bottom: 6px; line-height: 1.6; color: var(--text-primary);">
+                            Technical notes, architectural post-mortems, and engineering insights on Generative AI pipelines, ComfyUI nodes, and web systems.
+                        </p>
+                        <div style="font-size: 11px; color: var(--text-secondary); font-family: 'Fira Code', monospace;">
+                            Total posts logged: <span style="color: var(--accent-yellow);">${sortedPosts.length}</span> | Manifest: <span style="color: var(--accent-cyan);">data/posts.json</span>
+                        </div>
+                    </div>
+
+                    <div class="devlog-grid" role="feed" aria-label="Devlog Posts" style="margin-top: 16px;">
+                        ${sortedPosts.length > 0
+                            ? sortedPosts.map(post => renderCard(post, 'devlog_post')).join('')
+                            : '<div style="color: var(--text-dim); padding: 16px;">No posts published yet.</div>'
+                        }
                     </div>
                 </div>
             `;

@@ -56,7 +56,7 @@ class ArchPortfolio {
 
     async loadAllData() {
         try {
-            const [about, skills, experience, achievements, portfolio, gallery, contact, arcade] = await Promise.all([
+            const [about, skills, experience, achievements, portfolio, gallery, contact, arcade, posts] = await Promise.all([
                 this.loadJson('./data/about.json'),
                 this.loadJson('./data/skills.json'),
                 this.loadJson('./data/experience.json'),
@@ -64,7 +64,8 @@ class ArchPortfolio {
                 this.loadJson('./data/projects.json'),
                 this.loadJson('./data/gallery.json'),
                 this.loadJson('./data/contact.json'),
-                this.loadJson('./data/arcade-games.json')
+                this.loadJson('./data/arcade-games.json'),
+                this.loadJson('./data/posts.json')
             ]);
 
             this.data = {
@@ -75,7 +76,8 @@ class ArchPortfolio {
                 portfolio,
                 gallery,
                 contact,
-                arcade: arcade || this.getFallbackArcadeData()
+                arcade: arcade || this.getFallbackArcadeData(),
+                posts: posts || []
             };
         } catch (err) {
             console.error('[Portfolio Error] Critical error during data initialization:', err);
@@ -1136,6 +1138,7 @@ class ArchPortfolio {
             'achievements': 'cat achievements.txt',
             'portfolio': 'ls -la projects/',
             'gallery': 'ls gallery/',
+            'devlog': 'cat devlog.md',
             'contact': 'contact --info'
         };
 
@@ -1181,6 +1184,7 @@ class ArchPortfolio {
             'achievements': 'Key Achievements',
             'portfolio': 'Projects & Portfolio',
             'gallery': 'AI Art & Motion Gallery',
+            'devlog': 'Devlog // Engineering Journal',
             'contact': 'Contact Information'
         };
         windowTitle.textContent = titles[section] || 'Portfolio';
@@ -1203,6 +1207,9 @@ class ArchPortfolio {
                 break;
             case 'gallery':
                 sectionElement.innerHTML = this.getGalleryContent();
+                break;
+            case 'devlog':
+                sectionElement.innerHTML = this.getDevlogContent();
                 break;
             case 'contact':
                 sectionElement.innerHTML = this.getContactContent();
@@ -1238,6 +1245,10 @@ class ArchPortfolio {
 
     getGalleryContent() {
         return renderSection('gallery', this.data ? this.data.gallery : null);
+    }
+
+    getDevlogContent() {
+        return renderSection('devlog', this.data ? this.data.posts : null);
     }
 
     getContactContent() {
