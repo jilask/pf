@@ -621,8 +621,15 @@ function renderSection(sectionType, data) {
 
         case 'devlog': {
             const posts = Array.isArray(data) ? data : (data && data.posts ? data.posts : []);
-            // Sort newest first by date
-            const sortedPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+            // Sort newest first by date (YYYY-MM-DD descending)
+            const sortedPosts = [...posts].sort((a, b) => {
+                const timeA = new Date(a.date).getTime();
+                const timeB = new Date(b.date).getTime();
+                if (isNaN(timeA) || isNaN(timeB)) {
+                    return String(b.date || '').localeCompare(String(a.date || ''));
+                }
+                return timeB - timeA;
+            });
 
             return `
                 <h2 class="section-title typewriter"># Devlog &amp; Engineering Journal</h2>

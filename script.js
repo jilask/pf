@@ -1248,7 +1248,10 @@ class ArchPortfolio {
     }
 
     getDevlogContent() {
-        return renderSection('devlog', this.data ? this.data.posts : null);
+        const posts = (this.data && Array.isArray(this.data.posts))
+            ? [...this.data.posts].sort((a, b) => new Date(b.date) - new Date(a.date))
+            : (this.data ? this.data.posts : null);
+        return renderSection('devlog', posts);
     }
 
     getContactContent() {
