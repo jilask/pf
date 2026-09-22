@@ -24,6 +24,9 @@ export default defineConfig({
                 if (fs.existsSync('assets')) {
                     fs.cpSync('assets', 'dist/assets', { recursive: true });
                 }
+                if (fs.existsSync('content')) {
+                    fs.cpSync('content', 'dist/content', { recursive: true });
+                }
             }
         }
     ]
