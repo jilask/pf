@@ -5870,4 +5870,71 @@ button {
     }
 }
 
+/* Step 6 — Mobile Responsiveness (375px & small viewports) */
+@media (max-width: 768px) {
+    .devlog-card {
+        padding: 14px 14px;
+    }
+
+    .devlog-card-title {
+        font-size: 15px;
+    }
+
+    .devlog-card-summary {
+        font-size: 12px;
+    }
+
+    .devlog-markdown-body {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .devlog-markdown-body h1 {
+        font-size: 18px;
+    }
+
+    .devlog-markdown-body h2 {
+        font-size: 16px;
+    }
+
+    .devlog-markdown-body h3 {
+        font-size: 14px;
+    }
+
+    .devlog-markdown-body pre {
+        padding: 12px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .devlog-intro-banner {
+        padding: 10px 12px;
+    }
+
+    .devlog-card {
+        padding: 12px;
+    }
+
+    .devlog-card-meta {
+        font-size: 10px;
+        gap: 6px;
+    }
+
+    .devlog-tag {
+        font-size: 9px;
+        padding: 1px 6px;
+    }
+
+    .devlog-markdown-body pre {
+        padding: 10px;
+        font-size: 10.5px;
+    }
+
+    .devlog-markdown-body ul,
+    .devlog-markdown-body ol {
+        margin-left: 16px;
+    }
+}
+
 
