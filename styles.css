@@ -5861,4 +5861,13 @@ button {
     opacity: 0.5;
 }
 
+/* Step 5 — Reduced Motion Support for Devlog */
+@media (prefers-reduced-motion: reduce) {
+    .devlog-card,
+    .devlog-back-btn {
+        transition: none !important;
+        transform: none !important;
+    }
+}
+
 

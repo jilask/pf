@@ -1329,6 +1329,13 @@ class ArchPortfolio {
 
             sectionElement.innerHTML = renderPostDetails(post, renderedHtml);
 
+            sectionElement.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    window.portfolio.loadSection('devlog');
+                }
+            });
+
             requestAnimationFrame(() => {
                 const backBtn = sectionElement.querySelector('.devlog-back-btn');
                 if (backBtn) backBtn.focus();
