@@ -439,6 +439,40 @@ body::after {
     color: var(--accent-yellow);
 }
 
+/* Gallery — styled like a terminal directory */
+.nav-gallery,
+.nav-item.nav-gallery,
+.nav-gallery .nav-prompt,
+.nav-gallery .nav-cmd,
+.nav-gallery .nav-file,
+.nav-gallery span {
+    color: #56b6c2; /* cyan — adjust hex to match site palette if one exists */
+}
+
+/* Contact — styled like a root/admin prompt */
+.nav-contact,
+.nav-item.nav-contact,
+.nav-contact .nav-prompt,
+.nav-contact .nav-cmd,
+.nav-contact .nav-file,
+.nav-contact span {
+    color: #e06c75; /* terminal red — adjust to match site palette */
+}
+
+.nav-contact:hover,
+.nav-item.nav-contact:hover {
+    background-color: #e06c75;
+}
+
+.nav-contact:hover,
+.nav-item.nav-contact:hover,
+.nav-contact:hover .nav-prompt,
+.nav-contact:hover .nav-cmd,
+.nav-contact:hover .nav-file,
+.nav-contact:hover span {
+    color: #000000; /* black text on red = reverse video */
+}
+
 /* System Monitor (htop) */
 #htop-display {
     font-family: 'Fira Code', monospace;
