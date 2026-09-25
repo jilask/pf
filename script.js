@@ -1138,8 +1138,8 @@ class ArchPortfolio {
             'achievements': 'cat achievements.txt',
             'portfolio': 'ls -la projects/',
             'gallery': 'ls gallery/',
-            'devlog': 'cat devlog.md',
-            'contact': 'contact --info'
+            'contact': 'contact --info',
+            'devlog': 'cat devlog.md'
         };
 
         const fullCommand = commands[command] || command;
@@ -1184,8 +1184,8 @@ class ArchPortfolio {
             'achievements': 'Key Achievements',
             'portfolio': 'Projects & Portfolio',
             'gallery': 'AI Art & Motion Gallery',
-            'devlog': 'Devlog // Engineering Journal',
-            'contact': 'Contact Information'
+            'contact': 'Contact Information',
+            'devlog': 'Devlog // Engineering Journal'
         };
         windowTitle.textContent = titles[section] || 'Portfolio';
 
@@ -1208,11 +1208,11 @@ class ArchPortfolio {
             case 'gallery':
                 sectionElement.innerHTML = this.getGalleryContent();
                 break;
-            case 'devlog':
-                sectionElement.innerHTML = this.getDevlogContent();
-                break;
             case 'contact':
                 sectionElement.innerHTML = this.getContactContent();
+                break;
+            case 'devlog':
+                sectionElement.innerHTML = this.getDevlogContent();
                 break;
         }
 
@@ -1753,7 +1753,7 @@ ACHIEVEMENTS
         this.isPromptRevealedInModal = true;
         const guessBox = document.getElementById('prompt-guess-box');
         const promptContainer = document.getElementById('lightbox-prompt-container');
-        
+
         if (guessBox && promptContainer) {
             guessBox.style.opacity = '0';
             guessBox.style.transform = 'translateY(-4px)';
@@ -2105,11 +2105,11 @@ ACHIEVEMENTS
                             <span class="lightbox-subnav-label"><span class="terminal-prompt-char" aria-hidden="true">&gt;</span> VIEWS [${item.media.length}]:</span>
                             <div class="lightbox-subnav-strip">
                                 ${item.media.map((sub, idx) => {
-                                    const isActive = idx === this.currentCaseStudySubIndex;
-                                    const isSubVid = sub.type === 'video' || (typeof sub.full === 'string' && sub.full.endsWith('.mp4'));
-                                    const subThumb = sub.thumb || item.coverThumb || sub.full;
-                                    const subTitle = sub.caption || `View ${idx + 1}`;
-                                    return `
+                        const isActive = idx === this.currentCaseStudySubIndex;
+                        const isSubVid = sub.type === 'video' || (typeof sub.full === 'string' && sub.full.endsWith('.mp4'));
+                        const subThumb = sub.thumb || item.coverThumb || sub.full;
+                        const subTitle = sub.caption || `View ${idx + 1}`;
+                        return `
                                         <button type="button" 
                                                 role="tab"
                                                 class="lightbox-subnav-item ${isActive ? 'active' : ''}${isSubVid ? ' is-video' : ''}" 
@@ -2122,7 +2122,7 @@ ACHIEVEMENTS
                                             <span class="subnav-title">${subTitle}</span>
                                         </button>
                                     `;
-                                }).join('')}
+                    }).join('')}
                             </div>
                         </div>
                     `;
@@ -2303,7 +2303,7 @@ ACHIEVEMENTS
                     // If at root arcade menu, exit back to Workspace 1
                     this.switchWorkspace(1);
                     const targetTab = document.querySelector('.workspace-item[aria-label="Workspace 1"]') ||
-                                      document.querySelector('.workspace-item[aria-label="Workspace 5"]');
+                        document.querySelector('.workspace-item[aria-label="Workspace 5"]');
                     if (targetTab) {
                         targetTab.focus();
                     }
