@@ -33,7 +33,12 @@
     box-sizing: border-box;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin: 0;
     padding: 0;
     font-size: inherit;
@@ -440,6 +445,54 @@ body::after {
     color: var(--accent-yellow);
 }
 
+/* Contact — styled like a root/admin prompt */
+/* ========================================================
+   NORMAL STATE (Fixes layout jump & sets smooth transition)
+   ======================================================== */
+.nav-contact,
+.nav-item.nav-contact {
+    border: 1px solid transparent !important;
+    border-radius: 2px !important;
+    background-color: transparent;
+    transition: background-color 0.15s ease-in-out,
+        border-color 0.15s ease-in-out,
+        box-shadow 0.15s ease-in-out;
+}
+
+.nav-contact .nav-prompt,
+.nav-contact .nav-cmd,
+.nav-contact .nav-file,
+.nav-contact span {
+    transition: color 0.15s ease-in-out;
+}
+
+
+/* ========================================================
+   HOVER STATE (Sharper corners + subtle CRT phosphor bloom)
+   ======================================================== */
+.nav-contact:hover,
+.nav-item.nav-contact:hover {
+    background-color: rgba(255, 106, 0, 0.12) !important;
+    border-color: #ff6a00 !important;
+    border-radius: 2px !important;
+    box-shadow: 0 0 8px rgba(255, 106, 0, 0.35),
+        inset 0 0 4px rgba(255, 106, 0, 0.15) !important;
+    cursor: pointer;
+}
+
+.nav-contact:hover .nav-prompt {
+    color: #ff6a00 !important;
+}
+
+.nav-contact:hover .nav-cmd {
+    color: #33ff00 !important;
+}
+
+.nav-contact:hover .nav-file,
+.nav-contact:hover span:last-child {
+    color: #ff6a00 !important;
+}
+
 /* System Monitor (htop) */
 #htop-display {
     font-family: 'Fira Code', monospace;
@@ -558,13 +611,11 @@ body::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 3px,
-        rgba(57, 255, 20, 0.035) 3px,
-        rgba(57, 255, 20, 0.035) 6px
-    );
+    background: repeating-linear-gradient(0deg,
+            transparent,
+            transparent 3px,
+            rgba(57, 255, 20, 0.035) 3px,
+            rgba(57, 255, 20, 0.035) 6px);
     background-size: 100% 12px;
     pointer-events: none;
     opacity: 0.6;
@@ -577,6 +628,7 @@ body::after {
     0% {
         background-position: 0 0;
     }
+
     100% {
         background-position: 0 100%;
     }
@@ -597,10 +649,12 @@ body::after {
         transform: scale(1);
         box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
     }
+
     50% {
         transform: scale(1.04);
         box-shadow: 0 0 30px rgba(57, 255, 20, 0.55), 0 0 12px rgba(139, 92, 246, 0.4);
     }
+
     100% {
         transform: scale(1);
         box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
@@ -620,15 +674,19 @@ body::after {
     0% {
         transform: translate(0, 0);
     }
+
     25% {
         transform: translate(-1px, 1px);
     }
+
     50% {
         transform: translate(1px, -1px);
     }
+
     75% {
         transform: translate(-1px, 0);
     }
+
     100% {
         transform: translate(1px, 1px);
     }
@@ -692,7 +750,9 @@ body::after {
 }
 
 @keyframes status-breathe {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.85;
         color: var(--accent-green);
         text-shadow: 0 0 2px var(--accent-green);
@@ -729,7 +789,9 @@ body::after {
 }
 
 @keyframes evil-pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.85;
     }
 
@@ -781,7 +843,9 @@ body::after {
 }
 
 @keyframes eternal-glow {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.8;
     }
 
@@ -1022,7 +1086,9 @@ body::after {
 }
 
 @keyframes blink-caret {
-    from, to {
+
+    from,
+    to {
         border-color: transparent;
     }
 
@@ -1300,19 +1366,19 @@ body::after {
     border-color: var(--accent-orange);
 }
 
-.gallery-reveal-toggle input:checked + .toggle-slider {
+.gallery-reveal-toggle input:checked+.toggle-slider {
     background-color: rgba(255, 95, 0, 0.25);
     border-color: var(--accent-orange);
     box-shadow: 0 0 10px rgba(255, 95, 0, 0.4);
 }
 
-.gallery-reveal-toggle input:checked + .toggle-slider::before {
+.gallery-reveal-toggle input:checked+.toggle-slider::before {
     transform: translateX(14px);
     background-color: var(--accent-orange);
     box-shadow: 0 0 6px var(--accent-orange);
 }
 
-.gallery-reveal-toggle input:focus-visible + .toggle-slider {
+.gallery-reveal-toggle input:focus-visible+.toggle-slider {
     outline: 2px solid var(--accent-cyan);
 }
 
@@ -1440,9 +1506,17 @@ body::after {
     display: inline-block;
 }
 
-.empty-dot.red { background: #ff5f56; }
-.empty-dot.yellow { background: #ffbd2e; }
-.empty-dot.green { background: #27c93f; }
+.empty-dot.red {
+    background: #ff5f56;
+}
+
+.empty-dot.yellow {
+    background: #ffbd2e;
+}
+
+.empty-dot.green {
+    background: #27c93f;
+}
 
 .empty-body {
     padding: 28px 20px;
@@ -1908,6 +1982,7 @@ body::after {
     0% {
         background-position: 200% 0;
     }
+
     100% {
         background-position: -200% 0;
     }
@@ -2283,7 +2358,9 @@ ntent Styling */
    ========================================================================== */
 
 @media (max-width: 767.98px) {
-    html, body {
+
+    html,
+    body {
         height: auto !important;
         min-height: 100vh;
         overflow-y: auto !important;
@@ -2509,14 +2586,16 @@ ntent Styling */
     }
 
     /* Horizontal Overflow Prevention for Narrow Mobile (down to 375px) */
-    #ascii-animation, .ascii-frame {
+    #ascii-animation,
+    .ascii-frame {
         font-size: clamp(5.5px, 1.8vw, 8px) !important;
         line-height: 1.1;
         overflow-x: auto;
         max-width: 100%;
     }
 
-    #htop-display, .htop-process-table {
+    #htop-display,
+    .htop-process-table {
         overflow-x: auto;
         max-width: 100%;
         font-size: clamp(7px, 2vw, 9.5px);
@@ -2535,6 +2614,7 @@ ntent Styling */
 }
 
 @media (max-width: 580px) {
+
     /* Drop lower-priority disk/memory usage indicator first */
     .sys-item:nth-child(2) {
         display: none;
@@ -2547,6 +2627,7 @@ ntent Styling */
 }
 
 @media (max-width: 400px) {
+
     /* On narrow phone viewports (<400px), drop CPU indicator to keep WiFi, Battery, Clock, and Workspaces un-clipped */
     .sys-item:nth-child(1) {
         display: none;
@@ -2708,6 +2789,7 @@ button {
    Step 5 — Reduced Motion Support (prefers-reduced-motion: reduce)
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -3338,6 +3420,7 @@ button {
         opacity: 0;
         transform: translateY(-4px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -3997,10 +4080,13 @@ button {
 }
 
 @keyframes arcadePulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
         transform: scale(1);
     }
+
     50% {
         opacity: 0.35;
         transform: scale(0.85);
@@ -4251,18 +4337,23 @@ button {
     0% {
         transform: scale(1);
     }
+
     20% {
         transform: scale(1.08) translateX(-2px);
     }
+
     40% {
         transform: scale(1.08) translateX(2px);
     }
+
     60% {
         transform: scale(1.04) translateX(-1px);
     }
+
     80% {
         transform: scale(1.02) translateX(1px);
     }
+
     100% {
         transform: scale(1) translateX(0);
     }
@@ -4722,6 +4813,7 @@ button {
     .hud-short-label {
         display: inline;
     }
+
     .hud-full-label {
         display: none;
     }
@@ -4883,10 +4975,12 @@ button {
         transform: translate(-50%, -50%) scale(0.85);
         opacity: 0;
     }
+
     30% {
         transform: translate(-50%, -50%) scale(1.05);
         opacity: 1;
     }
+
     100% {
         transform: translate(-50%, -50%) scale(1);
         opacity: 0;
@@ -4924,10 +5018,12 @@ button {
         transform: translate(-50%, -50%) scale(0.85);
         opacity: 0;
     }
+
     25% {
         transform: translate(-50%, -50%) scale(1.05);
         opacity: 1;
     }
+
     100% {
         transform: translate(-50%, -50%) scale(1);
         opacity: 0;
@@ -5467,8 +5563,17 @@ button {
 }
 
 @keyframes arcade-cue-pulse {
-    0%, 100% { opacity: 0.92; transform: translate(-50%, -50%) scale(1); }
-    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.04); }
+
+    0%,
+    100% {
+        opacity: 0.92;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.04);
+    }
 }
 
 /* Learning Rate HUD Stepper */
@@ -5540,6 +5645,7 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .lightbox-modal-backdrop,
     .lightbox-window-pane,
     .lightbox-nav-btn,
@@ -5608,10 +5714,10 @@ button {
     cursor: pointer;
     font-family: inherit;
     color: inherit;
-    transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), 
-                border-color 0.2s ease, 
-                box-shadow 0.2s ease,
-                background 0.2s ease;
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1),
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
 }
 
@@ -5805,11 +5911,11 @@ button {
     margin-bottom: 6px;
 }
 
-.devlog-markdown-body ul > li::marker {
+.devlog-markdown-body ul>li::marker {
     color: var(--accent-green);
 }
 
-.devlog-markdown-body ol > li::marker {
+.devlog-markdown-body ol>li::marker {
     color: var(--accent-yellow);
     font-family: 'Fira Code', monospace;
 }
@@ -5864,6 +5970,7 @@ button {
 
 /* Step 5 — Reduced Motion Support for Devlog */
 @media (prefers-reduced-motion: reduce) {
+
     .devlog-card,
     .devlog-back-btn {
         transition: none !important;
@@ -5937,5 +6044,3 @@ button {
         margin-left: 16px;
     }
 }
-
-
