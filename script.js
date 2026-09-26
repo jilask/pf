@@ -56,7 +56,7 @@ class ArchPortfolio {
 
     async loadAllData() {
         try {
-            const [about, skills, experience, achievements, portfolio, gallery, contact, arcade] = await Promise.all([
+            const [about, skills, experience, achievements, portfolio, gallery, contact, arcade, posts] = await Promise.all([
                 this.loadJson('./data/about.json'),
                 this.loadJson('./data/skills.json'),
                 this.loadJson('./data/experience.json'),
@@ -64,7 +64,8 @@ class ArchPortfolio {
                 this.loadJson('./data/projects.json'),
                 this.loadJson('./data/gallery.json'),
                 this.loadJson('./data/contact.json'),
-                this.loadJson('./data/arcade-games.json')
+                this.loadJson('./data/arcade-games.json'),
+                this.loadJson('./data/posts.json')
             ]);
 
             this.data = {
@@ -75,7 +76,8 @@ class ArchPortfolio {
                 portfolio,
                 gallery,
                 contact,
-                arcade: arcade || this.getFallbackArcadeData()
+                arcade: arcade || this.getFallbackArcadeData(),
+                posts: posts || []
             };
         } catch (err) {
             console.error('[Portfolio Error] Critical error during data initialization:', err);
@@ -1136,7 +1138,8 @@ class ArchPortfolio {
             'achievements': 'cat achievements.txt',
             'portfolio': 'ls -la projects/',
             'gallery': 'ls gallery/',
-            'contact': 'contact --info'
+            'contact': 'contact --info',
+            'devlog': 'cat devlog.md'
         };
 
         const fullCommand = commands[command] || command;
@@ -1181,7 +1184,8 @@ class ArchPortfolio {
             'achievements': 'Key Achievements',
             'portfolio': 'Projects & Portfolio',
             'gallery': 'AI Art & Motion Gallery',
-            'contact': 'Contact Information'
+            'contact': 'Contact Information',
+            'devlog': 'Devlog // Engineering Journal'
         };
         windowTitle.textContent = titles[section] || 'Portfolio';
 
@@ -1206,6 +1210,9 @@ class ArchPortfolio {
                 break;
             case 'contact':
                 sectionElement.innerHTML = this.getContactContent();
+                break;
+            case 'devlog':
+                sectionElement.innerHTML = this.getDevlogContent();
                 break;
         }
 
@@ -1240,6 +1247,13 @@ class ArchPortfolio {
         return renderSection('gallery', this.data ? this.data.gallery : null);
     }
 
+    getDevlogContent() {
+        const posts = (this.data && Array.isArray(this.data.posts))
+            ? [...this.data.posts].sort((a, b) => new Date(b.date) - new Date(a.date))
+            : (this.data ? this.data.posts : null);
+        return renderSection('devlog', posts);
+    }
+
     getContactContent() {
         return renderSection('contact', this.data ? this.data.contact : null);
     }
@@ -1249,6 +1263,99 @@ class ArchPortfolio {
             ? this.data.portfolio.projects.find(p => p.id === projectId)
             : null;
         return renderProjectDetails(project);
+    }
+
+    async showPost(postId) {
+        if (!this.data || !this.data.posts) {
+            await this.loadAllData();
+        }
+        const post = Array.isArray(this.data.posts)
+            ? this.data.posts.find(p => p.id === postId)
+            : null;
+
+        const contentArea = document.getElementById('portfolio-content');
+        if (!contentArea) return;
+        contentArea.innerHTML = '';
+
+        const sectionElement = document.createElement('div');
+        sectionElement.className = 'content-section';
+
+        if (!post) {
+            sectionElement.innerHTML = `
+                <div class="terminal-text" style="color: var(--accent-red); padding: 16px;">
+                    <p>[ERROR 404] Devlog post not found: ${postId}</p>
+                    <div style="margin-top: 12px;">
+                        <button type="button" class="devlog-back-btn" onclick="window.portfolio.loadSection('devlog')" aria-label="Back to Devlog post list">
+                            ← Back to Devlog
+                        </button>
+                    </div>
+                </div>
+            `;
+            contentArea.appendChild(sectionElement);
+            requestAnimationFrame(() => sectionElement.classList.add('active'));
+            return;
+        }
+
+        const windowTitle = document.getElementById('current-window');
+        if (windowTitle) {
+            windowTitle.textContent = `Devlog: ${post.title}`;
+        }
+
+        // Show loading state
+        sectionElement.innerHTML = `
+            <div class="terminal-text" style="padding: 16px;">
+                <div class="command-output">
+                    <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~/devlog</span><span style="color: var(--accent-yellow);">$</span> cat ${post.markdownPath}
+                </div>
+                <p style="margin-top: 12px; color: var(--accent-cyan);">[SYSTEM] Loading post stream...</p>
+            </div>
+        `;
+        contentArea.appendChild(sectionElement);
+        requestAnimationFrame(() => sectionElement.classList.add('active'));
+
+        try {
+            let markdownPath = post.markdownPath;
+            let res = await fetch(markdownPath);
+            if (!res.ok && !markdownPath.startsWith('./')) {
+                res = await fetch('./' + markdownPath);
+            }
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            }
+            const markdownRaw = await res.text();
+            const renderedHtml = (typeof window.marked !== 'undefined' && window.marked.parse)
+                ? window.marked.parse(markdownRaw)
+                : `<pre>${markdownRaw}</pre>`;
+
+            sectionElement.innerHTML = renderPostDetails(post, renderedHtml);
+
+            sectionElement.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    window.portfolio.loadSection('devlog');
+                }
+            });
+
+            requestAnimationFrame(() => {
+                const backBtn = sectionElement.querySelector('.devlog-back-btn');
+                if (backBtn) backBtn.focus();
+            });
+        } catch (err) {
+            console.error(`[Devlog Error] Failed to fetch post at ${post.markdownPath}:`, err);
+            sectionElement.innerHTML = `
+                <div class="terminal-text" style="color: var(--accent-red); padding: 16px; border: 1px solid var(--accent-red); border-radius: 6px; background: rgba(255, 0, 0, 0.05); margin-top: 16px;">
+                    <div style="font-weight: bold; margin-bottom: 8px;">[ERROR] Failed to load devlog post</div>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Path: ${post.markdownPath} (${err.message})</p>
+                    <button type="button" class="devlog-back-btn" onclick="window.portfolio.loadSection('devlog')" aria-label="Back to Devlog post list">
+                        ← Back to Devlog
+                    </button>
+                </div>
+            `;
+            requestAnimationFrame(() => {
+                const backBtn = sectionElement.querySelector('.devlog-back-btn');
+                if (backBtn) backBtn.focus();
+            });
+        }
     }
 
     showProject(projectId) {
@@ -1646,7 +1753,7 @@ ACHIEVEMENTS
         this.isPromptRevealedInModal = true;
         const guessBox = document.getElementById('prompt-guess-box');
         const promptContainer = document.getElementById('lightbox-prompt-container');
-        
+
         if (guessBox && promptContainer) {
             guessBox.style.opacity = '0';
             guessBox.style.transform = 'translateY(-4px)';
@@ -1998,11 +2105,11 @@ ACHIEVEMENTS
                             <span class="lightbox-subnav-label"><span class="terminal-prompt-char" aria-hidden="true">&gt;</span> VIEWS [${item.media.length}]:</span>
                             <div class="lightbox-subnav-strip">
                                 ${item.media.map((sub, idx) => {
-                                    const isActive = idx === this.currentCaseStudySubIndex;
-                                    const isSubVid = sub.type === 'video' || (typeof sub.full === 'string' && sub.full.endsWith('.mp4'));
-                                    const subThumb = sub.thumb || item.coverThumb || sub.full;
-                                    const subTitle = sub.caption || `View ${idx + 1}`;
-                                    return `
+                        const isActive = idx === this.currentCaseStudySubIndex;
+                        const isSubVid = sub.type === 'video' || (typeof sub.full === 'string' && sub.full.endsWith('.mp4'));
+                        const subThumb = sub.thumb || item.coverThumb || sub.full;
+                        const subTitle = sub.caption || `View ${idx + 1}`;
+                        return `
                                         <button type="button" 
                                                 role="tab"
                                                 class="lightbox-subnav-item ${isActive ? 'active' : ''}${isSubVid ? ' is-video' : ''}" 
@@ -2015,7 +2122,7 @@ ACHIEVEMENTS
                                             <span class="subnav-title">${subTitle}</span>
                                         </button>
                                     `;
-                                }).join('')}
+                    }).join('')}
                             </div>
                         </div>
                     `;
@@ -2196,7 +2303,7 @@ ACHIEVEMENTS
                     // If at root arcade menu, exit back to Workspace 1
                     this.switchWorkspace(1);
                     const targetTab = document.querySelector('.workspace-item[aria-label="Workspace 1"]') ||
-                                      document.querySelector('.workspace-item[aria-label="Workspace 5"]');
+                        document.querySelector('.workspace-item[aria-label="Workspace 5"]');
                     if (targetTab) {
                         targetTab.focus();
                     }
