@@ -114,7 +114,7 @@ essentialElements.forEach((el) => {
 });
 
 // 6. Verify Arcade Close Button accessibility attributes
-if (!galleryHtml.includes('aria-label="Close arcade and return to workspace 1" tabindex="0"')) {
+if (!/aria-label="Close arcade and return to workspace 1"\s+tabindex="0"/.test(galleryHtml)) {
     errors.push('gallery/index.html has outdated arcade close button attributes.');
 }
 
