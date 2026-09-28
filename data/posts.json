@@ -1,0 +1,10 @@
+[
+  {
+    "id": "hello-world",
+    "title": "Building in the Terminal: Introducing the Devlog",
+    "date": "2026-09-22",
+    "tags": ["Architecture", "Engineering", "Web"],
+    "summary": "Why and how I built a client-side, zero-build Markdown devlog directly into this retro tiling WM portfolio.",
+    "markdownPath": "content/posts/hello-world.md"
+  }
+]
