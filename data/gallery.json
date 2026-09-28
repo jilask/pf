@@ -227,5 +227,24 @@
     ],
     "date": "2026-08-30",
     "featured": false
+  },
+  {
+    "id": "windswept",
+    "title": "Windswept",
+    "category": "video",
+    "mediaType": "video",
+    "thumb": "assets/gallery/video/windswept-poster.webp",
+    "full": "assets/gallery/video/windswept.mp4",
+    "tool": "Gemini Omni Video 1.1 Flash",
+    "prompt": "A cinematic fashion-editorial portrait of a young south Asian man standing partially concealed within tall, windswept green grass in an expansive meadow. He wears a loose, slightly oversized, crisp white button-up shirt that contrasts softly against the rich natural surroundings. His dark brown hair appears slightly damp, naturally tousled by the wind, with delicate strands falling across his forehead and partially veiling his eyes. His head is gently lowered, gaze directed downward, conveying a quiet, introspective, melancholic mood. The tall grass surrounds and partially obscures his figure, creating layered foreground elements, immersive depth, and a sense of visual intimacy. Wind moves through the grass with subtle motion blur, while the subject remains sharply focused. The environment feels calm, isolated, and poetic, enhanced by a faint atmospheric haze and a muted palette of sage green, deep forest green, and soft neutral tones. Soft overcast daylight provides diffused, shadowless illumination with smooth tonal transitions, low contrast, gentle highlights, and realistic skin rendering. Shallow depth of field produces creamy bokeh and natural background separation, while fine film grain adds an organic editorial texture. Minimalist composition emphasizing solitude and emotional storytelling. Cinematic 16:9 composition, subject positioned slightly right of center with generous negative space above and around him, balanced visual weight, refined framing, sophisticated Korean and Japanese fashion magazine aesthetic, cinematic realism, highly detailed photorealistic photography, 85mm portrait lens, f/1.8, natural lens compression, ultra-realistic skin texture, premium color grading, atmospheric depth, elegant visual storytelling, award-winning editorial photography, masterfully composed, authentic and emotionally resonant.",
+    "tags": [
+      "Editorial",
+      "Cinematic",
+      "Motion",
+      "Gemini Omni Video 1.1 Flash",
+      "CapCut"
+    ],
+    "date": "2026-09-21",
+    "featured": true
   }
 ]
