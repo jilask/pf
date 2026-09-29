@@ -553,16 +553,16 @@ function renderSection(sectionType, data) {
                                 <!-- Sort Dropdown -->
                                 <div class="gallery-sort-wrap">
                                     <label for="gallery-sort-select" class="controls-section-label">
-                                        <span class="terminal-prompt-char">&gt;</span> SORT:
+                                        <span class="terminal-prompt-char">&gt;</span> <span aria-hidden="true">${renderIcon('arrow-down-a-z')}</span> SORT:
                                     </label>
                                     <select id="gallery-sort-select" 
                                             class="gallery-sort-select" 
                                             aria-label="Sort gallery items"
                                             onchange="window.portfolio && window.portfolio.setGallerySort(this.value)">
-                                        <option value="date-desc" ${currentSort === 'date-desc' ? 'selected' : ''}>📅 Date (Newest)</option>
-                                        <option value="featured-first" ${currentSort === 'featured-first' ? 'selected' : ''}>★ Featured first</option>
-                                        <option value="date-asc" ${currentSort === 'date-asc' ? 'selected' : ''}>📅 Date (Oldest)</option>
-                                        <option value="title-asc" ${currentSort === 'title-asc' ? 'selected' : ''}>🔤 Title (A-Z)</option>
+                                        <option value="date-desc" ${currentSort === 'date-desc' ? 'selected' : ''}>Date (Newest)</option>
+                                        <option value="featured-first" ${currentSort === 'featured-first' ? 'selected' : ''}>Featured first</option>
+                                        <option value="date-asc" ${currentSort === 'date-asc' ? 'selected' : ''}>Date (Oldest)</option>
+                                        <option value="title-asc" ${currentSort === 'title-asc' ? 'selected' : ''}>Title (A-Z)</option>
                                     </select>
                                 </div>
 
@@ -575,7 +575,7 @@ function renderSection(sectionType, data) {
                                                onchange="window.portfolio && window.portfolio.togglePromptRevealMode(this.checked)"
                                                aria-label="Prompt Reveal Mode: hide prompts initially in lightbox">
                                         <span class="toggle-slider" aria-hidden="true"></span>
-                                        <span class="toggle-text"><span class="toggle-icon">👁️</span> Guess Mode</span>
+                                        <span class="toggle-text"><span class="toggle-icon" aria-hidden="true">${renderIcon('eye')}</span> Guess Mode</span>
                                     </label>
                                 </div>
                             </div>
@@ -603,7 +603,7 @@ function renderSection(sectionType, data) {
                                         onclick="window.portfolio && window.portfolio.resetGalleryFilters()"
                                         style="${hasActiveFilters ? '' : 'display: none;'}"
                                         aria-label="Clear active category and tag filters">
-                                    ✕ Clear filters
+                                    <span aria-hidden="true">${renderIcon('x')}</span> Clear filters
                                 </button>
                             </div>
                         </div>
@@ -736,7 +736,7 @@ function renderGalleryEmptyState(options) {
                         class="gallery-reset-btn" 
                         onclick="window.portfolio && window.portfolio.resetGalleryFilters()"
                         aria-label="Clear active filters and show all items">
-                    <span aria-hidden="true">↺</span> CLEAR FILTERS // SHOW ALL ITEMS
+                    <span aria-hidden="true">${renderIcon('rotate-ccw')}</span> CLEAR FILTERS // SHOW ALL ITEMS
                 </button>
             </div>
         </div>
@@ -866,7 +866,7 @@ function renderProjectDetails(project) {
                 <div style="margin-bottom: 16px;">
                     <h4 class="project-subsection-title">${project.featuresHeader}</h4>
                     <ul style="list-style: none; padding: 0;">
-                        ${project.features.map(f => `<li style="margin-bottom: 6px;"><span style="color: var(--accent-green);">✓</span> ${f}</li>`).join('')}
+                        ${project.features.map(f => `<li style="margin-bottom: 6px;"><span style="color: var(--accent-green);" aria-hidden="true">${renderIcon('check')}</span> ${f}</li>`).join('')}
                     </ul>
                 </div>
                 <div style="margin-bottom: 16px;">
