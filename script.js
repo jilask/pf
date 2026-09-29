@@ -399,16 +399,16 @@ class ArchPortfolio {
                 return { frame: 2, status: "Oh hey! Click to say hello!" };
             }
             if (isBurst) {
-                return { frame: 12, status: "🏃 Whoa, slow down! You're clicking way too fast for me!" };
+                return { frame: 12, status: `${renderIcon('activity')} Whoa, slow down! You're clicking way too fast for me!` };
             }
             if (isDormant) {
-                return { frame: 8, status: "😴 I'm nodding off for a bit... poke me if you need me!" };
+                return { frame: 8, status: `${renderIcon('moon')} I'm nodding off for a bit... poke me if you need me!` };
             }
             if (this.currentWorkspace === 5 || this.activeSnakeGame || this.activeStackerGame || this.activeGradientGame || (this.currentArcadeView && this.currentArcadeView !== 'menu')) {
-                return { frame: 4, status: "🕹️ Oh sweet, games! Let's see if we can beat the high score!" };
+                return { frame: 4, status: `${renderIcon('gamepad-2')} Oh sweet, games! Let's see if we can beat the high score!` };
             }
             if (this.currentSection === 'gallery' || this.currentWorkspace === 3) {
-                return { frame: 10, status: "🎨 Look at all this art! I really love these colors." };
+                return { frame: 10, status: `${renderIcon('palette')} Look at all this art! I really love these colors.` };
             }
             return { frame: currentFrame, status: statusMessages[currentFrame] };
         };
@@ -421,8 +421,8 @@ class ArchPortfolio {
             if (frameEl && frameEl.textContent !== asciiFrames[desired.frame]) {
                 frameEl.textContent = asciiFrames[desired.frame];
             }
-            if (statusEl && statusEl.textContent !== desired.status) {
-                statusEl.textContent = desired.status;
+            if (statusEl && statusEl.innerHTML !== desired.status) {
+                statusEl.innerHTML = desired.status;
             }
         };
 
@@ -1448,7 +1448,7 @@ ACHIEVEMENTS
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             animation: slideIn 0.3s ease;
         `;
-        notification.textContent = '📄 Resume downloaded successfully!';
+        notification.innerHTML = `${renderIcon('file-text')} Resume downloaded successfully!`;
         document.body.appendChild(notification);
 
         setTimeout(() => {
