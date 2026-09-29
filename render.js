@@ -911,7 +911,7 @@ function renderArcadeMenu(arcadeData) {
                 <div class="arcade-col-size" aria-hidden="true">${game.size || '4.0K'}</div>
                 <div class="arcade-col-date" aria-hidden="true">${header.date || 'Sep 04'}</div>
                 <div class="arcade-col-name">
-                    <span class="arcade-exec-icon" aria-hidden="true">⚙</span>
+                    <span class="arcade-exec-icon" aria-hidden="true">${renderIcon('cog')}</span>
                     <span class="arcade-exec-name">${game.executable || `${game.id}.sh`}*</span>
                     <span class="arcade-game-title">(${game.title})</span>
                 </div>
@@ -951,7 +951,7 @@ function renderArcadeMenu(arcadeData) {
 
             <div class="arcade-directory-footer">
                 <div class="arcade-terminal-tip">
-                    <span class="arcade-tip-icon" aria-hidden="true">ℹ</span>
+                    <span class="arcade-tip-icon" aria-hidden="true">${renderIcon('info')}</span>
                     <span>Select an executable using <strong>Tab / Click</strong> and press <strong>[Enter]</strong> • Press <strong>[ESC]</strong> to exit arcade.</span>
                 </div>
             </div>
@@ -1005,7 +1005,7 @@ function renderArcadeGamePlaceholder(game) {
 
                 <div class="arcade-stage-notice">
                     <div class="arcade-notice-badge">
-                        <span class="arcade-notice-icon" aria-hidden="true">⏳</span>
+                        <span class="arcade-notice-icon" aria-hidden="true">${renderIcon('hourglass')}</span>
                         <span>DEPLOYMENT STAGE: COMING SOON</span>
                     </div>
                     <p class="arcade-notice-desc">
@@ -1116,7 +1116,7 @@ function renderSnakeGame(game, highScore = 0) {
                             <div class="hint-item"><kbd class="arcade-key-badge">ESC</kbd> <span>Arcade Menu</span></div>
                         </div>
                         <button class="arcade-btn arcade-btn-primary" id="snake-start-btn" type="button">
-                            ▶ LAUNCH VECTOR [PRESS ANY KEY / TAP]
+                            ${renderIcon('play')} LAUNCH VECTOR [PRESS ANY KEY / TAP]
                         </button>
                     </div>
                 </div>
@@ -1129,10 +1129,10 @@ function renderSnakeGame(game, highScore = 0) {
                         <p class="arcade-overlay-desc">CPU tick halted. Press Space, P, or click Resume to continue execution.</p>
                         <div class="arcade-overlay-actions">
                             <button class="arcade-btn arcade-btn-primary" id="snake-resume-btn" type="button">
-                                ▶ RESUME THREAD [SPACE]
+                                ${renderIcon('play')} RESUME THREAD [SPACE]
                             </button>
                             <button class="arcade-btn arcade-btn-secondary" id="snake-restart-from-pause-btn" type="button">
-                                ↺ RESTART [R]
+                                ${renderIcon('rotate-ccw')} RESTART [R]
                             </button>
                         </div>
                     </div>
@@ -1154,11 +1154,11 @@ function renderSnakeGame(game, highScore = 0) {
                             </div>
                         </div>
                         <div id="snake-new-highscore-badge" class="arcade-new-record" style="display: none;">
-                            ★ NEW PEAK RECORDED TO LATENT REGISTRY ★
+                            ${renderIcon('trophy')} NEW PEAK RECORDED TO LATENT REGISTRY ${renderIcon('trophy')}
                         </div>
                         <div class="arcade-overlay-actions">
                             <button class="arcade-btn arcade-btn-primary" id="snake-restart-btn" type="button">
-                                ↺ EXPLORE AGAIN [R / ENTER]
+                                ${renderIcon('rotate-ccw')} EXPLORE AGAIN [R / ENTER]
                             </button>
                             <button class="arcade-btn arcade-btn-secondary" id="snake-exit-to-menu-btn" type="button">
                                 ← ARCADE MENU [ESC]
@@ -1172,19 +1172,19 @@ function renderSnakeGame(game, highScore = 0) {
             <div class="arcade-touch-controls" id="snake-touch-controls" aria-label="On-screen directional controls">
                 <div class="arcade-dpad">
                     <button class="arcade-dpad-btn dpad-up" id="dpad-up" type="button" aria-label="Steer Up">
-                        <span aria-hidden="true">▲</span>
+                        <span aria-hidden="true">${renderIcon('chevron-up')}</span>
                     </button>
                     <div class="arcade-dpad-middle">
                         <button class="arcade-dpad-btn dpad-left" id="dpad-left" type="button" aria-label="Steer Left">
-                            <span aria-hidden="true">◀</span>
+                            <span aria-hidden="true">${renderIcon('chevron-left')}</span>
                         </button>
-                        <div class="arcade-dpad-center" aria-hidden="true">●</div>
+                        <div class="arcade-dpad-center" aria-hidden="true">${renderIcon('circle')}</div>
                         <button class="arcade-dpad-btn dpad-right" id="dpad-right" type="button" aria-label="Steer Right">
-                            <span aria-hidden="true">▶</span>
+                            <span aria-hidden="true">${renderIcon('chevron-right')}</span>
                         </button>
                     </div>
                     <button class="arcade-dpad-btn dpad-down" id="dpad-down" type="button" aria-label="Steer Down">
-                        <span aria-hidden="true">▼</span>
+                        <span aria-hidden="true">${renderIcon('chevron-down')}</span>
                     </button>
                 </div>
                 <div class="arcade-touch-tip" aria-hidden="true">
@@ -1295,7 +1295,7 @@ function renderStackerGame(game, highScore = 0) {
                                 <div class="hint-item"><kbd class="arcade-key-badge">R</kbd> <span>Restart</span></div>
                             </div>
                             <button class="arcade-btn arcade-btn-primary" id="stacker-start-btn" type="button">
-                                ▶ INITIALIZE CONTEXT [ENTER / TAP]
+                                ${renderIcon('play')} INITIALIZE CONTEXT [ENTER / TAP]
                             </button>
                         </div>
                     </div>
@@ -1308,10 +1308,10 @@ function renderStackerGame(game, highScore = 0) {
                             <p class="arcade-overlay-desc">CPU tick halted. Press P, Space, or click Resume to continue token ingestion.</p>
                             <div class="arcade-overlay-actions">
                                 <button class="arcade-btn arcade-btn-primary" id="stacker-resume-btn" type="button">
-                                    ▶ RESUME THREAD [P]
+                                    ${renderIcon('play')} RESUME THREAD [P]
                                 </button>
                                 <button class="arcade-btn arcade-btn-secondary" id="stacker-restart-from-pause-btn" type="button">
-                                    ↺ RESTART [R]
+                                    ${renderIcon('rotate-ccw')} RESTART [R]
                                 </button>
                             </div>
                         </div>
@@ -1338,11 +1338,11 @@ function renderStackerGame(game, highScore = 0) {
                                 <span class="arcade-mini-stat">DEPTH: <strong id="stacker-gameover-depth">00</strong></span>
                             </div>
                             <div id="stacker-new-highscore-badge" class="arcade-new-record" style="display: none;">
-                                ★ NEW PEAK RECORD COMMITTED TO REGISTRY ★
+                                ${renderIcon('trophy')} NEW PEAK RECORD COMMITTED TO REGISTRY ${renderIcon('trophy')}
                             </div>
                             <div class="arcade-overlay-actions">
                                 <button class="arcade-btn arcade-btn-primary" id="stacker-restart-btn" type="button">
-                                    ↺ PURGE & RESTART [R / ENTER]
+                                    ${renderIcon('rotate-ccw')} PURGE & RESTART [R / ENTER]
                                 </button>
                                 <button class="arcade-btn arcade-btn-secondary" id="stacker-exit-to-menu-btn" type="button">
                                     ← ARCADE MENU [ESC]
@@ -1376,19 +1376,19 @@ function renderStackerGame(game, highScore = 0) {
             <div class="arcade-touch-controls arcade-stacker-touch-controls" id="stacker-touch-controls" aria-label="On-screen game controls">
                 <div class="arcade-stacker-touch-row">
                     <button class="arcade-touch-btn" id="touch-left" type="button" aria-label="Shift Token Left">
-                        <span aria-hidden="true">◀</span>
+                        <span aria-hidden="true">${renderIcon('chevron-left')}</span>
                     </button>
                     <button class="arcade-touch-btn" id="touch-rotate" type="button" aria-label="Rotate Token">
-                        <span aria-hidden="true">↻</span>
+                        <span aria-hidden="true">${renderIcon('rotate-cw')}</span>
                     </button>
                     <button class="arcade-touch-btn" id="touch-right" type="button" aria-label="Shift Token Right">
-                        <span aria-hidden="true">▶</span>
+                        <span aria-hidden="true">${renderIcon('chevron-right')}</span>
                     </button>
                     <button class="arcade-touch-btn" id="touch-down" type="button" aria-label="Soft Drop Token">
-                        <span aria-hidden="true">▼</span>
+                        <span aria-hidden="true">${renderIcon('chevron-down')}</span>
                     </button>
                     <button class="arcade-touch-btn touch-btn-harddrop" id="touch-harddrop" type="button" aria-label="Hard Flush Token">
-                        <span aria-hidden="true">⚡ FLUSH</span>
+                        <span aria-hidden="true">${renderIcon('zap')} FLUSH</span>
                     </button>
                 </div>
                 <div class="arcade-stacker-touch-row arcade-stacker-temp-row">
@@ -1501,7 +1501,7 @@ function renderGradientGame(game, highScore = 0) {
                                 <div class="hint-item"><kbd class="arcade-key-badge">ESC</kbd> <span>Arcade Menu</span></div>
                             </div>
                             <button class="arcade-btn arcade-btn-primary" id="gradient-start-btn" type="button">
-                                ▶ LAUNCH OPTIMIZATION [ENTER / TAP]
+                                ${renderIcon('play')} LAUNCH OPTIMIZATION [ENTER / TAP]
                             </button>
                         </div>
                     </div>
@@ -1514,10 +1514,10 @@ function renderGradientGame(game, highScore = 0) {
                             <p class="arcade-overlay-desc">Gradient updates halted. Press P, Space, or click Resume to continue descent.</p>
                             <div class="arcade-overlay-actions">
                                 <button class="arcade-btn arcade-btn-primary" id="gradient-resume-btn" type="button">
-                                    ▶ RESUME THREAD [P]
+                                    ${renderIcon('play')} RESUME THREAD [P]
                                 </button>
                                 <button class="arcade-btn arcade-btn-secondary" id="gradient-restart-from-pause-btn" type="button">
-                                    ↺ RESTART [R]
+                                    ${renderIcon('rotate-ccw')} RESTART [R]
                                 </button>
                             </div>
                         </div>
@@ -1545,7 +1545,7 @@ function renderGradientGame(game, highScore = 0) {
                             </div>
                             <div class="arcade-overlay-actions">
                                 <button class="arcade-btn arcade-btn-primary" id="gradient-next-epoch-btn" type="button">
-                                    ▶ PROCEED TO NEXT EPOCH [SPACE / ENTER]
+                                    ${renderIcon('play')} PROCEED TO NEXT EPOCH [SPACE / ENTER]
                                 </button>
                             </div>
                         </div>
@@ -1571,11 +1571,11 @@ function renderGradientGame(game, highScore = 0) {
                                 <span class="arcade-mini-stat">TERMS CLEARED: <strong id="gradient-gameover-blocks">00</strong></span>
                             </div>
                             <div id="gradient-new-highscore-badge" class="arcade-new-record" style="display: none;">
-                                ★ NEW PEAK CONVERGENCE RECORD COMMITTED ★
+                                ${renderIcon('trophy')} NEW PEAK CONVERGENCE RECORD COMMITTED ${renderIcon('trophy')}
                             </div>
                             <div class="arcade-overlay-actions">
                                 <button class="arcade-btn arcade-btn-primary" id="gradient-restart-btn" type="button">
-                                    ↺ RE-INITIALIZE OPTIMIZER [R / ENTER]
+                                    ${renderIcon('rotate-ccw')} RE-INITIALIZE OPTIMIZER [R / ENTER]
                                 </button>
                                 <button class="arcade-btn arcade-btn-secondary" id="gradient-exit-to-menu-btn" type="button">
                                     ← ARCADE MENU [ESC]
@@ -1590,13 +1590,13 @@ function renderGradientGame(game, highScore = 0) {
             <div class="arcade-touch-controls arcade-gradient-touch-controls" id="gradient-touch-controls" aria-label="On-screen game controls">
                 <div class="arcade-gradient-touch-row">
                     <button class="arcade-touch-btn" id="touch-paddle-left" type="button" aria-label="Steer Optimizer Left">
-                        <span aria-hidden="true">◀ STEER</span>
+                        <span aria-hidden="true">${renderIcon('chevron-left')} STEER</span>
                     </button>
                     <button class="arcade-touch-btn touch-btn-launch" id="touch-launch" type="button" aria-label="Launch Ball or Pause">
-                        <span id="touch-launch-text" aria-hidden="true">⚡ LAUNCH</span>
+                        <span id="touch-launch-text" aria-hidden="true">${renderIcon('zap')} LAUNCH</span>
                     </button>
                     <button class="arcade-touch-btn" id="touch-paddle-right" type="button" aria-label="Steer Optimizer Right">
-                        <span aria-hidden="true">STEER ▶</span>
+                        <span aria-hidden="true">STEER ${renderIcon('chevron-right')}</span>
                     </button>
                 </div>
                 <div class="arcade-gradient-touch-row arcade-gradient-lr-row">

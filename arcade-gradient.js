@@ -362,7 +362,7 @@ class ArcadeGradientGame {
         this.ball.vy = this.ball.speed * Math.sin(angle);
 
         if (this.dom.touchLaunchText) {
-            this.dom.touchLaunchText.textContent = '⏸ PAUSE';
+            this.dom.touchLaunchText.innerHTML = `${renderIcon('pause')} PAUSE`;
         }
         if (this.dom.statusText) {
             this.dom.statusText.textContent = `OPTIMIZER: 0x6E4D // DESCENDING EPOCH ${String(this.epoch).padStart(2, '0')}`;
@@ -381,7 +381,7 @@ class ArcadeGradientGame {
         this.state = 'PAUSED';
         if (this.dom.pauseOverlay) this.dom.pauseOverlay.style.display = 'flex';
         if (this.dom.pauseBtnText) this.dom.pauseBtnText.textContent = 'RESUME [P]';
-        if (this.dom.touchLaunchText) this.dom.touchLaunchText.textContent = '▶ RESUME';
+        if (this.dom.touchLaunchText) this.dom.touchLaunchText.innerHTML = `${renderIcon('play')} RESUME`;
         if (this.dom.resumeBtn) this.dom.resumeBtn.focus();
         this.announce('Optimization thread suspended.');
     }
@@ -391,7 +391,7 @@ class ArcadeGradientGame {
         this.state = 'PLAYING';
         if (this.dom.pauseOverlay) this.dom.pauseOverlay.style.display = 'none';
         if (this.dom.pauseBtnText) this.dom.pauseBtnText.textContent = 'PAUSE [P]';
-        if (this.dom.touchLaunchText) this.dom.touchLaunchText.textContent = '⏸ PAUSE';
+        if (this.dom.touchLaunchText) this.dom.touchLaunchText.innerHTML = `${renderIcon('pause')} PAUSE`;
         this.lastTime = performance.now();
         this.announce('Optimization thread resumed.');
     }
@@ -1149,7 +1149,7 @@ class ArcadeGradientGame {
             this.ball.vx = 0;
             this.ball.vy = 0;
             this.ball.trail = [];
-            if (this.dom.touchLaunchText) this.dom.touchLaunchText.textContent = '⚡ LAUNCH';
+            if (this.dom.touchLaunchText) this.dom.touchLaunchText.innerHTML = `${renderIcon('zap')} LAUNCH`;
             this.announce(`Gradient step missed. ${this.lives} attempt${this.lives === 1 ? '' : 's'} remaining.`);
         }
     }
