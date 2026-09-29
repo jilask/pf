@@ -1725,7 +1725,7 @@ ACHIEVEMENTS
             if (btnEl) {
                 const originalHtml = btnEl.innerHTML;
                 btnEl.classList.add('copied');
-                btnEl.innerHTML = '<span class="copy-icon" aria-hidden="true">✓</span> <span class="copy-btn-text">Copied!</span> <span class="sr-only" aria-live="polite">Prompt copied to clipboard successfully</span>';
+                btnEl.innerHTML = `<span class="copy-icon" aria-hidden="true">${renderIcon('check')}</span> <span class="copy-btn-text">Copied!</span> <span class="sr-only" aria-live="polite">Prompt copied to clipboard successfully</span>`;
                 btnEl.setAttribute('aria-label', 'Prompt copied to clipboard!');
                 setTimeout(() => {
                     btnEl.classList.remove('copied');
@@ -1901,7 +1901,7 @@ ACHIEVEMENTS
             }
         }
         if (toggleBtnText) {
-            toggleBtnText.textContent = this.isPromptExpanded ? '▼ Hide prompt details' : '► Behind the image / Full details';
+            toggleBtnText.innerHTML = this.isPromptExpanded ? `${renderIcon('chevron-down')} Hide prompt details` : `${renderIcon('chevron-right')} Behind the image / Full details`;
         }
         if (toggleBtn) {
             toggleBtn.setAttribute('aria-expanded', this.isPromptExpanded ? 'true' : 'false');
@@ -2037,7 +2037,7 @@ ACHIEVEMENTS
 
             const captionMarkup = (isCaseStudy && activeCaption) ? `
                 <div class="lightbox-media-caption" role="status" aria-live="polite" aria-label="Media caption">
-                    <span class="caption-icon" aria-hidden="true">▸</span>
+                    <span class="caption-icon" aria-hidden="true">${renderIcon('chevron-right')}</span>
                     <span class="caption-text">${activeCaption}</span>
                 </div>
             ` : '';
@@ -2115,10 +2115,10 @@ ACHIEVEMENTS
                                                 class="lightbox-subnav-item ${isActive ? 'active' : ''}${isSubVid ? ' is-video' : ''}" 
                                                 aria-selected="${isActive ? 'true' : 'false'}"
                                                 aria-current="${isActive ? 'true' : 'false'}"
-                                                aria-label="View ${idx + 1} of ${item.media.length}: ${subTitle}${isActive ? ' (currently selected)' : ''}"
+                                                aria-label="View ${idx + 1} of ${item.media.length}${isSubVid ? ' (Video clip)' : ''}: ${subTitle}${isActive ? ' (currently selected)' : ''}"
                                                 onclick="window.portfolio && window.portfolio.setCaseStudySubIndex(${idx})">
                                             <img src="${subThumb}" alt="" class="subnav-thumb" loading="lazy">
-                                            <span class="subnav-badge" aria-hidden="true">${isSubVid ? '▶' : (idx + 1)}</span>
+                                            <span class="subnav-badge" aria-hidden="true">${isSubVid ? renderIcon('play') : (idx + 1)}</span>
                                             <span class="subnav-title">${subTitle}</span>
                                         </button>
                                     `;
@@ -2151,7 +2151,7 @@ ACHIEVEMENTS
             const subitemInfo = metaPanel.querySelector('.lightbox-subitem-info');
             if (subitemInfo && activeCaption) {
                 subitemInfo.innerHTML = `
-                    <span class="subitem-label"><span aria-hidden="true">📷</span> ACTIVE VIEW [${this.currentCaseStudySubIndex + 1}/${item.media.length}]:</span>
+                    <span class="subitem-label"><span aria-hidden="true">${renderIcon('camera')}</span> ACTIVE VIEW [${this.currentCaseStudySubIndex + 1}/${item.media.length}]:</span>
                     <span class="subitem-caption">${activeCaption}</span>
                 `;
             }
@@ -2187,14 +2187,14 @@ ACHIEVEMENTS
 
                 ${isCaseStudy && activeCaption ? `
                     <div class="lightbox-subitem-info">
-                        <span class="subitem-label"><span aria-hidden="true">📷</span> ACTIVE VIEW [${this.currentCaseStudySubIndex + 1}/${item.media.length}]:</span>
+                        <span class="subitem-label"><span aria-hidden="true">${renderIcon('camera')}</span> ACTIVE VIEW [${this.currentCaseStudySubIndex + 1}/${item.media.length}]:</span>
                         <span class="subitem-caption">${activeCaption}</span>
                     </div>
                 ` : ''}
 
                 <div class="lightbox-meta-row">
-                    <span class="lightbox-meta-item">🛠️ <strong>Tool:</strong> ${item.tool || 'N/A'}</span>
-                    <span class="lightbox-meta-item">📅 <strong>Date:</strong> ${item.date || 'N/A'}</span>
+                    <span class="lightbox-meta-item">${renderIcon('wrench')} <strong>Tool:</strong> ${item.tool || 'N/A'}</span>
+                    <span class="lightbox-meta-item">${renderIcon('calendar')} <strong>Date:</strong> ${item.date || 'N/A'}</span>
                 </div>
 
                 ${itemTags.length ? `
@@ -2207,7 +2207,7 @@ ACHIEVEMENTS
                     <div class="lightbox-prompt-section">
                         <div class="prompt-header-row">
                             <div class="prompt-label-group">
-                                <span class="prompt-label">🤖 PROMPT LOGIC:</span>
+                                <span class="prompt-label">${renderIcon('bot')} PROMPT LOGIC:</span>
                             </div>
                             <div class="prompt-actions-group">
                                 <button id="copy-prompt-btn" 
@@ -2215,7 +2215,7 @@ ACHIEVEMENTS
                                         type="button" 
                                         aria-label="Copy prompt to clipboard"
                                         onclick="window.portfolio && window.portfolio.copyCurrentPrompt(this)">
-                                    <span class="copy-icon" aria-hidden="true">📋</span> <span class="copy-btn-text">Copy prompt</span>
+                                    <span class="copy-icon" aria-hidden="true">${renderIcon('copy')}</span> <span class="copy-btn-text">Copy prompt</span>
                                 </button>
                                 ${isLongPrompt || item.negativePrompt ? `
                                     <button id="prompt-toggle-btn" 
@@ -2223,7 +2223,7 @@ ACHIEVEMENTS
                                             type="button" 
                                             aria-expanded="${this.isPromptExpanded ? 'true' : 'false'}"
                                             onclick="window.portfolio && window.portfolio.togglePromptDetails()">
-                                        <span id="prompt-toggle-text">${this.isPromptExpanded ? '▼ Hide prompt details' : '► Behind the image / Full details'}</span>
+                                        <span id="prompt-toggle-text">${this.isPromptExpanded ? `${renderIcon('chevron-down')} Hide prompt details` : `${renderIcon('chevron-right')} Behind the image / Full details`}</span>
                                     </button>
                                 ` : ''}
                             </div>
@@ -2231,14 +2231,14 @@ ACHIEVEMENTS
 
                         ${isConcealed ? `
                             <div class="prompt-guess-box" id="prompt-guess-box">
-                                <div class="guess-badge">🎮 GUESS THE PROMPT MODE</div>
+                                <div class="guess-badge">${renderIcon('gamepad-2')} GUESS THE PROMPT MODE</div>
                                 <div class="guess-instruction">Prompt hidden behind encrypted barrier. Can you deduce the generation prompt?</div>
                                 <button type="button" 
                                         class="reveal-prompt-btn" 
                                         id="reveal-prompt-btn"
                                         onclick="window.portfolio && window.portfolio.revealPromptInLightbox(this)"
                                         aria-label="Reveal the hidden AI generation prompt">
-                                    👁️ REVEAL PROMPT // [DECRYPT]
+                                    ${renderIcon('eye')} REVEAL PROMPT // [DECRYPT]
                                 </button>
                             </div>
                             <div id="lightbox-prompt-container" class="lightbox-prompt-container prompt-hidden-mode ${this.isPromptExpanded ? 'expanded' : ''}" style="display: none;">
@@ -2247,7 +2247,7 @@ ACHIEVEMENTS
                                 
                                 ${item.negativePrompt ? `
                                     <div class="negative-prompt-block">
-                                        <span class="negative-prompt-label">🚫 Negative Prompt:</span>
+                                        <span class="negative-prompt-label">${renderIcon('ban')} Negative Prompt:</span>
                                         <div class="negative-prompt-text">${item.negativePrompt}</div>
                                     </div>
                                 ` : ''}
@@ -2259,7 +2259,7 @@ ACHIEVEMENTS
                                 
                                 ${item.negativePrompt ? `
                                     <div class="negative-prompt-block">
-                                        <span class="negative-prompt-label">🚫 Negative Prompt:</span>
+                                        <span class="negative-prompt-label">${renderIcon('ban')} Negative Prompt:</span>
                                         <div class="negative-prompt-text">${item.negativePrompt}</div>
                                     </div>
                                 ` : ''}
@@ -2274,7 +2274,7 @@ ACHIEVEMENTS
                                 class="lightbox-project-link-btn" 
                                 onclick="window.portfolio && window.portfolio.navigateToRelatedProject('${item.relatedProject}')"
                                 aria-label="View case study for ${relatedProjectInfo.title}">
-                            <span class="project-link-icon">🔗</span> Related Project: <strong>${relatedProjectInfo.title}</strong> →
+                            <span class="project-link-icon">${renderIcon('link-2')}</span> Related Project: <strong>${relatedProjectInfo.title}</strong> →
                         </button>
                     </div>
                 ` : (item.relatedProject ? `
@@ -2283,7 +2283,7 @@ ACHIEVEMENTS
                                 class="lightbox-project-link-btn" 
                                 onclick="window.portfolio && window.portfolio.navigateToRelatedProject('${item.relatedProject}')"
                                 aria-label="View case study for related project">
-                            <span class="project-link-icon">🔗</span> Related Project: <strong>${item.relatedProject}</strong> →
+                            <span class="project-link-icon">${renderIcon('link-2')}</span> Related Project: <strong>${item.relatedProject}</strong> →
                         </button>
                     </div>
                 ` : '')}

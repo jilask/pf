@@ -30,7 +30,7 @@ function renderCard(item, type) {
                     <button class="devlog-card" type="button" onclick="window.portfolio.showPost('${item.id}')" aria-label="${ariaLabel}">
                         <div class="devlog-card-meta">
                             <time class="devlog-card-date" datetime="${item.date}">
-                                <span class="meta-icon" aria-hidden="true">📅</span> ${item.date}
+                                <span class="meta-icon" aria-hidden="true">${renderIcon('calendar')}</span> ${item.date}
                             </time>
                             <div class="devlog-card-tags" aria-label="Tags">
                                 ${tagPills}
@@ -123,15 +123,15 @@ function renderCard(item, type) {
             let mediaBadge = '';
             if (isCaseStudy) {
                 const count = item.media.length;
-                const countBadge = `<span class="gallery-type-badge case-study" aria-label="${count} items in case study"><span aria-hidden="true">❐</span> ${count} VIEWS</span>`;
-                const videoBadge = hasVideoSubItem ? `<span class="gallery-type-badge video" aria-label="Includes video content"><span aria-hidden="true">▶</span> VIDEO</span>` : '';
+                const countBadge = `<span class="gallery-type-badge case-study" aria-label="${count} items in case study"><span aria-hidden="true">${renderIcon('layers')}</span> ${count} VIEWS</span>`;
+                const videoBadge = hasVideoSubItem ? `<span class="gallery-type-badge video" aria-label="Includes video content"><span aria-hidden="true">${renderIcon('play')}</span> VIDEO</span>` : '';
                 mediaBadge = `<div class="gallery-badges-top-right">${countBadge}${videoBadge}</div>`;
             } else if (isVideo) {
-                mediaBadge = `<div class="gallery-badges-top-right"><span class="gallery-type-badge video"><span aria-hidden="true">▶</span> VIDEO</span></div>`;
+                mediaBadge = `<div class="gallery-badges-top-right"><span class="gallery-type-badge video"><span aria-hidden="true">${renderIcon('play')}</span> VIDEO</span></div>`;
             }
 
             const featuredBadge = item.featured
-                ? `<span class="gallery-featured-badge" aria-label="Featured item"><span aria-hidden="true">★</span> FEATURED</span>`
+                ? `<span class="gallery-featured-badge" aria-label="Featured item"><span aria-hidden="true">${renderIcon('star')}</span> FEATURED</span>`
                 : '';
 
             const altText = `${item.title} - ${catInfo.label} artwork thumbnail`;
@@ -159,7 +159,7 @@ function renderCard(item, type) {
 
             const videoIndicator = isVideo ? `
                 <div class="gallery-video-center-indicator" aria-hidden="true">
-                    <span class="video-play-glyph">▶</span>
+                    <span class="video-play-glyph" aria-hidden="true">${renderIcon('play')}</span>
                 </div>
             ` : '';
 
@@ -168,6 +168,14 @@ function renderCard(item, type) {
                 ? item.tags
                 : (typeof item.tags === 'string' && item.tags.trim() ? [item.tags.trim()] : []);
 
+            const cardAriaLabel = isVideo
+                ? `Play video: ${item.title} (includes video content)`
+                : (isCaseStudy && hasVideoSubItem
+                    ? `View case study: ${item.title} (${item.media.length} views, includes video content)`
+                    : (isCaseStudy
+                        ? `View case study: ${item.title} (${item.media.length} views)`
+                        : `View details for ${item.title}`));
+
             return `
                 <article class="gallery-card${item.featured ? ' is-featured' : ''}${isVideo ? ' is-video-item' : ''}${isCaseStudy ? ' is-case-study' : ''}" 
                          data-id="${item.id}" 
@@ -175,7 +183,7 @@ function renderCard(item, type) {
                          data-media-type="${cardMediaType}"
                          role="button" 
                          tabindex="0" 
-                         aria-label="${isVideo ? 'Play video' : 'View details'} for ${item.title}" 
+                         aria-label="${cardAriaLabel}" 
                          onclick="window.portfolio && window.portfolio.openGalleryLightbox('${item.id}')" 
                          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); window.portfolio && window.portfolio.openGalleryLightbox('${item.id}');}">
                     <div class="gallery-thumb-wrap skeleton-loading">
@@ -191,7 +199,7 @@ function renderCard(item, type) {
                              onload="this.classList.add('loaded'); if (this.parentElement) this.parentElement.parentElement ? this.parentElement.classList.remove('skeleton-loading') : null;"
                              onerror="this.style.display='none'; if (this.nextElementSibling) this.nextElementSibling.style.display='flex'; if (this.parentElement) this.parentElement.classList.remove('skeleton-loading');">
                         <div class="gallery-fallback" style="display: none;" role="img" aria-label="Image failed to load: ${item.title}">
-                            <span class="fallback-icon" aria-hidden="true">⚠️</span>
+                            <span class="fallback-icon" aria-hidden="true">${renderIcon('triangle-alert')}</span>
                             <span class="fallback-code">[ERR 404: NOT_FOUND]</span>
                             <span class="fallback-sub">${item.title}</span>
                         </div>
@@ -1637,7 +1645,7 @@ function renderPostDetails(post, renderedHtml) {
 
             <header class="devlog-post-header" style="margin: 16px 0 20px; padding: 14px; background: rgba(255, 255, 255, 0.03); border-radius: 6px; border-left: 3px solid var(--accent-cyan);">
                 <div class="devlog-post-meta" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 8px; font-size: 11px; font-family: 'Fira Code', monospace; color: var(--text-secondary);">
-                    <time datetime="${post.date}">📅 ${post.date}</time>
+                    <time datetime="${post.date}"><span aria-hidden="true">${renderIcon('calendar')}</span> ${post.date}</time>
                     <span aria-hidden="true">•</span>
                     <span>AUTHOR: AliJ A. Shaikh</span>
                     <span aria-hidden="true">•</span>
