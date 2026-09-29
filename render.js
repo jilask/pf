@@ -11,7 +11,7 @@ function renderCard(item, type) {
         case 'project':
             return `
                 <button class="portfolio-item" type="button" onclick="window.portfolio.showProject('${item.id}')" aria-label="${item.title}: ${item.description}. View project details.">
-                    <div class="portfolio-image" aria-hidden="true">${item.image ? `<img src="${item.image}" alt="${item.title}" loading="lazy">` : item.icon}</div>
+                    <div class="portfolio-image" aria-hidden="true">${item.image ? `<img src="${item.image}" alt="${item.title}" loading="lazy">` : (item.icon ? renderIcon(item.icon) : '')}</div>
                     <div class="portfolio-content">
                         <h3 class="portfolio-title">${item.title}</h3>
                         <div class="portfolio-description">${item.description}</div>
@@ -49,7 +49,7 @@ function renderCard(item, type) {
         case 'experience':
             return `
                 <article class="experience-item">
-                    <h3 class="job-title">${item.title}</h3>
+                    <h3 class="job-title">${item.icon ? `<span class="experience-icon" aria-hidden="true">${renderIcon(item.icon)}</span> ` : ''}${item.title}</h3>
                     <div class="company" style="color: ${item.companyColor}; font-weight: 600;">${item.company}</div>
                     <div class="duration">${item.duration}</div>
                     <div class="job-description">
@@ -63,7 +63,7 @@ function renderCard(item, type) {
 
         case 'achievement':
             return `
-                <div style="color: ${item.titleColor}; margin-bottom: 8px;">${item.status} ${item.icon} ${item.title}</div>
+                <div style="color: ${item.titleColor}; margin-bottom: 8px;">${item.status} ${item.icon ? `<span class="achievement-icon" aria-hidden="true">${renderIcon(item.icon)}</span> ` : ''}${item.title}</div>
                 <div style="padding-left: 16px; color: var(--text-secondary); margin-bottom: 12px; font-size: 12px;">
                     ${item.description}
                 </div>
@@ -91,7 +91,7 @@ function renderCard(item, type) {
         case 'contact_link':
             return `
                 <a href="${item.url}"${item.target ? ` target="${item.target}"` : ''} class="contact-item" aria-label="${item.label}: ${item.value}">
-                    <div class="contact-icon" aria-hidden="true">${item.icon}</div>
+                    <div class="contact-icon" aria-hidden="true">${item.icon ? renderIcon(item.icon) : ''}</div>
                     <div class="contact-label">${item.label}</div>
                     <div class="contact-value">${item.value}</div>
                 </a>
@@ -859,7 +859,7 @@ function renderProjectDetails(project) {
                 <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~/projects</span><span style="color: var(--accent-yellow);">$</span> ${project.readmeCommand}
             </div>
             <div style="margin: 16px 0; padding: 16px; background: rgba(255, 255, 255, 0.05); border-radius: 6px; border-left: 3px solid ${project.borderLeftColor};">
-                <h3 style="color: var(--accent-cyan); margin-bottom: 12px;">${project.icon} ${project.detailTitle || project.title}</h3>
+                <h3 style="color: var(--accent-cyan); margin-bottom: 12px;">${project.icon ? `<span class="project-title-icon" aria-hidden="true">${renderIcon(project.icon)}</span> ` : ''}${project.detailTitle || project.title}</h3>
                 <p style="margin-bottom: 12px; line-height: 1.6;">
                     ${project.intro}
                 </p>
