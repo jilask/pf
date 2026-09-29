@@ -19,7 +19,7 @@
     {
       "id": "ai-fashion",
       "title": "AI Fashion Pipeline",
-      "icon": "🤖",
+      "icon": "bot",
       "description": "Production-grade generative AI system for fashion retail, featuring custom ComfyUI workflows and brand-safe content generation.",
       "detailTitle": "AI Fashion Pipeline",
       "detailDescription": "Production-grade generative AI system for fashion retail",
@@ -53,7 +53,7 @@
     {
       "id": "ai-content",
       "title": "AI Content Creation",
-      "icon": "🎨",
+      "icon": "palette",
       "description": "Advanced AI-driven content creation system with innovative prompt engineering techniques and automated workflows.",
       "detailTitle": "AI Content Creation System",
       "detailDescription": "Advanced AI-driven content creation platform",
@@ -87,7 +87,7 @@
     {
       "id": "comfyui-nodes",
       "title": "Custom ComfyUI Nodes",
-      "icon": "⚙️",
+      "icon": "cpu",
       "description": "Specialized node development extending ComfyUI capabilities for advanced AI image generation workflows.",
       "detailTitle": "Custom ComfyUI Nodes",
       "detailDescription": "Specialized node development for ComfyUI",
@@ -121,7 +121,7 @@
     {
       "id": "flutter-apps",
       "title": "Flutter Applications",
-      "icon": "📱",
+      "icon": "smartphone",
       "description": "Cross-platform mobile applications with responsive design and seamless user experience.",
       "detailTitle": "Flutter Applications",
       "detailDescription": "Cross-platform mobile applications",
