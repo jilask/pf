@@ -17,7 +17,8 @@ export default [
         renderGallery: 'readonly',
         renderGalleryPagination: 'readonly',
         renderProjectDetails: 'readonly',
-        renderPostDetails: 'readonly'
+        renderPostDetails: 'readonly',
+        renderIcon: 'readonly'
       }
     },
     rules: {
