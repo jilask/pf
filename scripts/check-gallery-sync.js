@@ -45,7 +45,7 @@ if (!galleryHtml.includes('data-open-pane="gallery"')) {
 if (galleryHtml.includes('href="/styles.css"')) {
     errors.push('gallery/index.html has href="/styles.css". Must be relative "styles.css" to work with <base href="../">.');
 }
-const leadingSlashScriptMatches = galleryHtml.match(/src="\/(render|arcade|script)[^"]*"/g);
+const leadingSlashScriptMatches = galleryHtml.match(/src="\/(icons|render|arcade|script)[^"]*"/g);
 if (leadingSlashScriptMatches) {
     errors.push(`gallery/index.html has root-relative script sources: ${leadingSlashScriptMatches.join(', ')}. Use relative paths without leading slash.`);
 }

@@ -11,7 +11,7 @@ function renderCard(item, type) {
         case 'project':
             return `
                 <button class="portfolio-item" type="button" onclick="window.portfolio.showProject('${item.id}')" aria-label="${item.title}: ${item.description}. View project details.">
-                    <div class="portfolio-image" aria-hidden="true">${item.image ? `<img src="${item.image}" alt="${item.title}" loading="lazy">` : item.icon}</div>
+                    <div class="portfolio-image" aria-hidden="true">${item.image ? `<img src="${item.image}" alt="${item.title}" loading="lazy">` : (item.icon ? renderIcon(item.icon) : '')}</div>
                     <div class="portfolio-content">
                         <h3 class="portfolio-title">${item.title}</h3>
                         <div class="portfolio-description">${item.description}</div>
@@ -30,7 +30,7 @@ function renderCard(item, type) {
                     <button class="devlog-card" type="button" onclick="window.portfolio.showPost('${item.id}')" aria-label="${ariaLabel}">
                         <div class="devlog-card-meta">
                             <time class="devlog-card-date" datetime="${item.date}">
-                                <span class="meta-icon" aria-hidden="true">📅</span> ${item.date}
+                                <span class="meta-icon" aria-hidden="true">${renderIcon('calendar')}</span> ${item.date}
                             </time>
                             <div class="devlog-card-tags" aria-label="Tags">
                                 ${tagPills}
@@ -49,7 +49,7 @@ function renderCard(item, type) {
         case 'experience':
             return `
                 <article class="experience-item">
-                    <h3 class="job-title">${item.title}</h3>
+                    <h3 class="job-title">${item.icon ? `<span class="experience-icon" aria-hidden="true">${renderIcon(item.icon)}</span> ` : ''}${item.title}</h3>
                     <div class="company" style="color: ${item.companyColor}; font-weight: 600;">${item.company}</div>
                     <div class="duration">${item.duration}</div>
                     <div class="job-description">
@@ -63,7 +63,7 @@ function renderCard(item, type) {
 
         case 'achievement':
             return `
-                <div style="color: ${item.titleColor}; margin-bottom: 8px;">${item.status} ${item.icon} ${item.title}</div>
+                <div style="color: ${item.titleColor}; margin-bottom: 8px;">${item.status} ${item.icon ? `<span class="achievement-icon" aria-hidden="true">${renderIcon(item.icon)}</span> ` : ''}${item.title}</div>
                 <div style="padding-left: 16px; color: var(--text-secondary); margin-bottom: 12px; font-size: 12px;">
                     ${item.description}
                 </div>
@@ -91,7 +91,7 @@ function renderCard(item, type) {
         case 'contact_link':
             return `
                 <a href="${item.url}"${item.target ? ` target="${item.target}"` : ''} class="contact-item" aria-label="${item.label}: ${item.value}">
-                    <div class="contact-icon" aria-hidden="true">${item.icon}</div>
+                    <div class="contact-icon" aria-hidden="true">${item.icon ? renderIcon(item.icon) : ''}</div>
                     <div class="contact-label">${item.label}</div>
                     <div class="contact-value">${item.value}</div>
                 </a>
@@ -123,15 +123,15 @@ function renderCard(item, type) {
             let mediaBadge = '';
             if (isCaseStudy) {
                 const count = item.media.length;
-                const countBadge = `<span class="gallery-type-badge case-study" aria-label="${count} items in case study"><span aria-hidden="true">❐</span> ${count} VIEWS</span>`;
-                const videoBadge = hasVideoSubItem ? `<span class="gallery-type-badge video" aria-label="Includes video content"><span aria-hidden="true">▶</span> VIDEO</span>` : '';
+                const countBadge = `<span class="gallery-type-badge case-study" aria-label="${count} items in case study"><span aria-hidden="true">${renderIcon('layers')}</span> ${count} VIEWS</span>`;
+                const videoBadge = hasVideoSubItem ? `<span class="gallery-type-badge video" aria-label="Includes video content"><span aria-hidden="true">${renderIcon('play')}</span> VIDEO</span>` : '';
                 mediaBadge = `<div class="gallery-badges-top-right">${countBadge}${videoBadge}</div>`;
             } else if (isVideo) {
-                mediaBadge = `<div class="gallery-badges-top-right"><span class="gallery-type-badge video"><span aria-hidden="true">▶</span> VIDEO</span></div>`;
+                mediaBadge = `<div class="gallery-badges-top-right"><span class="gallery-type-badge video"><span aria-hidden="true">${renderIcon('play')}</span> VIDEO</span></div>`;
             }
 
             const featuredBadge = item.featured
-                ? `<span class="gallery-featured-badge" aria-label="Featured item"><span aria-hidden="true">★</span> FEATURED</span>`
+                ? `<span class="gallery-featured-badge" aria-label="Featured item"><span aria-hidden="true">${renderIcon('star')}</span> FEATURED</span>`
                 : '';
 
             const altText = `${item.title} - ${catInfo.label} artwork thumbnail`;
@@ -159,7 +159,7 @@ function renderCard(item, type) {
 
             const videoIndicator = isVideo ? `
                 <div class="gallery-video-center-indicator" aria-hidden="true">
-                    <span class="video-play-glyph">▶</span>
+                    <span class="video-play-glyph" aria-hidden="true">${renderIcon('play')}</span>
                 </div>
             ` : '';
 
@@ -168,6 +168,14 @@ function renderCard(item, type) {
                 ? item.tags
                 : (typeof item.tags === 'string' && item.tags.trim() ? [item.tags.trim()] : []);
 
+            const cardAriaLabel = isVideo
+                ? `Play video: ${item.title} (includes video content)`
+                : (isCaseStudy && hasVideoSubItem
+                    ? `View case study: ${item.title} (${item.media.length} views, includes video content)`
+                    : (isCaseStudy
+                        ? `View case study: ${item.title} (${item.media.length} views)`
+                        : `View details for ${item.title}`));
+
             return `
                 <article class="gallery-card${item.featured ? ' is-featured' : ''}${isVideo ? ' is-video-item' : ''}${isCaseStudy ? ' is-case-study' : ''}" 
                          data-id="${item.id}" 
@@ -175,7 +183,7 @@ function renderCard(item, type) {
                          data-media-type="${cardMediaType}"
                          role="button" 
                          tabindex="0" 
-                         aria-label="${isVideo ? 'Play video' : 'View details'} for ${item.title}" 
+                         aria-label="${cardAriaLabel}" 
                          onclick="window.portfolio && window.portfolio.openGalleryLightbox('${item.id}')" 
                          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); window.portfolio && window.portfolio.openGalleryLightbox('${item.id}');}">
                     <div class="gallery-thumb-wrap skeleton-loading">
@@ -191,7 +199,7 @@ function renderCard(item, type) {
                              onload="this.classList.add('loaded'); if (this.parentElement) this.parentElement.parentElement ? this.parentElement.classList.remove('skeleton-loading') : null;"
                              onerror="this.style.display='none'; if (this.nextElementSibling) this.nextElementSibling.style.display='flex'; if (this.parentElement) this.parentElement.classList.remove('skeleton-loading');">
                         <div class="gallery-fallback" style="display: none;" role="img" aria-label="Image failed to load: ${item.title}">
-                            <span class="fallback-icon" aria-hidden="true">⚠️</span>
+                            <span class="fallback-icon" aria-hidden="true">${renderIcon('triangle-alert')}</span>
                             <span class="fallback-code">[ERR 404: NOT_FOUND]</span>
                             <span class="fallback-sub">${item.title}</span>
                         </div>
@@ -545,16 +553,16 @@ function renderSection(sectionType, data) {
                                 <!-- Sort Dropdown -->
                                 <div class="gallery-sort-wrap">
                                     <label for="gallery-sort-select" class="controls-section-label">
-                                        <span class="terminal-prompt-char">&gt;</span> SORT:
+                                        <span class="terminal-prompt-char">&gt;</span> <span aria-hidden="true">${renderIcon('arrow-down-a-z')}</span> SORT:
                                     </label>
                                     <select id="gallery-sort-select" 
                                             class="gallery-sort-select" 
                                             aria-label="Sort gallery items"
                                             onchange="window.portfolio && window.portfolio.setGallerySort(this.value)">
-                                        <option value="date-desc" ${currentSort === 'date-desc' ? 'selected' : ''}>📅 Date (Newest)</option>
-                                        <option value="featured-first" ${currentSort === 'featured-first' ? 'selected' : ''}>★ Featured first</option>
-                                        <option value="date-asc" ${currentSort === 'date-asc' ? 'selected' : ''}>📅 Date (Oldest)</option>
-                                        <option value="title-asc" ${currentSort === 'title-asc' ? 'selected' : ''}>🔤 Title (A-Z)</option>
+                                        <option value="date-desc" ${currentSort === 'date-desc' ? 'selected' : ''}>Date (Newest)</option>
+                                        <option value="featured-first" ${currentSort === 'featured-first' ? 'selected' : ''}>Featured first</option>
+                                        <option value="date-asc" ${currentSort === 'date-asc' ? 'selected' : ''}>Date (Oldest)</option>
+                                        <option value="title-asc" ${currentSort === 'title-asc' ? 'selected' : ''}>Title (A-Z)</option>
                                     </select>
                                 </div>
 
@@ -567,7 +575,7 @@ function renderSection(sectionType, data) {
                                                onchange="window.portfolio && window.portfolio.togglePromptRevealMode(this.checked)"
                                                aria-label="Prompt Reveal Mode: hide prompts initially in lightbox">
                                         <span class="toggle-slider" aria-hidden="true"></span>
-                                        <span class="toggle-text"><span class="toggle-icon">👁️</span> Guess Mode</span>
+                                        <span class="toggle-text"><span class="toggle-icon" aria-hidden="true">${renderIcon('eye')}</span> Guess Mode</span>
                                     </label>
                                 </div>
                             </div>
@@ -595,7 +603,7 @@ function renderSection(sectionType, data) {
                                         onclick="window.portfolio && window.portfolio.resetGalleryFilters()"
                                         style="${hasActiveFilters ? '' : 'display: none;'}"
                                         aria-label="Clear active category and tag filters">
-                                    ✕ Clear filters
+                                    <span aria-hidden="true">${renderIcon('x')}</span> Clear filters
                                 </button>
                             </div>
                         </div>
@@ -728,7 +736,7 @@ function renderGalleryEmptyState(options) {
                         class="gallery-reset-btn" 
                         onclick="window.portfolio && window.portfolio.resetGalleryFilters()"
                         aria-label="Clear active filters and show all items">
-                    <span aria-hidden="true">↺</span> CLEAR FILTERS // SHOW ALL ITEMS
+                    <span aria-hidden="true">${renderIcon('rotate-ccw')}</span> CLEAR FILTERS // SHOW ALL ITEMS
                 </button>
             </div>
         </div>
@@ -851,14 +859,14 @@ function renderProjectDetails(project) {
                 <span style="color: var(--accent-green);">alij@arch-portfolio</span><span style="color: var(--text-secondary);">:</span><span style="color: var(--accent-blue);">~/projects</span><span style="color: var(--accent-yellow);">$</span> ${project.readmeCommand}
             </div>
             <div style="margin: 16px 0; padding: 16px; background: rgba(255, 255, 255, 0.05); border-radius: 6px; border-left: 3px solid ${project.borderLeftColor};">
-                <h3 style="color: var(--accent-cyan); margin-bottom: 12px;">${project.icon} ${project.detailTitle || project.title}</h3>
+                <h3 style="color: var(--accent-cyan); margin-bottom: 12px;">${project.icon ? `<span class="project-title-icon" aria-hidden="true">${renderIcon(project.icon)}</span> ` : ''}${project.detailTitle || project.title}</h3>
                 <p style="margin-bottom: 12px; line-height: 1.6;">
                     ${project.intro}
                 </p>
                 <div style="margin-bottom: 16px;">
                     <h4 class="project-subsection-title">${project.featuresHeader}</h4>
                     <ul style="list-style: none; padding: 0;">
-                        ${project.features.map(f => `<li style="margin-bottom: 6px;"><span style="color: var(--accent-green);">✓</span> ${f}</li>`).join('')}
+                        ${project.features.map(f => `<li style="margin-bottom: 6px;"><span style="color: var(--accent-green);" aria-hidden="true">${renderIcon('check')}</span> ${f}</li>`).join('')}
                     </ul>
                 </div>
                 <div style="margin-bottom: 16px;">
@@ -903,7 +911,7 @@ function renderArcadeMenu(arcadeData) {
                 <div class="arcade-col-size" aria-hidden="true">${game.size || '4.0K'}</div>
                 <div class="arcade-col-date" aria-hidden="true">${header.date || 'Sep 04'}</div>
                 <div class="arcade-col-name">
-                    <span class="arcade-exec-icon" aria-hidden="true">⚙</span>
+                    <span class="arcade-exec-icon" aria-hidden="true">${renderIcon('cog')}</span>
                     <span class="arcade-exec-name">${game.executable || `${game.id}.sh`}*</span>
                     <span class="arcade-game-title">(${game.title})</span>
                 </div>
@@ -943,7 +951,7 @@ function renderArcadeMenu(arcadeData) {
 
             <div class="arcade-directory-footer">
                 <div class="arcade-terminal-tip">
-                    <span class="arcade-tip-icon" aria-hidden="true">ℹ</span>
+                    <span class="arcade-tip-icon" aria-hidden="true">${renderIcon('info')}</span>
                     <span>Select an executable using <strong>Tab / Click</strong> and press <strong>[Enter]</strong> • Press <strong>[ESC]</strong> to exit arcade.</span>
                 </div>
             </div>
@@ -997,7 +1005,7 @@ function renderArcadeGamePlaceholder(game) {
 
                 <div class="arcade-stage-notice">
                     <div class="arcade-notice-badge">
-                        <span class="arcade-notice-icon" aria-hidden="true">⏳</span>
+                        <span class="arcade-notice-icon" aria-hidden="true">${renderIcon('hourglass')}</span>
                         <span>DEPLOYMENT STAGE: COMING SOON</span>
                     </div>
                     <p class="arcade-notice-desc">
@@ -1108,7 +1116,7 @@ function renderSnakeGame(game, highScore = 0) {
                             <div class="hint-item"><kbd class="arcade-key-badge">ESC</kbd> <span>Arcade Menu</span></div>
                         </div>
                         <button class="arcade-btn arcade-btn-primary" id="snake-start-btn" type="button">
-                            ▶ LAUNCH VECTOR [PRESS ANY KEY / TAP]
+                            ${renderIcon('play')} LAUNCH VECTOR [PRESS ANY KEY / TAP]
                         </button>
                     </div>
                 </div>
@@ -1121,10 +1129,10 @@ function renderSnakeGame(game, highScore = 0) {
                         <p class="arcade-overlay-desc">CPU tick halted. Press Space, P, or click Resume to continue execution.</p>
                         <div class="arcade-overlay-actions">
                             <button class="arcade-btn arcade-btn-primary" id="snake-resume-btn" type="button">
-                                ▶ RESUME THREAD [SPACE]
+                                ${renderIcon('play')} RESUME THREAD [SPACE]
                             </button>
                             <button class="arcade-btn arcade-btn-secondary" id="snake-restart-from-pause-btn" type="button">
-                                ↺ RESTART [R]
+                                ${renderIcon('rotate-ccw')} RESTART [R]
                             </button>
                         </div>
                     </div>
@@ -1146,11 +1154,11 @@ function renderSnakeGame(game, highScore = 0) {
                             </div>
                         </div>
                         <div id="snake-new-highscore-badge" class="arcade-new-record" style="display: none;">
-                            ★ NEW PEAK RECORDED TO LATENT REGISTRY ★
+                            ${renderIcon('trophy')} NEW PEAK RECORDED TO LATENT REGISTRY ${renderIcon('trophy')}
                         </div>
                         <div class="arcade-overlay-actions">
                             <button class="arcade-btn arcade-btn-primary" id="snake-restart-btn" type="button">
-                                ↺ EXPLORE AGAIN [R / ENTER]
+                                ${renderIcon('rotate-ccw')} EXPLORE AGAIN [R / ENTER]
                             </button>
                             <button class="arcade-btn arcade-btn-secondary" id="snake-exit-to-menu-btn" type="button">
                                 ← ARCADE MENU [ESC]
@@ -1164,19 +1172,19 @@ function renderSnakeGame(game, highScore = 0) {
             <div class="arcade-touch-controls" id="snake-touch-controls" aria-label="On-screen directional controls">
                 <div class="arcade-dpad">
                     <button class="arcade-dpad-btn dpad-up" id="dpad-up" type="button" aria-label="Steer Up">
-                        <span aria-hidden="true">▲</span>
+                        <span aria-hidden="true">${renderIcon('chevron-up')}</span>
                     </button>
                     <div class="arcade-dpad-middle">
                         <button class="arcade-dpad-btn dpad-left" id="dpad-left" type="button" aria-label="Steer Left">
-                            <span aria-hidden="true">◀</span>
+                            <span aria-hidden="true">${renderIcon('chevron-left')}</span>
                         </button>
-                        <div class="arcade-dpad-center" aria-hidden="true">●</div>
+                        <div class="arcade-dpad-center" aria-hidden="true">${renderIcon('circle')}</div>
                         <button class="arcade-dpad-btn dpad-right" id="dpad-right" type="button" aria-label="Steer Right">
-                            <span aria-hidden="true">▶</span>
+                            <span aria-hidden="true">${renderIcon('chevron-right')}</span>
                         </button>
                     </div>
                     <button class="arcade-dpad-btn dpad-down" id="dpad-down" type="button" aria-label="Steer Down">
-                        <span aria-hidden="true">▼</span>
+                        <span aria-hidden="true">${renderIcon('chevron-down')}</span>
                     </button>
                 </div>
                 <div class="arcade-touch-tip" aria-hidden="true">
@@ -1287,7 +1295,7 @@ function renderStackerGame(game, highScore = 0) {
                                 <div class="hint-item"><kbd class="arcade-key-badge">R</kbd> <span>Restart</span></div>
                             </div>
                             <button class="arcade-btn arcade-btn-primary" id="stacker-start-btn" type="button">
-                                ▶ INITIALIZE CONTEXT [ENTER / TAP]
+                                ${renderIcon('play')} INITIALIZE CONTEXT [ENTER / TAP]
                             </button>
                         </div>
                     </div>
@@ -1300,10 +1308,10 @@ function renderStackerGame(game, highScore = 0) {
                             <p class="arcade-overlay-desc">CPU tick halted. Press P, Space, or click Resume to continue token ingestion.</p>
                             <div class="arcade-overlay-actions">
                                 <button class="arcade-btn arcade-btn-primary" id="stacker-resume-btn" type="button">
-                                    ▶ RESUME THREAD [P]
+                                    ${renderIcon('play')} RESUME THREAD [P]
                                 </button>
                                 <button class="arcade-btn arcade-btn-secondary" id="stacker-restart-from-pause-btn" type="button">
-                                    ↺ RESTART [R]
+                                    ${renderIcon('rotate-ccw')} RESTART [R]
                                 </button>
                             </div>
                         </div>
@@ -1330,11 +1338,11 @@ function renderStackerGame(game, highScore = 0) {
                                 <span class="arcade-mini-stat">DEPTH: <strong id="stacker-gameover-depth">00</strong></span>
                             </div>
                             <div id="stacker-new-highscore-badge" class="arcade-new-record" style="display: none;">
-                                ★ NEW PEAK RECORD COMMITTED TO REGISTRY ★
+                                ${renderIcon('trophy')} NEW PEAK RECORD COMMITTED TO REGISTRY ${renderIcon('trophy')}
                             </div>
                             <div class="arcade-overlay-actions">
                                 <button class="arcade-btn arcade-btn-primary" id="stacker-restart-btn" type="button">
-                                    ↺ PURGE & RESTART [R / ENTER]
+                                    ${renderIcon('rotate-ccw')} PURGE & RESTART [R / ENTER]
                                 </button>
                                 <button class="arcade-btn arcade-btn-secondary" id="stacker-exit-to-menu-btn" type="button">
                                     ← ARCADE MENU [ESC]
@@ -1368,19 +1376,19 @@ function renderStackerGame(game, highScore = 0) {
             <div class="arcade-touch-controls arcade-stacker-touch-controls" id="stacker-touch-controls" aria-label="On-screen game controls">
                 <div class="arcade-stacker-touch-row">
                     <button class="arcade-touch-btn" id="touch-left" type="button" aria-label="Shift Token Left">
-                        <span aria-hidden="true">◀</span>
+                        <span aria-hidden="true">${renderIcon('chevron-left')}</span>
                     </button>
                     <button class="arcade-touch-btn" id="touch-rotate" type="button" aria-label="Rotate Token">
-                        <span aria-hidden="true">↻</span>
+                        <span aria-hidden="true">${renderIcon('rotate-cw')}</span>
                     </button>
                     <button class="arcade-touch-btn" id="touch-right" type="button" aria-label="Shift Token Right">
-                        <span aria-hidden="true">▶</span>
+                        <span aria-hidden="true">${renderIcon('chevron-right')}</span>
                     </button>
                     <button class="arcade-touch-btn" id="touch-down" type="button" aria-label="Soft Drop Token">
-                        <span aria-hidden="true">▼</span>
+                        <span aria-hidden="true">${renderIcon('chevron-down')}</span>
                     </button>
                     <button class="arcade-touch-btn touch-btn-harddrop" id="touch-harddrop" type="button" aria-label="Hard Flush Token">
-                        <span aria-hidden="true">⚡ FLUSH</span>
+                        <span aria-hidden="true">${renderIcon('zap')} FLUSH</span>
                     </button>
                 </div>
                 <div class="arcade-stacker-touch-row arcade-stacker-temp-row">
@@ -1493,7 +1501,7 @@ function renderGradientGame(game, highScore = 0) {
                                 <div class="hint-item"><kbd class="arcade-key-badge">ESC</kbd> <span>Arcade Menu</span></div>
                             </div>
                             <button class="arcade-btn arcade-btn-primary" id="gradient-start-btn" type="button">
-                                ▶ LAUNCH OPTIMIZATION [ENTER / TAP]
+                                ${renderIcon('play')} LAUNCH OPTIMIZATION [ENTER / TAP]
                             </button>
                         </div>
                     </div>
@@ -1506,10 +1514,10 @@ function renderGradientGame(game, highScore = 0) {
                             <p class="arcade-overlay-desc">Gradient updates halted. Press P, Space, or click Resume to continue descent.</p>
                             <div class="arcade-overlay-actions">
                                 <button class="arcade-btn arcade-btn-primary" id="gradient-resume-btn" type="button">
-                                    ▶ RESUME THREAD [P]
+                                    ${renderIcon('play')} RESUME THREAD [P]
                                 </button>
                                 <button class="arcade-btn arcade-btn-secondary" id="gradient-restart-from-pause-btn" type="button">
-                                    ↺ RESTART [R]
+                                    ${renderIcon('rotate-ccw')} RESTART [R]
                                 </button>
                             </div>
                         </div>
@@ -1537,7 +1545,7 @@ function renderGradientGame(game, highScore = 0) {
                             </div>
                             <div class="arcade-overlay-actions">
                                 <button class="arcade-btn arcade-btn-primary" id="gradient-next-epoch-btn" type="button">
-                                    ▶ PROCEED TO NEXT EPOCH [SPACE / ENTER]
+                                    ${renderIcon('play')} PROCEED TO NEXT EPOCH [SPACE / ENTER]
                                 </button>
                             </div>
                         </div>
@@ -1563,11 +1571,11 @@ function renderGradientGame(game, highScore = 0) {
                                 <span class="arcade-mini-stat">TERMS CLEARED: <strong id="gradient-gameover-blocks">00</strong></span>
                             </div>
                             <div id="gradient-new-highscore-badge" class="arcade-new-record" style="display: none;">
-                                ★ NEW PEAK CONVERGENCE RECORD COMMITTED ★
+                                ${renderIcon('trophy')} NEW PEAK CONVERGENCE RECORD COMMITTED ${renderIcon('trophy')}
                             </div>
                             <div class="arcade-overlay-actions">
                                 <button class="arcade-btn arcade-btn-primary" id="gradient-restart-btn" type="button">
-                                    ↺ RE-INITIALIZE OPTIMIZER [R / ENTER]
+                                    ${renderIcon('rotate-ccw')} RE-INITIALIZE OPTIMIZER [R / ENTER]
                                 </button>
                                 <button class="arcade-btn arcade-btn-secondary" id="gradient-exit-to-menu-btn" type="button">
                                     ← ARCADE MENU [ESC]
@@ -1582,13 +1590,13 @@ function renderGradientGame(game, highScore = 0) {
             <div class="arcade-touch-controls arcade-gradient-touch-controls" id="gradient-touch-controls" aria-label="On-screen game controls">
                 <div class="arcade-gradient-touch-row">
                     <button class="arcade-touch-btn" id="touch-paddle-left" type="button" aria-label="Steer Optimizer Left">
-                        <span aria-hidden="true">◀ STEER</span>
+                        <span aria-hidden="true">${renderIcon('chevron-left')} STEER</span>
                     </button>
                     <button class="arcade-touch-btn touch-btn-launch" id="touch-launch" type="button" aria-label="Launch Ball or Pause">
-                        <span id="touch-launch-text" aria-hidden="true">⚡ LAUNCH</span>
+                        <span id="touch-launch-text" aria-hidden="true">${renderIcon('zap')} LAUNCH</span>
                     </button>
                     <button class="arcade-touch-btn" id="touch-paddle-right" type="button" aria-label="Steer Optimizer Right">
-                        <span aria-hidden="true">STEER ▶</span>
+                        <span aria-hidden="true">STEER ${renderIcon('chevron-right')}</span>
                     </button>
                 </div>
                 <div class="arcade-gradient-touch-row arcade-gradient-lr-row">
@@ -1637,7 +1645,7 @@ function renderPostDetails(post, renderedHtml) {
 
             <header class="devlog-post-header" style="margin: 16px 0 20px; padding: 14px; background: rgba(255, 255, 255, 0.03); border-radius: 6px; border-left: 3px solid var(--accent-cyan);">
                 <div class="devlog-post-meta" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 8px; font-size: 11px; font-family: 'Fira Code', monospace; color: var(--text-secondary);">
-                    <time datetime="${post.date}">📅 ${post.date}</time>
+                    <time datetime="${post.date}"><span aria-hidden="true">${renderIcon('calendar')}</span> ${post.date}</time>
                     <span aria-hidden="true">•</span>
                     <span>AUTHOR: AliJ A. Shaikh</span>
                     <span aria-hidden="true">•</span>

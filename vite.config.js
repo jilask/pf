@@ -18,7 +18,7 @@ export default defineConfig({
         {
             name: 'resolve-gallery-base-assets',
             resolveId(id) {
-                if (['render.js', 'arcade-snake.js', 'arcade-stacker.js', 'arcade-gradient.js', 'script.js'].includes(id)) {
+                if (['icons.js', 'render.js', 'arcade-snake.js', 'arcade-stacker.js', 'arcade-gradient.js', 'script.js'].includes(id)) {
                     return resolve(__dirname, id);
                 }
                 return null;
@@ -31,7 +31,7 @@ export default defineConfig({
                     if (isGallery) {
                         return html
                             .replace('href="styles.css"', 'href="/styles.css"')
-                            .replace(/src="(render\.js|arcade-[a-z]+\.js|script\.js)"/g, 'src="/$1"');
+                            .replace(/src="(icons\.js|render\.js|arcade-[a-z]+\.js|script\.js)"/g, 'src="/$1"');
                     }
                     return html;
                 }
