@@ -3,7 +3,8 @@
   "entries": [
     {
       "id": "exp-ai-engineer-freelance",
-      "title": "💡 AI Engineer (Freelance)",
+      "icon": "lightbulb",
+      "title": "AI Engineer (Freelance)",
       "company": "@ Self-employed",
       "companyColor": "var(--accent-green)",
       "duration": "October 2025 – Present",
@@ -15,7 +16,8 @@
     },
     {
       "id": "exp-senior-ai-architect",
-      "title": "🚀 Senior AI Architect",
+      "icon": "rocket",
+      "title": "Senior AI Architect",
       "company": "@ Modelia",
       "companyColor": "var(--accent-red)",
       "duration": "March 2024 – October 2025",
@@ -28,7 +30,8 @@
     },
     {
       "id": "exp-prompt-engineer-freelance",
-      "title": "💡 Prompt Engineer (Freelance)",
+      "icon": "lightbulb",
+      "title": "Prompt Engineer (Freelance)",
       "company": "@ Self-employed",
       "companyColor": "var(--accent-purple)",
       "duration": "July 2022 – March 2024",
@@ -40,7 +43,8 @@
     },
     {
       "id": "exp-junior-flutter-developer",
-      "title": "📱 Junior Flutter Developer",
+      "icon": "smartphone",
+      "title": "Junior Flutter Developer",
       "company": "@ AARFAA Technovision pvt Ltd, Pune",
       "companyColor": "var(--accent-orange)",
       "duration": "June 2021 – July 2022",

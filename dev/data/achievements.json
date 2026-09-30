@@ -3,7 +3,7 @@
     {
       "id": "ach-production-ai",
       "status": "[SUCCESS]",
-      "icon": "🚀",
+      "icon": "rocket",
       "title": "Production AI Deployment",
       "titleColor": "var(--accent-cyan)",
       "description": "Successfully deployed generative AI pipelines for fashion retail industry, achieving production-grade performance and reliability."
@@ -11,7 +11,7 @@
     {
       "id": "ach-brand-safe",
       "status": "[SUCCESS]",
-      "icon": "🛡️",
+      "icon": "shield-check",
       "title": "Brand-Safe AI Systems",
       "titleColor": "var(--accent-green)",
       "description": "Developed comprehensive brand-safe AI image generation systems, ensuring content compliance and quality control."
@@ -19,7 +19,7 @@
     {
       "id": "ach-creative-ai",
       "status": "[SUCCESS]",
-      "icon": "🎨",
+      "icon": "palette",
       "title": "Creative AI Solutions",
       "titleColor": "var(--accent-yellow)",
       "description": "Developed innovative AI-driven content creation systems leveraging advanced prompt engineering and automated workflows."
@@ -27,7 +27,7 @@
     {
       "id": "ach-custom-comfyui",
       "status": "[SUCCESS]",
-      "icon": "⚙️",
+      "icon": "cpu",
       "title": "Custom ComfyUI Development",
       "titleColor": "var(--accent-purple)",
       "description": "Specialized in developing custom ComfyUI nodes and workflows, extending the platform's capabilities for specific use cases."

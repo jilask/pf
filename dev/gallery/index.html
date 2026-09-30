@@ -73,19 +73,19 @@
         <div class="waybar-right">
             <div class="waybar-module system-info" role="region" aria-label="System status">
                 <span class="sys-item" aria-label="CPU usage">
-                    <i class="icon" aria-hidden="true">🖥️</i>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2" /><line x1="8" x2="16" y1="21" y2="21" /><line x1="12" x2="12" y1="17" y2="21" /></svg>
                     <span id="cpu-usage">45%</span>
                 </span>
                 <span class="sys-item" aria-label="Memory usage">
-                    <i class="icon" aria-hidden="true">💾</i>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon" aria-hidden="true"><path d="M10 16h.01" /><path d="M2.212 11.577a2 2 0 0 0-.212.896V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5.527a2 2 0 0 0-.212-.896L18.55 5.11A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /><path d="M21.946 12.013H2.054" /><path d="M6 16h.01" /></svg>
                     <span id="memory-usage">2.1G</span>
                 </span>
                 <span class="sys-item" aria-label="Network status">
-                    <i class="icon" aria-hidden="true">🌐</i>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></svg>
                     <span id="network-status">WiFi</span>
                 </span>
                 <span class="sys-item" aria-label="Battery level">
-                    <i class="icon" aria-hidden="true">🔋</i>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon" aria-hidden="true"><path d="m11 7-3 5h4l-3 5" /><path d="M14.856 6H16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.935" /><path d="M22 14v-4" /><path d="M5.14 18H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2.936" /></svg>
                     <span id="battery">100%</span>
                 </span>
             </div>
@@ -278,18 +278,18 @@
                 </div>
                 <button class="lightbox-close-btn" id="lightbox-close-btn" type="button"
                     aria-label="Close gallery lightbox viewer">
-                    <span aria-hidden="true">✕</span> CLOSE <span class="close-shortcut-hint">[ESC]</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg> CLOSE <span class="close-shortcut-hint">[ESC]</span>
                 </button>
             </div>
             <div class="lightbox-body">
                 <div class="lightbox-media-container">
                     <button id="lightbox-prev-btn" class="lightbox-nav-btn prev" type="button"
-                        aria-label="Previous gallery item">‹</button>
+                        aria-label="Previous gallery item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg></button>
                     <div id="lightbox-media-wrapper" class="lightbox-media-wrapper">
                         <!-- Dynamic media content -->
                     </div>
                     <button id="lightbox-next-btn" class="lightbox-nav-btn next" type="button"
-                        aria-label="Next gallery item">›</button>
+                        aria-label="Next gallery item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button>
                     <div id="lightbox-subnav-container" class="lightbox-subnav-container"></div>
                     <div id="lightbox-live-caption" class="sr-only" aria-live="polite" aria-atomic="true"></div>
                 </div>
@@ -301,6 +301,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+    <script type="module" src="icons.js"></script>
     <script type="module" src="render.js"></script>
     <script type="module" src="arcade-snake.js"></script>
     <script type="module" src="arcade-stacker.js"></script>
